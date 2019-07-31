@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <ImageView
+        android:id="@+id/SCREEN"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+    <Button
+        android:id="@+id/MOVE_UP"
+        android:layout_width="45dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
+        android:text="↑↑"
+        app:layout_constraintBottom_toTopOf="@+id/MOVE_LEFT"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/MOVE_FORWARD"
+        android:layout_width="45dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginLeft="0dp"
+        android:text="↑"
+        app:layout_constraintBottom_toBottomOf="@+id/MOVE_UP"
+        app:layout_constraintStart_toEndOf="@+id/MOVE_UP"
+        app:layout_constraintTop_toTopOf="@+id/MOVE_UP" />
+
+    <Button
+        android:id="@+id/MOVE_DOWN"
+        android:layout_width="45dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginLeft="0dp"
+        android:text="↓↓"
+        app:layout_constraintBottom_toBottomOf="@+id/MOVE_FORWARD"
+        app:layout_constraintStart_toEndOf="@+id/MOVE_FORWARD"
+        app:layout_constraintTop_toTopOf="@+id/MOVE_FORWARD" />
+
+    <Button
+        android:id="@+id/MOVE_LEFT"
+        android:layout_width="45dp"
+        android:layout_height="wrap_content"
+        android:text="←"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/MOVE_UP"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/MOVE_BACK"
+        android:layout_width="45dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginLeft="0dp"
+        android:text=" ↓"
+        app:layout_constraintBottom_toBottomOf="@+id/MOVE_LEFT"
+        app:layout_constraintEnd_toEndOf="@+id/MOVE_FORWARD"
+        app:layout_constraintStart_toEndOf="@+id/MOVE_LEFT"
+        app:layout_constraintTop_toTopOf="@+id/MOVE_LEFT" />
+
+    <Button
+        android:id="@+id/MOVE_RIGHT"
+        android:layout_width="45dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginLeft="0dp"
+        android:text="→"
+        app:layout_constraintBottom_toBottomOf="@+id/MOVE_BACK"
+        app:layout_constraintEnd_toEndOf="@+id/MOVE_DOWN"
+        app:layout_constraintStart_toEndOf="@+id/MOVE_BACK"
+        app:layout_constraintTop_toTopOf="@+id/MOVE_BACK" />
+
+    <ToggleButton
+        android:id="@+id/INVENTORY_TOGGLE"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:text="INVENTORY"
+        android:textOff="INVENTORY"
+        android:textOn="INVENTORY"
+        app:layout_constraintBottom_toBottomOf="@+id/MOVE_RIGHT"
+        app:layout_constraintStart_toEndOf="@+id/MOVE_RIGHT"
+        app:layout_constraintTop_toTopOf="@+id/MOVE_RIGHT" />
+
+    <Button
+        android:id="@+id/TOGGLETEXTUREEDIT"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:text="TILE"
+        app:layout_constraintBottom_toTopOf="@+id/INVENTORY_TOGGLE"
+        app:layout_constraintStart_toEndOf="@+id/MOVE_DOWN"
+        app:layout_constraintTop_toTopOf="@+id/MOVE_DOWN" />
+
+    <Spinner
+        android:id="@+id/LoadLVL"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Load LVL"
+        android:textOff="Load LVL"
+        android:textOn="Load LVL"
+        app:layout_constraintBottom_toTopOf="@+id/MOVE_UP"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ToggleButton
+        android:id="@+id/FILLPLACE"
+        android:layout_width="wrap_content"
+        android:layout_height="62dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="AREA"
+        android:textOn="AREA"
+        android:textOff="SINGLE"
+        app:layout_constraintBottom_toTopOf="@+id/MOVE_FORWARD"
+        app:layout_constraintEnd_toEndOf="@+id/MOVE_FORWARD"
+        app:layout_constraintStart_toEndOf="@+id/LoadLVL" />
+
+    <ToggleButton
+        android:id="@+id/DRAWKDTREE"
+        android:layout_width="86dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="SHOW KDTREE"
+        android:textOn="HIDE KDTREE"
+        android:textOff="SHOW KDTREE"
+        app:layout_constraintBottom_toBottomOf="@+id/FILLPLACE"
+        app:layout_constraintEnd_toEndOf="@+id/MOVE_DOWN"
+        app:layout_constraintStart_toEndOf="@+id/FILLPLACE"
+        app:layout_constraintTop_toTopOf="@+id/FILLPLACE" />
+
+    <ToggleButton
+        android:id="@+id/REMOVETILES"
+        android:layout_width="86dp"
+        android:layout_height="63dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:text="DRAWKDTREE"
+        android:textOn="REMOVE"
+        android:textOff="ADD"
+        app:layout_constraintBottom_toBottomOf="@+id/DRAWKDTREE"
+        app:layout_constraintStart_toEndOf="@+id/DRAWKDTREE"
+        app:layout_constraintTop_toTopOf="@+id/DRAWKDTREE"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/ADDRIGHT"
+        android:layout_width="45dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:text="+1"
+        app:layout_constraintBottom_toBottomOf="@+id/ADDLEFT"
+        app:layout_constraintStart_toEndOf="@+id/DISPLAYFRAMES"
+        app:layout_constraintTop_toTopOf="@+id/ADDLEFT"
+        app:layout_constraintRight_toLeftOf="parent"/>
+
+    <Button
+        android:id="@+id/ADDLEFT"
+        android:layout_width="45dp"
+        android:layout_height="40dp"
+        android:text="-1"
+        app:layout_constraintStart_toEndOf="@+id/INVENTORY_TOGGLE"
+        app:layout_constraintBottom_toBottomOf="@+id/INVENTORY_TOGGLE"
+        app:layout_constraintTop_toTopOf="@+id/INVENTORY_TOGGLE"
+        tools:layout_editor_absoluteY="467dp"
+        app:layout_constraintRight_toLeftOf="@+id/DISPLAYFRAMES"/>
+
+    <TextView
+        android:id="@+id/DISPLAYFRAMES"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:text="Material: 0"
+        app:layout_constraintBottom_toBottomOf="@+id/ADDLEFT"
+        app:layout_constraintStart_toEndOf="@+id/ADDLEFT"
+        app:layout_constraintTop_toTopOf="@+id/ADDLEFT"
+        app:layout_constraintRight_toLeftOf="@+id/ADDRIGHT"/>
+
+    <SeekBar
+        android:id="@+id/seekBarALPHA"
+        android:layout_width="400dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="8dp"
+        android:max="255"
+        android:rotation="270"
+        app:layout_constraintBottom_toTopOf="@+id/TOGGLETEXTUREEDIT"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/INVENTORY_TOGGLE"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/seekBarRED"/>
+
+    <SeekBar
+        android:id="@+id/seekBarRED"
+        android:max="255"
+        android:layout_width="400dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="8dp"
+        android:rotation="270"
+        app:layout_constraintBottom_toBottomOf="@+id/seekBarALPHA"
+        app:layout_constraintStart_toStartOf="@+id/seekBarALPHA"
+        app:layout_constraintTop_toTopOf="@+id/seekBarALPHA"
+        app:layout_constraintRight_toLeftOf="@+id/seekBarGREEN" />
+
+    <SeekBar
+        android:id="@+id/seekBarGREEN"
+        android:max="255"
+        android:layout_width="400dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="8dp"
+        android:rotation="270"
+        app:layout_constraintBottom_toBottomOf="@+id/seekBarRED"
+        app:layout_constraintStart_toStartOf="@+id/seekBarRED"
+        app:layout_constraintTop_toTopOf="@+id/seekBarRED"
+        app:layout_constraintRight_toLeftOf="@+id/seekBarBLUE" />
+
+    <SeekBar
+        android:id="@+id/seekBarBLUE"
+        android:max="255"
+        android:layout_width="400dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="8dp"
+        android:rotation="270"
+        app:layout_constraintBottom_toBottomOf="@+id/seekBarGREEN"
+        app:layout_constraintStart_toStartOf="@+id/seekBarGREEN"
+        app:layout_constraintTop_toTopOf="@+id/seekBarGREEN"
+        app:layout_constraintRight_toLeftOf="parent"/>
+
+    <SeekBar
+        android:id="@+id/seekBarANIMATION"
+        android:layout_width="400dp"
+        android:layout_height="20dp"
+        android:max="30"
+        tools:layout_editor_absoluteX="37dp"
+        tools:layout_editor_absoluteY="491dp"
+        app:layout_constraintLeft_toRightOf="@+id/LoadLVL"
+        app:layout_constraintRight_toLeftOf="@id/seekBarALPHA"
+        app:layout_constraintTop_toTopOf="@id/LoadLVL"
+        app:layout_constraintBottom_toBottomOf="@id/LoadLVL"/>
+
+</android.support.constraint.ConstraintLayout>
