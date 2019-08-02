@@ -13,9 +13,11 @@ import android.graphics.Rect;
 import java.util.ArrayList;
 
 import static com.jacobjacob.ttproject.Util.CONTEXT;
+import static com.jacobjacob.ttproject.Util.MATERIALARRAY;
 import static com.jacobjacob.ttproject.Util.MATERIALLIST;
 import static com.jacobjacob.ttproject.Util.MATERIALLISTUPDATING;
 import static com.jacobjacob.ttproject.Util.TEXTUREWIDTH;
+import static com.jacobjacob.ttproject.Util.TILELAYER;
 import static com.jacobjacob.ttproject.Util.TILESIZE;
 import static com.jacobjacob.ttproject.Util.TILESIZEORIGINAL;
 import static com.jacobjacob.ttproject.Util.TILESIZETEXTURE;
@@ -174,6 +176,28 @@ public class Tiletexture {
         }
     }
 
+    public Bitmap getBitmap(int MATERIALint) { // no animations possible yet
+        // Material
+        if (MATERIALint >= 0) {
+            if (MATERIALARRAY[MATERIALint] != null && MATERIALint * 5 < Bitmaplist.size()) {
+                if (TILELAYER == 1) {
+                    return RGBTilesLAYER1.get(MATERIALint * 5);
+                } else if (TILELAYER == 2) {
+                    return RGBTilesLAYER2.get(MATERIALint * 5);
+                } else if (TILELAYER == 3) {
+                    return RGBTilesLAYER3.get(MATERIALint * 5);
+                } else {
+                    return null;
+                }
+
+            } else {
+                return null;
+            }
+        }else {
+            return null;
+        }
+    }
+
 
     public void CreateTilemap(int Material, int Layer1, int Layer2, int Layer3, int ColorLayer1, int ColorLayer2, int ColorLayer3) { // needs more Options as input
 
@@ -186,7 +210,15 @@ public class Tiletexture {
         //Layer1 = 0;
         //Layer2 = 0;
         //Layer3 = 0;
-
+        if (Layer1 < 0){
+            Layer1 = 0;
+        }
+        if (Layer2 < 0){
+            Layer2 = 0;
+        }
+        if (Layer3 < 0){
+            Layer3 = 0;
+        }
         Layer1 *= TILESOFSINGLEKIND;
         Layer2 *= TILESOFSINGLEKIND;
         Layer3 *= TILESOFSINGLEKIND;
@@ -310,36 +342,6 @@ public class Tiletexture {
         Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
         bm.recycle();
         return resizedBitmap;
-    }
-
-    public Bitmap getBitmap(int ID) {
-        if (ID < Bitmaplist.size()) {
-
-            if (ID < 0) {
-                ID = Bitmaplist.size() + ID;
-            }
-            Bitmap imagetexture;
-            //if ((float) Math.ceil(TILESIZE * (camera.getEye2D().getValue(2) / ZOOMFACTOR)) < HEIGHTSCREEN/10){
-            //    imagetexture = BitmaplistLLOD.get(ID);
-            //}else {
-            imagetexture = Bitmaplist.get(ID);
-            //}
-            /*/
-            Matrix matrixnew = new Matrix();
-            boolean fliphorizontal = false;
-            boolean flipvertical = false;
-            if (fliphorizontal){
-                matrixnew.preScale(-1.0f, 1.0f);
-                imagetexture = Bitmap.createBitmap(imagetexture, 0, 0, imagetexture.getWidth(), imagetexture.getHeight(), matrixnew, true);
-
-            }
-            if (flipvertical){
-                matrixnew.preScale(1.0f, -1.0f);
-                imagetexture = Bitmap.createBitmap(imagetexture, 0, 0, imagetexture.getWidth(), imagetexture.getHeight(), matrixnew, true);
-            }/**/
-
-            return imagetexture;
-        } else return null;
     }
 }
 

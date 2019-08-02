@@ -55,6 +55,7 @@ class UpdateHandler/* extends AppCompatActivity*/ {
         }
 
         RENDERERTILES.DrawSelectedTile(); /** Draws the Inventory to the left or top*/
+        RENDERERTILES.DrawSelectedTileLayer();
         RENDERERTILES.DrawInventoryTiles(); /**Inventory to select IDs**/
 
         RENDERERTILES.postImage();

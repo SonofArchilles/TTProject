@@ -32,6 +32,15 @@ public class Material {
 
     public Material(int Number, int Layer1, int Layer2, int Layer3, int ColorLayer1, int ColorLayer2, int ColorLayer3) {
         this.Number = Number;
+        if (Layer1 < 0){
+            Layer1 = 0;
+        }
+        if (Layer2 < 0){
+            Layer2 = 0;
+        }
+        if (Layer3 < 0){
+            Layer3 = 0;
+        }
         this.Layer1 = Layer1;
         this.Layer2 = Layer2;
         this.Layer3 = Layer3;
@@ -296,5 +305,25 @@ public class Material {
         } else if (TILELAYER == 3) {
             this.Layer3 = Layer123;
         }
+    }
+
+    public int getLayer(int Layer) {
+        if (Layer == 1) {
+            return this.Layer1;
+        } else if (Layer == 2) {
+            return this.Layer2;
+        } else if (Layer == 3) {
+            return this.Layer3;
+        }else return 0;
+    }
+
+    public int getColor(int ColorLayer) {
+        if (ColorLayer == 1) {
+            return this.ColorLayer1;
+        } else if (ColorLayer == 2) {
+            return this.ColorLayer2;
+        } else if (ColorLayer == 3) {
+            return this.ColorLayer3;
+        }else return 0;
     }
 }
