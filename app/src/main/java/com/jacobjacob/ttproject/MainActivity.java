@@ -72,6 +72,7 @@ import static com.jacobjacob.ttproject.Util.TILEEDIT;
 import static com.jacobjacob.ttproject.Util.TILELAYER;
 import static com.jacobjacob.ttproject.Util.TILETEXTURE;
 import static com.jacobjacob.ttproject.Util.TILEUPDATE;
+import static com.jacobjacob.ttproject.Util.UPDATETILESET;
 import static com.jacobjacob.ttproject.Util.WIDTH;
 import static com.jacobjacob.ttproject.Util.WIDTHSCREEN;
 import static com.jacobjacob.ttproject.Util.camera;
@@ -227,6 +228,10 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     FILLTILES = false;
                     PLACETILE = true;
+                }
+                if (TILELAYER > 3) {
+                    FILLTILES = false;
+                    PLACETILE = false;
                 }
 
             }
@@ -428,6 +433,8 @@ public class MainActivity extends AppCompatActivity {
                     TILELAYER = 0;
                 }
                 if (TILELAYER == 0) {
+                    FILLTILES = FILLPLACE.isChecked();
+                    PLACETILE = !FILLPLACE.isChecked();
                     TILEEDIT.setText("EDIT TILE");
                     DISPLAYFRAMES.setText("Material: " + String.valueOf(FRAMES));
                     SeekbarALPHA.setVisibility(View.INVISIBLE);
@@ -451,7 +458,11 @@ public class MainActivity extends AppCompatActivity {
                     ADDLEFT.setVisibility(View.VISIBLE);
                     ADDRIGHT.setVisibility(View.VISIBLE);
                     DISPLAYFRAMES.setVisibility(View.VISIBLE);
+                    MATERIALARRAY[SelectedMaterial].UpdateSeekbarProgress();
+
                 } else {
+                    FILLTILES = false;
+                    PLACETILE = false;
                     DISPLAYFRAMES.setText("Animationtime: " + String.valueOf(FRAMES) + "s");
                     TILEEDIT.setText("ANIMATIONLAYER: " + String.valueOf(TILELAYER - 3));
                     SeekbarANIMATON.setVisibility(View.VISIBLE);
@@ -560,16 +571,21 @@ public class MainActivity extends AppCompatActivity {
         SeekbarANIMATON.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                //UPDATETILESET = true;
                 ANIMATIONPROGRESSPERCENT = (((float) seekBar.getProgress()) / ((float) SeekbarANIMATON.getMax()));
                 ANIMATIONPROGRESS = seekBar.getProgress();
+                MATERIALARRAY[SelectedMaterial].UpdateAnimationSeekbarColor();
+
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
+                UPDATETILESET = true;
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+                UPDATETILESET = false;
             }
         });
     }

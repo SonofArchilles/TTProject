@@ -76,6 +76,8 @@
         app:layout_constraintStart_toEndOf="@+id/MOVE_BACK"
         app:layout_constraintTop_toTopOf="@+id/MOVE_BACK" />
 
+
+
     <ToggleButton
         android:id="@+id/INVENTORY_TOGGLE"
         android:layout_width="wrap_content"
@@ -112,7 +114,7 @@
         android:textOff="Load LVL"
         android:textOn="Load LVL"
         app:layout_constraintBottom_toTopOf="@+id/MOVE_UP"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="@+id/MOVE_UP" />
 
     <ToggleButton
         android:id="@+id/FILLPLACE"
@@ -139,12 +141,14 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:text="SHOW KDTREE"
-        android:textOn="HIDE KDTREE"
         android:textOff="SHOW KDTREE"
+        android:textOn="HIDE KDTREE"
         app:layout_constraintBottom_toBottomOf="@+id/FILLPLACE"
         app:layout_constraintEnd_toEndOf="@+id/MOVE_DOWN"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/FILLPLACE"
-        app:layout_constraintTop_toTopOf="@+id/FILLPLACE" />
+        app:layout_constraintTop_toTopOf="@+id/FILLPLACE"
+        app:layout_constraintVertical_bias="0.0" />
 
     <ToggleButton
         android:id="@+id/REMOVETILES"
@@ -199,11 +203,11 @@
         android:id="@+id/seekBarALPHA"
         android:layout_width="400dp"
         android:layout_height="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:max="255"
         android:rotation="270"
-        app:layout_constraintBottom_toTopOf="@+id/TOGGLETEXTUREEDIT"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/INVENTORY_TOGGLE"
         app:layout_constraintTop_toTopOf="parent"
@@ -253,11 +257,10 @@
         android:layout_width="400dp"
         android:layout_height="20dp"
         android:max="30"
-        tools:layout_editor_absoluteX="37dp"
-        tools:layout_editor_absoluteY="491dp"
+        app:layout_constraintBottom_toBottomOf="@id/LoadLVL"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toRightOf="@+id/LoadLVL"
         app:layout_constraintRight_toLeftOf="@id/seekBarALPHA"
         app:layout_constraintTop_toTopOf="@id/LoadLVL"
-        app:layout_constraintBottom_toBottomOf="@id/LoadLVL"/>
-
+        app:layout_constraintVertical_bias="0.0" />
 </android.support.constraint.ConstraintLayout>

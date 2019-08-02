@@ -287,7 +287,7 @@ public class LevelEditor {
         for (int i = 0; i < MATERIALARRAY.length; i++) {
             if (MATERIALARRAY[i] != null) {
                 Tiles.append(MATERIALARRAY[i].getMaterialdetails() + "\n");
-            }else {
+            } else {
                 Tiles.append(STARTINGMATERIAL.getMaterialdetails() + "\n");
             }
         }

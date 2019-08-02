@@ -148,6 +148,7 @@ public class Util {
     public static Bitmap[][] MATERIALLISTUPDATING;
     public static Material[] MATERIALARRAY = new Material[TEXTUREWIDTH * TEXTUREWIDTH];
     public static Material STARTINGMATERIAL = new Material(1, 0, 0, 0, Color.argb(255, 120, 170, 100), Color.argb(255, 174, 160, 108), Color.argb(255, 10, 255, 255));
+    public static boolean UPDATETILESET = false;
 
     public static KdTree KDTREE = new KdTree();
     public static KdTree KDTREECOPY = KDTREE;

@@ -1,6 +1,5 @@
 package com.jacobjacob.ttproject;
 
-import android.graphics.Color;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -109,7 +108,7 @@ public class ReadFile {
                     }
                     AllTiles.add(newTile);
                 }
-                if (readMaterial){
+                if (readMaterial) {
 
                     if (!String.valueOf(parts[0]).equals("m")) {
 
@@ -126,22 +125,22 @@ public class ReadFile {
                 }
 
 
-                if (readMaterialAnimations){
+                if (readMaterialAnimations) {
 
                     if (!String.valueOf(parts[0]).equals("a") && !String.valueOf(parts[0]).equals(" ")) {
                         int[][] Animation = new int[31][3];
-                        if (MATERIALARRAY[Integer.parseInt(parts[0])] != null){
-                            for (int i = 0; i < (parts.length-2)/4; i++){
-                                Animation[Integer.parseInt(parts[i*4+2])][0] = Integer.parseInt(parts[i*4+3]);
-                                Animation[Integer.parseInt(parts[i*4+2])][1] = Integer.parseInt(parts[i*4+4]);
-                                Animation[Integer.parseInt(parts[i*4+2])][2] = Integer.parseInt(parts[i*4+5]);
+                        if (MATERIALARRAY[Integer.parseInt(parts[0])] != null) {
+                            for (int i = 0; i < (parts.length - 2) / 4; i++) {
+                                Animation[Integer.parseInt(parts[i * 4 + 2])][0] = Integer.parseInt(parts[i * 4 + 3]);
+                                Animation[Integer.parseInt(parts[i * 4 + 2])][1] = Integer.parseInt(parts[i * 4 + 4]);
+                                Animation[Integer.parseInt(parts[i * 4 + 2])][2] = Integer.parseInt(parts[i * 4 + 5]);
                             }
-                        }else {
+                        } else {
                             MATERIALARRAY[Integer.parseInt(parts[0])] = STARTINGMATERIAL;
-                            for (int i = 0; i < (parts.length-1)/4; i++){
-                                Animation[i*4+2][0] = Integer.parseInt(parts[i*4+3]);
-                                Animation[i*4+2][1] = Integer.parseInt(parts[i*4+4]);
-                                Animation[i*4+2][2] = Integer.parseInt(parts[i*4+5]);
+                            for (int i = 0; i < (parts.length - 1) / 4; i++) {
+                                Animation[i * 4 + 2][0] = Integer.parseInt(parts[i * 4 + 3]);
+                                Animation[i * 4 + 2][1] = Integer.parseInt(parts[i * 4 + 4]);
+                                Animation[i * 4 + 2][2] = Integer.parseInt(parts[i * 4 + 5]);
                             }
                         }
 
@@ -190,14 +189,14 @@ public class ReadFile {
         //if (MATERIALARRAY.length < 1) {
         //    MATERIALARRAY[0] = STARTINGMATERIAL;
         //}
-        for (int i = 0; i < MATERIALARRAY.length; i++){
-            if (MATERIALARRAY[i] == null){
+        for (int i = 0; i < MATERIALARRAY.length; i++) {
+            if (MATERIALARRAY[i] == null) {
                 Material NewMaterial = STARTINGMATERIAL;
                 int Number = i;
                 NewMaterial.setNumber(Number);
                 MATERIALARRAY[i] = NewMaterial;
-            }else {
-                if (MATERIALARRAY[i].getNumber() != i){
+            } else {
+                if (MATERIALARRAY[i].getNumber() != i) {
                     MATERIALARRAY[i].setNumber(i);
                 }
             }

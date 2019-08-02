@@ -25,7 +25,7 @@ public class Tiletexture {
     private ArrayList<Bitmap> Bitmaplist;
 
     //private Bitmap[][] MATERIALLIST;
-
+    //TODO das und das anpassen
     ArrayList<Bitmap> RGBTilesLAYER1 = new ArrayList<>();
     ArrayList<Bitmap> RGBTilesLAYER2 = new ArrayList<>();
     ArrayList<Bitmap> RGBTilesLAYER3 = new ArrayList<>();
@@ -131,6 +131,13 @@ public class Tiletexture {
     }
 
 
+    /**
+     * This method rotates
+     *
+     * @param Input   the bitmap that should be rotated
+     * @param Degrees the amount of rotation
+     * @return the rotated bitmap
+     */
     private Bitmap Rotate(Bitmap Input, int Degrees) {
         Matrix matrix = new Matrix();
         matrix.postRotate(Degrees);
