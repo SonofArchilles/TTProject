@@ -9,6 +9,9 @@ import android.graphics.LightingColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.opengl.GLES20;
+import android.opengl.GLUtils;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -16,8 +19,12 @@ import static com.jacobjacob.ttproject.Util.CONTEXT;
 import static com.jacobjacob.ttproject.Util.MATERIALARRAY;
 import static com.jacobjacob.ttproject.Util.MATERIALLIST;
 import static com.jacobjacob.ttproject.Util.MATERIALLISTUPDATING;
+import static com.jacobjacob.ttproject.Util.MATERIALNORMALS;
+import static com.jacobjacob.ttproject.Util.NORMALSTRENGTH;
+import static com.jacobjacob.ttproject.Util.PLACETILE;
 import static com.jacobjacob.ttproject.Util.TEXTUREWIDTH;
 import static com.jacobjacob.ttproject.Util.TILELAYER;
+import static com.jacobjacob.ttproject.Util.TILELAYERSTART;
 import static com.jacobjacob.ttproject.Util.TILESIZE;
 import static com.jacobjacob.ttproject.Util.TILESIZEORIGINAL;
 import static com.jacobjacob.ttproject.Util.TILESIZETEXTURE;
@@ -39,11 +46,14 @@ public class Tiletexture {
     private Rect SrcDst = new Rect(0, 0, TILESIZE, TILESIZE);
     private long Starttime;
 
+    /**
+     * Initializes the bmp Arrays. Takes the rgb values and creates new Arrays with grey images that get Colored later
+     */
     public Tiletexture() { //rgb
         Bitmaplist = new ArrayList<>();
 
         MATERIALLIST = new Bitmap[TEXTUREWIDTH * TEXTUREWIDTH][15];
-
+        MATERIALNORMALS = new Bitmap[TEXTUREWIDTH * TEXTUREWIDTH][15];
 
         Bitmap LayerR, LayerG, LayerB;
         //BitmaplistLLOD = new ArrayList<>();
@@ -134,7 +144,7 @@ public class Tiletexture {
 
 
     /**
-     * This method rotates
+     * This method rotates a Bitmap
      *
      * @param Input   the bitmap that should be rotated
      * @param Degrees the amount of rotation
@@ -147,6 +157,13 @@ public class Tiletexture {
         return /* Bitmap rotatedBitmap = */Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
     }
 
+    /**
+     * This method Overlays two Bitmaps
+     *
+     * @param Bottom The first bitmap on the bottom
+     * @param Top    The second Bitmap that gets drawn on top of the first one
+     * @return
+     */
     private Bitmap OverlayTilemap(Bitmap Bottom, Bitmap Top) {
 
         Bitmap Out = Bitmap.createBitmap(TILESIZE, TILESIZE, Bitmap.Config.ARGB_8888);
@@ -158,33 +175,286 @@ public class Tiletexture {
         return Out;
     }
 
+    /**
+     * Returns a bmp of a Bitmap with fitting ID and Material
+     *
+     * @param ID          The Id of the Bitmap / can range from 0 to 15
+     * @param MATERIALint The Material the Texture has
+     * @return
+     */
     public Bitmap getBitmap(int ID, int MATERIALint) { // no animations possible yet
-        //MATERIALint = 0;
-        //if (MATERIALLIST == null){
-        //    MATERIALLIST = new Bitmap[TEXTUREWIDTH * TEXTUREWIDTH][15];
-        //}
+
+        if (!PLACETILE/*MATERIALNORMALS[MATERIALint] != null && MATERIALint * 5 < Bitmaplist.size() && MATERIALARRAY[MATERIALint].showNormal()*/) {
+            try {
+                return MATERIALNORMALS[MATERIALint][ID];
+            } catch (Exception e) {
+                Log.d("TILETEXTURE","Tile not in Normal Array!");
+            }
+        }
+
+
         if (MATERIALLIST != null && MATERIALLIST[MATERIALint] != null && ID < MATERIALLIST[MATERIALint].length) {
-
-            /**/
-            Bitmap imagetexture;
-            imagetexture = MATERIALLIST[MATERIALint][ID];
-
-            return imagetexture;/*/return Materiallist.get(ID)[MATERIALint];/**/
+            return MATERIALLIST[MATERIALint][ID];/*/return Materiallist.get(ID)[MATERIALint];/**/
 
         } else {
             return null;
         }
     }
 
+
+    public void deleteTextures() {
+        for (int i = 0; i < TEXTUREWIDTH; i++) {
+            try {
+                GLES20.glDeleteTextures(15, Textures[i], 0);
+
+            } catch (Exception e) {
+                Log.d("Textures: ", "Failed Deleting Textures" + e);
+            }
+        }
+    }
+
+    public void deleteNormals() {
+        for (int i = 0; i < TEXTUREWIDTH; i++) {
+            try {
+                GLES20.glDeleteTextures(15, TextureNormals[i], 0);
+            } catch (Exception e) {
+                Log.d("Textures: ", "Failed Deleting Textures" + e);
+            }
+        }
+    }
+
+
+    /**
+     * Updates the Material loads the Bitmap as a Texture
+     *
+     * @param MaterialToUpdate The Material that gets a new Texture
+     */
+    public void UpdateMaterialTexture(int MaterialToUpdate) {
+        MATERIALARRAY[MaterialToUpdate].CreateMaterialTileset();
+
+        updateTextures(MaterialToUpdate);
+    }
+
+
+    /**
+     * Updates the Material loads the Bitmap as a Texture. This is the normal map- Texture
+     *
+     * @param MaterialToUpdate The Material that gets a new Texture
+     */
+    public void UpdateMaterialNormalTexture(int MaterialToUpdate) {
+        MATERIALARRAY[MaterialToUpdate].CreateMaterialTilesetNormal();
+
+        updateTexturesNormals(MaterialToUpdate);
+    }
+
+
+    public void updateTextures(int TextureToUpdate) {
+
+        int[] textureHandle = new int[16];
+        for (int j = 0; j < 16; j++) {
+
+
+            GLES20.glGenTextures(1, textureHandle, j);
+
+            try {
+
+                if (textureHandle[j] != 0) {
+                    // Bind to the texture in OpenGL
+                    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[j]);
+
+                    // Set filtering
+                    GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+                    GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+
+                    // Load the bitmap into the bound texture.
+                    GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, MATERIALLIST[TextureToUpdate][j], 0);
+                }
+            } catch (Exception e) {
+                Log.d("Load Texture:", "" + e);
+            }
+            if (textureHandle[0] == 0) {
+                throw new RuntimeException("Error loading texture.");
+            }
+            if (j == 15) {
+                Textures[TextureToUpdate] = textureHandle;
+            }
+        }
+    }
+
+    public void updateTexturesNormals(int TextureToUpdate) {
+
+
+        int[] textureHandle = new int[16];
+        for (int j = 0; j < 16; j++) {
+
+            GLES20.glGenTextures(1, textureHandle, j);
+
+            try {
+
+                if (textureHandle[j] != 0) {
+                    // Bind to the texture in OpenGL
+                    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[j]);
+
+                    // Set filtering
+                    GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+                    GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+
+                    // Load the bitmap into the bound texture.
+                    GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, MATERIALNORMALS[TextureToUpdate][j], 0);
+                }
+            } catch (Exception e) {
+                Log.d("Load Texture:", "" + e);
+            }
+            if (textureHandle[0] == 0) {
+                throw new RuntimeException("Error loading texture.");
+            }
+            if (j == 15) {
+                TextureNormals[TextureToUpdate] = textureHandle;
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*/
+    public void updateTextures() { // new void
+
+        TODO5 remove 4
+
+        for (int i = 0; i < TEXTUREWIDTH; i++) {
+
+            int[] textureHandle = new int[16];
+            for (int j = 0; j < 16; j++) {
+
+
+                GLES20.glGenTextures(1, textureHandle, j);
+
+                try {
+
+                    if (textureHandle[j] != 0) {
+                        // Bind to the texture in OpenGL
+                        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[j]);
+
+                        // Set filtering
+                        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+                        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+
+                        // Load the bitmap into the bound texture.
+                        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, MATERIALLIST[i][j], 0);
+                    }
+                } catch (Exception e) {
+                    Log.d("Load Texture:", "" + e);
+                }
+                if (textureHandle[0] == 0) {
+                    throw new RuntimeException("Error loading texture.");
+                }
+                if (j == 15) {
+                    Textures[i] = textureHandle;
+                }
+            }
+
+        }
+    }/**/
+
+/*/
+    public void updateTexturesNormals() {
+        //TODO0 remove 4
+
+        for (int i = 0; i < TEXTUREWIDTH; i++) {
+
+            int[] textureHandle = new int[16];
+            for (int j = 0; j < 16; j++) {
+
+                GLES20.glGenTextures(1, textureHandle, j);
+
+                try {
+
+                    if (textureHandle[j] != 0) {
+                        // Bind to the texture in OpenGL
+                        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[j]);
+
+                        // Set filtering
+                        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+                        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+
+                        // Load the bitmap into the bound texture.
+                        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, MATERIALNORMALS[i][j], 0);
+                    }
+                } catch (Exception e) {
+                    Log.d("Load Texture:", "" + e);
+                }
+                if (textureHandle[0] == 0) {
+                    throw new RuntimeException("Error loading texture.");
+                }
+                if (j == 15) {
+                    TextureNormals[i] = textureHandle;
+                }
+            }
+
+        }
+    }/**/
+
+    int Textures[][] = new int[TEXTUREWIDTH * TEXTUREWIDTH][15];
+
+    int TextureNormals[][] = new int[TEXTUREWIDTH * TEXTUREWIDTH][15];
+
+    public int getTexture(int ID, int Materialint) {
+
+        try {
+            return Textures[Materialint][ID];
+        } catch (Exception e) {
+
+        }
+        return 0;
+        /**/
+    }
+
+    public int getTextureNormals(int ID, int Materialint) {
+
+        try {
+            return TextureNormals[Materialint][ID];
+        } catch (Exception e) {
+
+        }
+        return 0;
+        /**/
+    }
+
+    /**
+     * Returns the Bitmap of a specific Layer to make the quick selection screen possible.
+     * It does not take in an ID, the ID equals 15 / the bottom Tile
+     *
+     * @param MATERIALint The Material we want the Bitmap of a specific Layer from
+     * @return a grey Bitmap
+     */
     public Bitmap getBitmap(int MATERIALint) { // no animations possible yet
         // Material
         if (MATERIALint >= 0) {
             if (MATERIALARRAY[MATERIALint] != null && MATERIALint * 5 < Bitmaplist.size()) {
-                if (TILELAYER == 1) {
+                if (TILELAYER == TILELAYERSTART + 1) {
                     return RGBTilesLAYER1.get(MATERIALint * 5);
-                } else if (TILELAYER == 2) {
+                } else if (TILELAYER == TILELAYERSTART + 2) {
                     return RGBTilesLAYER2.get(MATERIALint * 5);
-                } else if (TILELAYER == 3) {
+                } else if (TILELAYER == TILELAYERSTART + 3) {
                     return RGBTilesLAYER3.get(MATERIALint * 5);
                 } else {
                     return null;
@@ -193,13 +463,13 @@ public class Tiletexture {
             } else {
                 return null;
             }
-        }else {
+        } else {
             return null;
         }
     }
 
 
-    public void CreateTilemap(int Material, int Layer1, int Layer2, int Layer3, int ColorLayer1, int ColorLayer2, int ColorLayer3) { // needs more Options as input
+    public void CreateTilemap(int Material, int Layer1, int Layer2, int Layer3, int ColorLayer0, int ColorLayer1, int ColorLayer2, int ColorLayer3) { // needs more Options as input
 
         Bitmap[] SingleTilemap = new Bitmap[15]; // Tiles from 0 to 15 as Bitmap
 
@@ -210,13 +480,13 @@ public class Tiletexture {
         //Layer1 = 0;
         //Layer2 = 0;
         //Layer3 = 0;
-        if (Layer1 < 0){
+        if (Layer1 < 0) {
             Layer1 = 0;
         }
-        if (Layer2 < 0){
+        if (Layer2 < 0) {
             Layer2 = 0;
         }
-        if (Layer3 < 0){
+        if (Layer3 < 0) {
             Layer3 = 0;
         }
         Layer1 *= TILESOFSINGLEKIND;
@@ -228,7 +498,10 @@ public class Tiletexture {
             Bitmap Current = Bitmap.createBitmap(TILESIZE, TILESIZE, Bitmap.Config.ARGB_8888);
             Canvas Currentcanvas = new Canvas();
             Currentcanvas.setBitmap(Current);
-
+            if (i == 0) {
+                paint.setColor(ColorLayer0);
+                Currentcanvas.drawRect(SrcDst, paint);
+            }
 
             filter = new LightingColorFilter(ColorLayer1, 0);
             paint.setColorFilter(filter);
@@ -255,7 +528,7 @@ public class Tiletexture {
         MATERIALLIST[Material] = FinishedTilemap; // updates all Tiles from a specific Material
     }
 
-    public void UpdateTilemap(int Material, int Layer1, int Layer2, int Layer3, int ColorLayer1, int ColorLayer2, int ColorLayer3) { // needs more Options as input
+    public void UpdateTilemap(int Material, int Layer1, int Layer2, int Layer3, int ColorLayer0, int ColorLayer1, int ColorLayer2, int ColorLayer3) { // needs more Options as input
 
         if (MATERIALLISTUPDATING == null) {
             MATERIALLISTUPDATING = new Bitmap[TEXTUREWIDTH * TEXTUREWIDTH][15];
@@ -266,6 +539,18 @@ public class Tiletexture {
         SrcDst = new Rect(0, 0, TILESIZE, TILESIZE);
         Paint paint = new Paint();
         ColorFilter filter;
+
+
+        if (Layer1 < 0) {
+            Layer1 = 0;
+        }
+        if (Layer2 < 0) {
+            Layer2 = 0;
+        }
+        if (Layer3 < 0) {
+            Layer3 = 0;
+        }
+
 
         Layer1 *= TILESOFSINGLEKIND;
         Layer2 *= TILESOFSINGLEKIND;
@@ -297,13 +582,18 @@ public class Tiletexture {
 
         Bitmap[] FinishedTilemap = getFinnishedBitmaplist(SingleTilemap);
 
-        for (int i = 0; i < FinishedTilemap.length; i++) {
+        for (int i = 0; i < FinishedTilemap.length-1; i++) {
             FinishedTilemap[i] = OverlayTilemap(FinishedTilemap[15], FinishedTilemap[i]);
         }
 
         MATERIALLISTUPDATING[Material] = FinishedTilemap; // updates all Tiles from a specific Material
     }
 
+    /**
+     * Transforms a bmp[] with 5 Tiles into one with 15 Tiles
+     * @param SingleTilemap The 5 Tiles as Input
+     * @return The 15 Finished Tiles
+     */
     private Bitmap[] getFinnishedBitmaplist(Bitmap[] SingleTilemap) {
         Bitmap[] FinishedTilemap = new Bitmap[16];
 
@@ -342,6 +632,287 @@ public class Tiletexture {
         Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
         bm.recycle();
         return resizedBitmap;
+    }
+
+
+    //TODO Create accurate normals
+    public void CreateNormals(int intMaterial, int Layer1, int Layer2, int Layer3, int alpha1, int alpha2, int alpha3) {
+
+        Bitmap[] SingleTilemap = new Bitmap[15]; // Tiles from 0 to 15 as Bitmap
+
+        SrcDst = new Rect(0, 0, TILESIZE, TILESIZE);
+        Paint paint = new Paint();
+
+        if (Layer1 < 0) {
+            Layer1 = 0;
+        }
+        if (Layer2 < 0) {
+            Layer2 = 0;
+        }
+        if (Layer3 < 0) {
+            Layer3 = 0;
+        }
+
+        Layer1 *= TILESOFSINGLEKIND;
+        Layer2 *= TILESOFSINGLEKIND;
+        Layer3 *= TILESOFSINGLEKIND;
+
+        for (int i = 0; i < TILESOFSINGLEKIND; i++) { // i < 5 // all five starting tiles in grey
+
+            Bitmap Current = Bitmap.createBitmap(TILESIZE, TILESIZE, Bitmap.Config.ARGB_8888);
+            Canvas Currentcanvas = new Canvas();
+            Currentcanvas.setBitmap(Current);
+
+            if (i == 0) {
+                paint.setColor(Color.rgb(127, 127, 255)); // equals 0 0 1
+                //paint.setColor(Color.rgb(0,0,0)); // equals 0 0 1
+                Currentcanvas.drawRect(new Rect(0, 0, TILESIZEORIGINAL, TILESIZEORIGINAL), paint);
+            }
+
+            for (int j = TILESIZEORIGINAL; j < 2 * TILESIZEORIGINAL; j++) {
+                for (int k = TILESIZEORIGINAL; k < 2 * TILESIZEORIGINAL; k++) {
+
+
+                    int ColorLayerUP = 0;
+                    int ColorLayerDOWN = 0;
+                    int ColorLayerLEFT = 0;
+                    int ColorLayerRIGHT = 0;
+
+                    Bitmap Layer;
+                    float Alpha;
+
+                    for (int l = 0; l < 3; l++) {
+
+                        if (l == 0) {
+                            Layer = RGBTilesLAYER1.get(Layer1 + i);
+                            Alpha = alpha1;
+                        } else if (l == 1) {
+                            Layer = RGBTilesLAYER2.get(Layer2 + i);
+                            Alpha = alpha2;
+                        } else {
+                            Layer = RGBTilesLAYER2.get(Layer3 + i);
+                            Alpha = alpha3;
+                        }
+
+                        int jrelative = j % TILESIZEORIGINAL;
+                        int krelative = k % TILESIZEORIGINAL;
+
+                        ColorLayerUP += (int) (1/*((Alpha / 255.0f))*/ * Color.red(Layer.getPixel(jrelative, (k - 1) % TILESIZEORIGINAL)));// takes the colorvalue of the three bitmaps at the same point
+
+                        ColorLayerDOWN += (int) (1/*((Alpha / 255.0f))*/ * Color.red(Layer.getPixel(jrelative, (k + 1) % TILESIZEORIGINAL)));// takes the colorvalue of the three bitmaps at the same point
+
+                        ColorLayerLEFT += (int) (1/*((Alpha / 255.0f))*/ * Color.red(Layer.getPixel((j - 1) % TILESIZEORIGINAL, krelative)));// takes the colorvalue of the three bitmaps at the same point
+
+                        ColorLayerRIGHT += (int) (1/*((Alpha / 255.0f))*/ * Color.red(Layer.getPixel((j + 1) % TILESIZEORIGINAL, krelative)));// takes the colorvalue of the three bitmaps at the same point
+                    }
+
+
+                    Vector NormalVec;
+
+                    //NormalVec = (NormalVec.normalize()).multiplydouble(255);
+
+                    float Scale = alpha1 + alpha2 + alpha3;
+
+                    float Hor = (float) (ColorLayerLEFT - ColorLayerRIGHT) / Scale; // value from 0 to 1
+                    float Ver = (float) (ColorLayerUP - ColorLayerDOWN) / Scale; // value from 0 to 1
+
+
+
+                    Vector vb = /*/new Vector(Hor, 0, Sca).normalize();/*/new Vector(NORMALSTRENGTH, 0, Hor).normalize();/**/
+                    Vector va = /*/new Vector(0, Ver, Sca).normalize();/*/new Vector(0, NORMALSTRENGTH, Ver).normalize();/**/
+
+                    //va = new Vector(Hor, 0,Sca).normalize();
+                    //vb = new Vector(0, Ver,Sca).normalize();
+                    NormalVec = ((va.cross(vb)).normalize()).negate();
+
+                    NormalVec = new Vector(NormalVec.getX(), NormalVec.getY(), Math.abs(NormalVec.getZ())).normalize();
+
+                    int red = (int) (/**/255 - /**/((NormalVec.getX() + 1) * 127));
+                    int green = (int) (/**/255 - /**/(NormalVec.getY() + 1) * 127);
+                    int blue = (int) ((NormalVec.getZ() + 1) * 127);
+
+                    //blue = 127;
+
+                    paint.setColor(Color.rgb(red, green, blue));
+
+
+                    //Currentcanvas.drawRect(j%TILESIZEORIGINAL, k%TILESIZEORIGINAL,j%TILESIZEORIGINAL+1,k%TILESIZEORIGINAL+1, paint);
+                    if ((red < 123 || red > 130) && (green < 123 || green > 130)/* && (blue < 123 || blue > 130)*/) {
+                        Currentcanvas.drawPoint(j % TILESIZEORIGINAL, k % TILESIZEORIGINAL, paint);
+                    }
+                }
+            }
+
+            SingleTilemap[i] = Current;
+        }
+
+
+        Bitmap[] FinishedTilemap = getFinnishedBitmaplist(SingleTilemap);
+
+        for (int i = 0; i < FinishedTilemap.length; i++) {
+            FinishedTilemap[i] = OverlayTilemap(FinishedTilemap[FinishedTilemap.length-1], FinishedTilemap[i]);
+        }
+
+        MATERIALNORMALS[intMaterial] = FinishedTilemap;
+    }
+
+
+    /**
+     * Creates a Bitmaplist with 5 bmps for one Layer ony
+     *
+     * @param Layer    The chosen LayerBitmap like  5 = brick wall or 3 = sand,...
+     * @param alpha    The chosen Opacity
+     * @param Position The original Layer = 1, 2 or 3
+     * @return
+     */
+    public Bitmap[] createBitmapOfSingleKind(int Position, int Layer, int alpha) {
+        Bitmap[] BitmapArry = new Bitmap[TILESOFSINGLEKIND];
+
+        Paint paint = new Paint();
+        paint.setAlpha(alpha);
+
+
+        for (int i = 0; i < TILESOFSINGLEKIND; i++) {
+            //Create Bitmap
+            Bitmap newLayer = Bitmap.createBitmap(TILESIZE, TILESIZE, Bitmap.Config.ARGB_8888);
+            Canvas Currentcanvas = new Canvas();
+            Currentcanvas.setBitmap(newLayer);
+
+
+            if (Position == 0) {
+                Currentcanvas.drawBitmap(RGBTilesLAYER1.get(Layer * TILESOFSINGLEKIND + i), 0, 0, paint);
+            } else if (Position == 1) {
+                Currentcanvas.drawBitmap(RGBTilesLAYER2.get(Layer * TILESOFSINGLEKIND + i), 0, 0, paint);
+            } else {
+                Currentcanvas.drawBitmap(RGBTilesLAYER3.get(Layer * TILESOFSINGLEKIND + i), 0, 0, paint);
+            }
+            BitmapArry[i] = newLayer;
+        }
+
+        return BitmapArry;
+    }
+
+    public Bitmap returnNormalBmp(int ID, Bitmap Layer1, Bitmap Layer2, Bitmap Layer3, int alpha1, int alpha2, int alpha3) {
+
+        Paint paint = new Paint();
+
+        Bitmap Current = Bitmap.createBitmap(TILESIZE, TILESIZE, Bitmap.Config.ARGB_8888);
+        Canvas Currentcanvas = new Canvas();
+        Currentcanvas.setBitmap(Current);
+
+        if (ID == 15) {
+            paint.setColor(Color.rgb(127, 127, 255)); // equals 0 0 1
+            //paint.setColor(Color.rgb(0,0,0)); // equals 0 0 1
+            Currentcanvas.drawRect(new Rect(0, 0, TILESIZEORIGINAL, TILESIZEORIGINAL), paint);
+        }
+
+        for (int j = TILESIZEORIGINAL; j < 2 * TILESIZEORIGINAL; j++) {
+            for (int k = TILESIZEORIGINAL; k < 2 * TILESIZEORIGINAL; k++) {
+
+
+                int ColorLayerUP = 0;
+                int ColorLayerDOWN = 0;
+                int ColorLayerLEFT = 0;
+                int ColorLayerRIGHT = 0;
+
+                Bitmap Layer;
+
+                for (int l = 0; l < 3; l++) {
+
+                    if (l == 0) {
+                        Layer = Layer1;
+                    } else if (l == 1) {
+                        Layer = Layer2;
+                    } else {
+                        Layer = Layer3;
+                    }
+
+                    int jrelative = j % TILESIZEORIGINAL;
+                    int krelative = k % TILESIZEORIGINAL;
+
+                    ColorLayerUP += Color.red(Layer.getPixel(jrelative, (k - 1) % TILESIZEORIGINAL));// takes the colorvalue of the three bitmaps at the same point
+
+                    ColorLayerDOWN += Color.red(Layer.getPixel(jrelative, (k + 1) % TILESIZEORIGINAL));// takes the colorvalue of the three bitmaps at the same point
+
+                    ColorLayerLEFT += Color.red(Layer.getPixel((j - 1) % TILESIZEORIGINAL, krelative));// takes the colorvalue of the three bitmaps at the same point
+
+                    ColorLayerRIGHT += Color.red(Layer.getPixel((j + 1) % TILESIZEORIGINAL, krelative));// takes the colorvalue of the three bitmaps at the same point
+                }
+
+
+                Vector NormalVec;
+
+                float Scale = alpha1 + alpha2 + alpha3;
+
+                float Hor = (float) (ColorLayerLEFT - ColorLayerRIGHT) / Scale; // value from 0 to 1
+                float Ver = (float) (ColorLayerUP - ColorLayerDOWN) / Scale; // value from 0 to 1
+
+
+
+                Vector vb = new Vector(NORMALSTRENGTH, 0, Hor).normalize();/**/
+                Vector va = new Vector(0, NORMALSTRENGTH, Ver).normalize();/**/
+
+                NormalVec = ((va.cross(vb)).normalize()).negate();
+
+                NormalVec = new Vector(NormalVec.getX(), NormalVec.getY(), Math.abs(NormalVec.getZ())).normalize();
+
+                int red = (int) (255 - ((NormalVec.getX() + 1) * 127));
+                int green = (int) (255 - (NormalVec.getY() + 1) * 127);
+                int blue = (int) ((NormalVec.getZ() + 1) * 127);
+
+                //blue = 127;
+
+                paint.setColor(Color.rgb(red, green, blue));
+
+
+                //Currentcanvas.drawRect(j%TILESIZEORIGINAL, k%TILESIZEORIGINAL,j%TILESIZEORIGINAL+1,k%TILESIZEORIGINAL+1, paint);
+                if ((red < 123 || red > 130) && (green < 123 || green > 130)/* && (blue < 123 || blue > 130)*/) {
+                    Currentcanvas.drawPoint(j % TILESIZEORIGINAL, k % TILESIZEORIGINAL, paint);
+                }
+            }
+        }
+        return Current;
+    }
+
+    //TODO Create accurate normals
+    public void CreateAccurateNormals(int intMaterial, int Layer1, int Layer2, int Layer3, int alpha1, int alpha2, int alpha3) {
+
+        Bitmap[] SingleTilemap = new Bitmap[16]; // Tiles from 0 to 15 as Bitmap
+
+        Bitmap[][] GreyTilemaps = new Bitmap[3][16];
+
+        for (int i = 0; i < 3; i++) {
+
+            Bitmap[] FinishedTilemap;
+
+            if (i == 0) {
+                FinishedTilemap = createBitmapOfSingleKind(i, Layer1, alpha1); // length of 5, only the basic Tiles
+                int a = 0;
+            } else if (i == 1) {
+                FinishedTilemap = createBitmapOfSingleKind(i, Layer2, alpha2); // length of 5, only the basic Tiles
+            } else {
+                FinishedTilemap = createBitmapOfSingleKind(i, Layer3, alpha3); // length of 5, only the basic Tiles
+            }
+
+            FinishedTilemap = getFinnishedBitmaplist(FinishedTilemap);
+            int b = 0;
+
+            for (int j = 0; j < FinishedTilemap.length; j++) {
+                FinishedTilemap[j] = OverlayTilemap(FinishedTilemap[FinishedTilemap.length-1], FinishedTilemap[j]);
+            }
+            GreyTilemaps[i] = FinishedTilemap;
+        }
+
+        for (int i = 0; i < 16; i++) {
+            SingleTilemap[i] = returnNormalBmp(i, GreyTilemaps[0][i], GreyTilemaps[1][i], GreyTilemaps[2][i], alpha1, alpha2, alpha3);
+        }
+        int a = 0;
+        for (int j = 0; j < SingleTilemap.length-1; j++) {
+            SingleTilemap[j] = OverlayTilemap(SingleTilemap[15]/*SingleTilemap[SingleTilemap.length-1]*/, SingleTilemap[j]);
+        }
+
+
+        MATERIALNORMALS[intMaterial] = SingleTilemap;
     }
 }
 

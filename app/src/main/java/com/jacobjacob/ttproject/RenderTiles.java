@@ -11,6 +11,9 @@ import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.jacobjacob.ttproject.Tile.KdTree;
+import com.jacobjacob.ttproject.Tile.Tile;
+
 import java.util.ArrayList;
 
 import static com.jacobjacob.ttproject.LevelEditor.SelectedMaterial;
@@ -42,6 +45,7 @@ import static com.jacobjacob.ttproject.Util.PORTALLIST;
 import static com.jacobjacob.ttproject.Util.SELECTEDIDINVENTORY;
 import static com.jacobjacob.ttproject.Util.TEXTUREWIDTH;
 import static com.jacobjacob.ttproject.Util.TILELAYER;
+import static com.jacobjacob.ttproject.Util.TILELAYERSTART;
 import static com.jacobjacob.ttproject.Util.TILESIZE;
 import static com.jacobjacob.ttproject.Util.TILESIZETEXTURE;
 import static com.jacobjacob.ttproject.Util.TILETEXTURE;
@@ -52,18 +56,12 @@ import static com.jacobjacob.ttproject.Util.camera;
 public class RenderTiles {
 
     static Bitmap bmp;
-    static Bitmap bmpScreen;
     static Canvas canvas;
     Paint paint = new Paint(BACKGROUNDCOLOR);
     Rect Screenboundaries;
     float TILESIZEzoom = (float) Math.ceil(TILESIZE * (camera.getEye2D().getValue(2) / ZOOMFACTOR));
-    //public  static KdTree kdtreeCopy = new KdTree();
-
 
     public void initializeRenderTiles() {
-
-        //this.kdtreeCopy = new KdTree();
-        //this.kdtreeCopy = KDTREECOPY;
         if (!KDTREECURRENTLYBUILDING) {
             KDTREECOPYING = true;
             KDTREECOPY = new KdTree();
@@ -153,7 +151,7 @@ public class RenderTiles {
     }
 
     public void DrawSelectedTileLayer() { // Draws the TILES on the left or top, like a quick inventory
-        if (TILELAYER > 0 && TILELAYER < 4) {
+        if (TILELAYER > 0 && TILELAYER < TILELAYERSTART + 4) {
 
             this.paint.setColor(INVENTORYBACKGROUNDCOLOR);
 
@@ -162,48 +160,52 @@ public class RenderTiles {
 
             Rect dst;
             Rect src = new Rect(0, 0, TILESIZE, TILESIZE);
-            int idselectedmaterial = MATERIALARRAY[SelectedMaterial].getLayer(TILELAYER);
-            int ColorSelectedmaterial = MATERIALARRAY[SelectedMaterial].getColor(TILELAYER);
+            int idselectedmaterial = MATERIALARRAY[SelectedMaterial].getLayer(TILELAYER/*/+ TILELAYERSTART/**/);
+            int ColorSelectedmaterial = MATERIALARRAY[SelectedMaterial].getColor(TILELAYER/*/+ TILELAYERSTART/**/);
 
 
-            dst = new Rect((2) * HeTeIn + Height7Texturewidth,  HeTeIn + Height7Texturewidth, HeTeIn * ((2) + 1), HeTeIn * (1 + 1));
+            dst = new Rect((2) * HeTeIn + Height7Texturewidth, HeTeIn + Height7Texturewidth, HeTeIn * ((2) + 1), HeTeIn * (1 + 1));
             Paint tempPaint1 = new Paint();
-            tempPaint1.setColor(Color.rgb(255,255,255));
+            tempPaint1.setColor(Color.rgb(255, 255, 255));
             canvas.drawRect(dst, tempPaint1);
 
+            if (TILELAYERSTART < TILELAYER) {
+                for (int i = 0; i < 5; i++) {
 
-            for (int i = 0; i < 5; i++) {
+                    dst = new Rect((i) * HeTeIn + Height7Texturewidth, HeTeIn + Height7Texturewidth, HeTeIn * ((i) + 1), HeTeIn * (1 + 1));
 
-                dst = new Rect((i) * HeTeIn + Height7Texturewidth,  HeTeIn + Height7Texturewidth, HeTeIn * ((i) + 1), HeTeIn * (1 + 1));
+                    if (SelectedMaterial <= INVENTORY.size()/* && Display*/) {
 
-                if (SelectedMaterial <= INVENTORY.size()/* && Display*/) {
+                        Paint temppaint = new Paint();
+                        temppaint.setColor(ColorSelectedmaterial);
 
-                    Paint temppaint = new Paint();
-                    temppaint.setColor(ColorSelectedmaterial);
-
-                    Bitmap Tilebmp = TILETEXTURE.getBitmap(idselectedmaterial + i - 2);
+                        Bitmap Tilebmp = TILETEXTURE.getBitmap(idselectedmaterial + i - 2);
 
 
+                        if (Tilebmp != null) {
+                            ColorFilter filter = new LightingColorFilter(ColorSelectedmaterial, 0);
+                            temppaint.setColorFilter(filter);
+                            temppaint.setAlpha(Color.alpha(ColorSelectedmaterial));
+                            Bitmap Current = Bitmap.createBitmap(TILESIZE, TILESIZE, Bitmap.Config.ARGB_8888);
+                            Canvas Currentcanvas = new Canvas();
+                            Currentcanvas.setBitmap(Current);
+                            Currentcanvas.drawBitmap(Tilebmp, src, src, temppaint);
 
-                    if (Tilebmp != null) {
-                        ColorFilter filter = new LightingColorFilter(ColorSelectedmaterial, 0);
-                        temppaint.setColorFilter(filter);
-                        temppaint.setAlpha(Color.alpha(ColorSelectedmaterial));
-                        Bitmap Current = Bitmap.createBitmap(TILESIZE, TILESIZE, Bitmap.Config.ARGB_8888);
-                        Canvas Currentcanvas = new Canvas();
-                        Currentcanvas.setBitmap(Current);
-                        Currentcanvas.drawBitmap(Tilebmp, src, src, temppaint);
-
-                        this.canvas.drawBitmap(Current, src, dst, null);
+                            this.canvas.drawBitmap(Current, src, dst, null);
+                        }
                     }
                 }
             }
 
-            dst = new Rect((2) * HeTeIn + Height7Texturewidth,  HeTeIn + Height7Texturewidth, HeTeIn * ((2) + 1), HeTeIn * (1 + 1));
+            dst = new Rect((2) * HeTeIn + Height7Texturewidth, HeTeIn + Height7Texturewidth, HeTeIn * ((2) + 1), HeTeIn * (1 + 1));
             Paint tempPaint = new Paint();
+            if (TILELAYER == TILELAYERSTART) {
+                tempPaint.setColor(MATERIALARRAY[SelectedMaterial].getColor(TILELAYERSTART));
+                this.canvas.drawRect(dst, tempPaint);
+            }
             tempPaint.setColor(INVENTORYSELECTTILECOLOR);
             tempPaint.setStyle(Paint.Style.STROKE);
-            tempPaint.setStrokeWidth((int)(Height7Texturewidth/5));
+            tempPaint.setStrokeWidth((int) (Height7Texturewidth / 5));
             canvas.drawRect(dst, tempPaint);
         }
     }
@@ -271,7 +273,12 @@ public class RenderTiles {
 
                 if (this.Screenboundaries.contains(TileonScreen)/*|| new Rect(0, 0, WIDTHSCREEN, HEIGHTSCREEN).intersect(draw)*/) {
                     if (VisibleTiles.get(i).getTexture() != null) {
-                        this.canvas.drawBitmap(VisibleTiles.get(i).getTexture(), src, TileonScreen, null);
+                        try {
+
+                            this.canvas.drawBitmap(VisibleTiles.get(i).getTexture(), src, TileonScreen, null);
+                        } catch (Exception e) {
+
+                        }
                     }
                 }
             }
@@ -442,36 +449,15 @@ public class RenderTiles {
                     }
                 }
             }
-            //}catch (Exception e){
-            //    System.out.print("Boundaries broke");
-            //    Log.d("Render Tiles","Boundaries broke");
-            //}
         }
     }
 
     public void postImage() {
-        //this.bmp.prepareToDraw();
-        //IMAGE.setImageBitmap(bmp);
-        int i = 0;
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-
-                //IMAGE.setVisibility(View.INVISIBLE);
                 IMAGE.setImageBitmap(bmp);
-                //IMAGE.setVisibility(View.VISIBLE);
-                //MainActivity.UpdateScreen(bmp);
-                //bmp.recycle();
-                //FRAMEDRAWN = true;
             }
         });
     }
-
-    public static Bitmap getBmp() {
-        return bmp;
-    }
-
-    //public Bitmap getRenderedTiles() {
-    //    return bmp;
-    //}
 }

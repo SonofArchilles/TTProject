@@ -1,4 +1,6 @@
-package com.jacobjacob.ttproject;
+package com.jacobjacob.ttproject.Old;
+
+import com.jacobjacob.ttproject.Vector;
 
 public interface Object{
     Vector getNormal();

@@ -1,10 +1,17 @@
-package com.jacobjacob.ttproject;
+package com.jacobjacob.ttproject.Tile;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 
+import com.jacobjacob.ttproject.Vector;
+
+import static com.jacobjacob.ttproject.Util.HEIGHT;
+import static com.jacobjacob.ttproject.Util.HEIGHTSCREEN;
 import static com.jacobjacob.ttproject.Util.TILESIZE;
 import static com.jacobjacob.ttproject.Util.TILETEXTURE;
+import static com.jacobjacob.ttproject.Util.WIDTHSCREEN;
+import static com.jacobjacob.ttproject.Util.ZOOMFACTOR;
+import static com.jacobjacob.ttproject.Util.camera;
 
 //import static com.jacobjacob.ttproject.MainActivity.uHandeler;
 
@@ -45,6 +52,29 @@ public class Tile {
             return this.Screenposition;
         } else {
             return Position;
+        }
+    }
+
+    public boolean isOnScreen(){
+
+
+        Vector Cal = new Vector().getScreencoordinatesFromTileCoordinates(this.getPosition());
+        float TILESIZEzoom = (float) Math.ceil(TILESIZE * (camera.getEye2D().getValue(2) / ZOOMFACTOR));
+
+
+        int left = (int) Cal.getValue(0);//(float) visible.get(i).getPositionRAW().getX() * Scale;//width / height;
+        int top = (int) Cal.getValue(1);//(float) visible.get(i).getPositionRAW().getY() * Scale;
+        int right = (int) (Cal.getValue(0) + TILESIZEzoom);//(float) (visible.get(i).getPositionRAW().getX() + 1) * Scale;
+        int bottom = (int) (Cal.getValue(1) + TILESIZEzoom);//(float) (visible.get(i).getPositionRAW().getY() + 1) * Scale;
+
+        Rect TileRect = new Rect(left,top,right,bottom);
+
+        Rect Screen = new Rect(0,0,WIDTHSCREEN,HEIGHTSCREEN);
+
+        if (Screen.contains(TileRect) || Screen.intersect(TileRect)) {
+            return true;
+        }else {
+            return false;
         }
     }
 

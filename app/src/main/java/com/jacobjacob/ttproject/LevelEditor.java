@@ -2,6 +2,8 @@ package com.jacobjacob.ttproject;
 
 import android.graphics.Rect;
 
+import com.jacobjacob.ttproject.Tile.Tile;
+
 import java.util.ArrayList;
 
 import static com.jacobjacob.ttproject.Util.CHUNKCOLOR;
@@ -26,7 +28,6 @@ import static com.jacobjacob.ttproject.Util.UPDATEVIEW;
 import static com.jacobjacob.ttproject.Util.WF;
 import static com.jacobjacob.ttproject.Util.WIDTHSCREEN;
 
-//import static com.jacobjacob.ttproject.Util.KDTREECOPY;
 
 public class LevelEditor {
 

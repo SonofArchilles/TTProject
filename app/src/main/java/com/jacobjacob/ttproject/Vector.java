@@ -251,11 +251,11 @@ public class Vector {
         return (float) ((plane_n.x * p.x + plane_n.y * p.y + plane_n.z * p.z) - plane_n.skalarprodukt(plane_p));
     }
 
-    ArrayList<Triangle> Triangle_ClipAgainstPlane(Vector plane_p, Vector plane_n, Triangle in_tri) {
-        Triangle out_tri1, out_tri2;
-        Triangle output1;
-        Triangle output2;
-        ArrayList<Triangle> outputArray = new ArrayList<>();
+    public ArrayList<com.jacobjacob.ttproject.Old.Triangle> Triangle_ClipAgainstPlane(Vector plane_p, Vector plane_n, com.jacobjacob.ttproject.Old.Triangle in_tri) {
+        com.jacobjacob.ttproject.Old.Triangle out_tri1, out_tri2;
+        com.jacobjacob.ttproject.Old.Triangle output1;
+        com.jacobjacob.ttproject.Old.Triangle output2;
+        ArrayList<com.jacobjacob.ttproject.Old.Triangle> outputArray = new ArrayList<>();
         // Make sure plane normal is indeed normal
         plane_n = plane_n.normalize();
 

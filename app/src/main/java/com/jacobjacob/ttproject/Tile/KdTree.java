@@ -1,6 +1,9 @@
-package com.jacobjacob.ttproject;
+package com.jacobjacob.ttproject.Tile;
 
 import android.graphics.Rect;
+import android.util.Log;
+
+import com.jacobjacob.ttproject.Vector;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,77 +67,86 @@ public class KdTree {
     }
 
     public void addTilesInCurrentTree(ArrayList<Tile> tilesInCurrentTree) {
-        this.TilesInCurrentTree.addAll(tilesInCurrentTree);
+        try {
+            this.TilesInCurrentTree.addAll(tilesInCurrentTree);
+        }catch (Exception e){
+
+        }
     }
 
     public void CreatenewKDTree() {
-        //KDTREECURRENTLYBUILDING = true;
+        try {
 
-        //TilesInCurrentTree = getTilesInCurrentTree();
+            //KDTREECURRENTLYBUILDING = true;
 
-        int minX = 999, minY = 999, maxX = -999, maxY = -999;
+            //TilesInCurrentTree = getTilesInCurrentTree();
 
-        if (this.Iteration == 0) {
+            int minX = 999, minY = 999, maxX = -999, maxY = -999;
 
-            ArrayList<Tile> allTiles = getTilesInCurrentTree();
-            this.TilesInCurrentTree.clear();
-            this.TilesInCurrentTree.addAll(allTiles);
-            this.Children.clear();
-            this.hasChildren = false;
+            if (this.Iteration == 0) {
 
-            for (int i = 0; i < this.TilesInCurrentTree.size(); i++) {
-                if (this.TilesInCurrentTree.get(i).getPositionRAW().getValue(0) < minX) {
-                    minX = (int) this.TilesInCurrentTree.get(i).getPositionRAW().getValue(0);
+                ArrayList<Tile> allTiles = getTilesInCurrentTree();
+                this.TilesInCurrentTree.clear();
+                this.TilesInCurrentTree.addAll(allTiles);
+                this.Children.clear();
+                this.hasChildren = false;
+
+                for (int i = 0; i < this.TilesInCurrentTree.size(); i++) {
+                    if (this.TilesInCurrentTree.get(i).getPositionRAW().getValue(0) < minX) {
+                        minX = (int) this.TilesInCurrentTree.get(i).getPositionRAW().getValue(0);
+                    }
+                    if (this.TilesInCurrentTree.get(i).getPositionRAW().getValue(1) < minY) {
+                        minY = (int) this.TilesInCurrentTree.get(i).getPositionRAW().getValue(1);
+                    }
+                    if (this.TilesInCurrentTree.get(i).getPositionRAW().getValue(0) > maxX) {
+                        maxX = (int) this.TilesInCurrentTree.get(i).getPositionRAW().getValue(0);
+                    }
+                    if (this.TilesInCurrentTree.get(i).getPositionRAW().getValue(1) > maxY) {
+                        maxY = (int) this.TilesInCurrentTree.get(i).getPositionRAW().getValue(1);
+                    }
                 }
-                if (this.TilesInCurrentTree.get(i).getPositionRAW().getValue(1) < minY) {
-                    minY = (int) this.TilesInCurrentTree.get(i).getPositionRAW().getValue(1);
+                minX -= 1;
+                minY -= 1;
+                maxX += 1;
+                maxY += 1;
+                this.BoundaryOld = new Rect(minX, minY, maxX, maxY);
+
+                int X = this.BoundaryOld.width() + 2;
+                int Y = this.BoundaryOld.height() + 2;
+                if (X < 0) {
+                    X = 0;
                 }
-                if (this.TilesInCurrentTree.get(i).getPositionRAW().getValue(0) > maxX) {
-                    maxX = (int) this.TilesInCurrentTree.get(i).getPositionRAW().getValue(0);
+                if (Y < 0) {
+                    Y = 0;
                 }
-                if (this.TilesInCurrentTree.get(i).getPositionRAW().getValue(1) > maxY) {
-                    maxY = (int) this.TilesInCurrentTree.get(i).getPositionRAW().getValue(1);
+                this.TileMaterialint = new int[X][Y]; // must be bigger to give the Tiles on the edges the right Orientation
+                for (int i = 0; i < X; i++) {
+                    for (int j = 0; j < Y; j++) {
+                        this.TileMaterialint[i][j] = -1;
+
+                    }
                 }
+
+                //Vector a = new Vector(this.BoundaryOld.left, this.BoundaryOld.top).multiplydouble(TILESIZE);
+                //Vector b = new Vector(this.BoundaryOld.right, this.BoundaryOld.bottom).multiplydouble(TILESIZE);
+
+                //a = a.getScreencoordinatesFromTileCoordinates(a);
+                //b = b.getScreencoordinatesFromTileCoordinates(b);
+
+                //this.CURRENTOnScreen = new Rect((int) a.getValue(0), (int) a.getValue(1), (int) b.getValue(0), (int) b.getValue(1));
+
+                this.Boundary = (int) Math.ceil(TILESIZE * (camera.getEye2D().getValue(2) / ZOOMFACTOR));
+
+                Autotile();
             }
-            minX -= 1;
-            minY -= 1;
-            maxX += 1;
-            maxY += 1;
-            this.BoundaryOld = new Rect(minX, minY, maxX, maxY);
 
-            int X = this.BoundaryOld.width() + 2;
-            int Y = this.BoundaryOld.height() + 2;
-            if (X < 0) {
-                X = 0;
+            if (( /* 2 * */KDTREEMAXITEMS) < this.TilesInCurrentTree.size()) { // THE MAXIMUM IN A GIVEN CELL IS NOW KDTREEMMAXITEMS, SINCE THE TREE GETS DEVIDED INTO TWO CHILDREN HALF AS BIG
+                Split();
             }
-            if (Y < 0) {
-                Y = 0;
-            }
-            this.TileMaterialint = new int[X][Y]; // must be bigger to give the Tiles on the edges the right Orientation
-            for (int i = 0; i < X; i++) {
-                for (int j = 0; j < Y; j++) {
-                    this.TileMaterialint[i][j] = -1;
+            //KDTREECURRENTLYBUILDING = false;
+        }catch (Exception e){
 
-                }
-            }
-
-            //Vector a = new Vector(this.BoundaryOld.left, this.BoundaryOld.top).multiplydouble(TILESIZE);
-            //Vector b = new Vector(this.BoundaryOld.right, this.BoundaryOld.bottom).multiplydouble(TILESIZE);
-
-            //a = a.getScreencoordinatesFromTileCoordinates(a);
-            //b = b.getScreencoordinatesFromTileCoordinates(b);
-
-            //this.CURRENTOnScreen = new Rect((int) a.getValue(0), (int) a.getValue(1), (int) b.getValue(0), (int) b.getValue(1));
-
-            this.Boundary = (int) Math.ceil(TILESIZE * (camera.getEye2D().getValue(2) / ZOOMFACTOR));
-
-            Autotile();
         }
-
-        if (( /* 2 * */KDTREEMAXITEMS) < this.TilesInCurrentTree.size()) { // THE MAXIMUM IN A GIVEN CELL IS NOW KDTREEMMAXITEMS, SINCE THE TREE GETS DEVIDED INTO TWO CHILDREN HALF AS BIG
-            Split();
-        }
-        //KDTREECURRENTLYBUILDING = false;
     }
 
 
@@ -250,7 +262,7 @@ public class KdTree {
         return Boundary;
     }
 
-
+    //TODO make new sorting System to get the visible Tiles more efficently and faster!!!
     public ArrayList<Tile> getVisibleTilesInCurrentTree() { // Looks like it Works!
         ArrayList<Tile> returnTilesfromChildren = new ArrayList<>();
 
@@ -272,13 +284,25 @@ public class KdTree {
             } else {
                 if (Screenboundaries.intersect(CURRENTOnScreen)) {
                     for (int i = 0; i < this.Children.size(); i++) {
-                        returnTilesfromChildren.addAll(this.Children.get(i).getVisibleTilesInCurrentTree());
+                        try {
+                            returnTilesfromChildren.addAll(this.Children.get(i).getVisibleTilesInCurrentTree());
+                        }catch (Exception e){
+                            Log.d("KDTREE","CHILD = null" + e);
+                        }
                     }
                 }
             }
         } else {
-            returnTilesfromChildren.addAll(this.TilesInCurrentTree);
+            try {
+                for (int i = 0; i < this.TilesInCurrentTree.size();i++) {
+                    if (this.TilesInCurrentTree.get(i).isOnScreen()){
+                        returnTilesfromChildren.add(this.TilesInCurrentTree.get(i));
+                    }
+                }
+                //returnTilesfromChildren.addAll(this.TilesInCurrentTree);
+            }catch (Exception e){
 
+            }
         }
         return returnTilesfromChildren;
 

@@ -1,5 +1,7 @@
 package com.jacobjacob.ttproject;
 
+import com.jacobjacob.ttproject.Tile.Tile;
+
 import java.util.ArrayList;
 
 import static com.jacobjacob.ttproject.Util.FRAMES;

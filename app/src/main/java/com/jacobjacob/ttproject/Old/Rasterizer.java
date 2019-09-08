@@ -1,9 +1,13 @@
-package com.jacobjacob.ttproject;
+package com.jacobjacob.ttproject.Old;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+
+import com.jacobjacob.ttproject.Matrix;
+import com.jacobjacob.ttproject.Old.Triangle;
+import com.jacobjacob.ttproject.Vector;
 
 import java.util.ArrayList;
 import java.util.Collections;

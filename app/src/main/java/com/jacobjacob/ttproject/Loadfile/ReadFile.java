@@ -1,6 +1,12 @@
-package com.jacobjacob.ttproject;
+package com.jacobjacob.ttproject.Loadfile;
 
+import android.util.Log;
 import android.widget.Toast;
+
+import com.jacobjacob.ttproject.Material;
+import com.jacobjacob.ttproject.Tile.KdTree;
+import com.jacobjacob.ttproject.Tile.Tile;
+import com.jacobjacob.ttproject.Vector;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -12,12 +18,12 @@ import java.util.ArrayList;
 import static com.jacobjacob.ttproject.Util.CONTEXT;
 import static com.jacobjacob.ttproject.Util.DISPAYTOAST;
 import static com.jacobjacob.ttproject.Util.FILE_NAME;
-import static com.jacobjacob.ttproject.Util.FRAMETIME;
-import static com.jacobjacob.ttproject.Util.FRAMETIMESTART;
 import static com.jacobjacob.ttproject.Util.KDTREE;
 import static com.jacobjacob.ttproject.Util.KDTREECOPY;
 import static com.jacobjacob.ttproject.Util.KDTREECURRENTLYBUILDING;
 import static com.jacobjacob.ttproject.Util.MATERIALARRAY;
+import static com.jacobjacob.ttproject.Util.OPENGL;
+import static com.jacobjacob.ttproject.Util.SETTINS_NAME;
 import static com.jacobjacob.ttproject.Util.STARTINGMATERIAL;
 import static com.jacobjacob.ttproject.Util.TEXTUREWIDTH;
 import static com.jacobjacob.ttproject.Util.UPDATEVIEW;
@@ -60,14 +66,64 @@ public class ReadFile {
         }
     }
 
+    public void ReadSettings() {
+
+
+        FileInputStream fis = null;
+
+        try {
+            fis = CONTEXT.openFileInput(SETTINS_NAME);
+
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String text;
+
+            while ((text = br.readLine()) != null) {
+                sb.append(text).append("\n");
+
+                String[] parts = text.split(" ");
+
+                if (String.valueOf(parts[0]).equals("OPENGL")) {
+                    if (String.valueOf(parts[1]).equals("true")) {
+                        OPENGL = true;
+                    } else if (String.valueOf(parts[1]).equals("false")) {
+                        OPENGL = false;
+                    }
+                }
+
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     public void ReadFileTiles() { // String Filename
 
 
-        UPDATEVIEW = false;
+        //UPDATEVIEW = false;
+
+        //UPDATEVIEW = true;
 
         ArrayList<Tile> AllTiles = new ArrayList<>();
 
-        KDTREE = new KdTree();//reset();
+        //KDTREE = new KdTree();//reset();
+        //KDTREECOPY = new KdTree();
+        //KDTREECURRENTLYBUILDING = false;
+        //KDTREECOPY = KDTREE;
+
+
         MATERIALARRAY = new Material[TEXTUREWIDTH * TEXTUREWIDTH]; // reset
         int Materialint = 0;
 
@@ -120,6 +176,9 @@ public class ReadFile {
                                 Integer.parseInt(parts[4]), // color int 1
                                 Integer.parseInt(parts[5]), // color int 2
                                 Integer.parseInt(parts[6])); // color int 3
+                        if (parts.length > 7) {
+                            MATERIALARRAY[Materialint].setColorLayer0(Integer.parseInt(parts[7]));
+                        }
                         Materialint++;
                     }
                 }
@@ -154,41 +213,31 @@ public class ReadFile {
             //Toast.makeText(CONTEXT, sb.toString(), Toast.LENGTH_LONG).show();
             if (DISPAYTOAST) {
                 Toast.makeText(CONTEXT, "SUCCESS: " + FILE_NAME + " loaded", Toast.LENGTH_LONG).show();
+                Log.d("Loadtxt: ", "Success!");
             }
             //mEditText.setText(sb.toString());
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            Log.d("Read File", "Crash1");
         } catch (IOException e) {
             e.printStackTrace();
+            Log.d("Read File", "Crash2");
         } finally {
             if (fis != null) {
                 try {
                     fis.close();
                 } catch (IOException e) {
                     e.printStackTrace();
+                    Log.d("Read File", "Crash3 fis couldn`t be closed");
                 }
             }
         }
 
 
-        FRAMETIMESTART = System.currentTimeMillis();
-
-        KDTREE = new KdTree();
-        KDTREE.setTilesInCurrentTree(AllTiles); // 16ms
-        KDTREE.CreatenewKDTree();
+        //FRAMETIMESTART = System.currentTimeMillis();
 
 
-        KDTREECOPY = new KdTree();
-        KDTREECOPY = KDTREE;
-
-
-        FRAMETIME = System.currentTimeMillis() - FRAMETIMESTART; //41ms with 20 iterations // 23 with 5 iterations // 102 with unlimited Iterations and 6467 Tiles // now 770
-        KDTREECURRENTLYBUILDING = false;
-
-        //if (MATERIALARRAY.length < 1) {
-        //    MATERIALARRAY[0] = STARTINGMATERIAL;
-        //}
         for (int i = 0; i < MATERIALARRAY.length; i++) {
             if (MATERIALARRAY[i] == null) {
                 Material NewMaterial = STARTINGMATERIAL;
@@ -200,12 +249,45 @@ public class ReadFile {
                     MATERIALARRAY[i].setNumber(i);
                 }
             }
-
-
             MATERIALARRAY[i].UpdateMaterialTileset();
         }
+
+        KDTREE = new KdTree();
+        KDTREE.setTilesInCurrentTree(AllTiles); // 16ms
+        KDTREE.CreatenewKDTree();
+
+        KDTREECOPY = KDTREE;
+
+
+        //KDTREECOPY = new KdTree();
+        //KDTREECOPY = KDTREE;
+
+
+        //FRAMETIME = System.currentTimeMillis() - FRAMETIMESTART; //41ms with 20 iterations // 23 with 5 iterations // 102 with unlimited Iterations and 6467 Tiles // now 770
+        KDTREECURRENTLYBUILDING = false;
+
+        //if (MATERIALARRAY.length < 1) {
+        //    MATERIALARRAY[0] = STARTINGMATERIAL;
+        //}
+
+
+
+        /*/
+        for (int i = 0; i < MATERIALARRAY.length; i++) {
+            if (MATERIALARRAY[i] == null) {
+                Material NewMaterial = STARTINGMATERIAL;
+                int Number = i;
+                NewMaterial.setNumber(Number);
+                MATERIALARRAY[i] = NewMaterial;
+            } else {
+                if (MATERIALARRAY[i].getNumber() != i) {
+                    MATERIALARRAY[i].setNumber(i);
+                }
+            }
+            MATERIALARRAY[i].UpdateMaterialTileset();
+        }/**/
+
         UPDATEVIEW = true;
 
-        //int a = 6;
     }
 }

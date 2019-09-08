@@ -9,30 +9,30 @@ import static com.jacobjacob.ttproject.Util.LASTUPDATETIME;
 import static com.jacobjacob.ttproject.Util.MATERIALARRAY;
 import static com.jacobjacob.ttproject.Util.MATERIALLIST;
 import static com.jacobjacob.ttproject.Util.MATERIALLISTUPDATING;
-import static com.jacobjacob.ttproject.Util.MINUPDATETIME;
 import static com.jacobjacob.ttproject.Util.RENDERERTILES;
 import static com.jacobjacob.ttproject.Util.RUNNING;
 import static com.jacobjacob.ttproject.Util.TILELAYER;
+import static com.jacobjacob.ttproject.Util.TILELAYERSTART;
 import static com.jacobjacob.ttproject.Util.TILESIZE;
 import static com.jacobjacob.ttproject.Util.UPDATEVIEW;
 import static com.jacobjacob.ttproject.Util.camera;
 import static com.jacobjacob.ttproject.Util.movespeed;
 
-class UpdateHandler/* extends AppCompatActivity*/ {
+public class UpdateHandler/* extends AppCompatActivity*/ {
 
-    static Rasterizer Rasterize;
+    static com.jacobjacob.ttproject.Old.Rasterizer Rasterize;
     //public static RenderTiles RenderTiles;
     static boolean UPDATEBITMAP;
     //boolean check = true;
 
 
     UpdateHandler() {
-        Rasterize = new Rasterizer();
+        Rasterize = new com.jacobjacob.ttproject.Old.Rasterizer();
         RENDERERTILES = new RenderTiles();
         movespeed = 2 * TILESIZE / 3;
     }
 
-    void updateScreen() {
+    public void updateScreen() {
 
 
         //updateTiles();
@@ -55,7 +55,12 @@ class UpdateHandler/* extends AppCompatActivity*/ {
         }
 
         RENDERERTILES.DrawSelectedTile(); /** Draws the Inventory to the left or top*/
-        RENDERERTILES.DrawSelectedTileLayer();
+        try {
+
+            RENDERERTILES.DrawSelectedTileLayer();
+        } catch (Exception e) {
+            Log.d("Renderer: ", "Draw Tile Layer" + e);
+        }
         RENDERERTILES.DrawInventoryTiles(); /**Inventory to select IDs**/
 
         RENDERERTILES.postImage();
@@ -68,7 +73,7 @@ class UpdateHandler/* extends AppCompatActivity*/ {
         while (RUNNING) {
             //UPDATEVIEW = true;
             if (UPDATEVIEW) {
-                if (System.currentTimeMillis() - LASTUPDATETIME >= MINUPDATETIME) { // the minimum ammount of Time has passed, you may now update the Screen
+                if (/*System.currentTimeMillis() - LASTUPDATETIME >= MINUPDATETIME ||/**/true) { // the minimum ammount of Time has passed, you may now update the Screen
                     //long Starttime = System.currentTimeMillis();
                     if (FRAMEDRAWN && !KDTREECURRENTLYBUILDING) {
                         //thisIMAGE.findViewById(R.id.SCREEN);
@@ -106,10 +111,10 @@ class UpdateHandler/* extends AppCompatActivity*/ {
     void runTileUpdates() {
         boolean UPDATEBITMAP2 = false;
         while (RUNNING) {
-            if (UPDATEBITMAP != UPDATEBITMAP2 && FRAMEDRAWN && UPDATEVIEW && TILELAYER == 0 || TILELAYER > 3) {
+            if (UPDATEBITMAP != UPDATEBITMAP2 && FRAMEDRAWN && UPDATEVIEW /*&& TILELAYER == 0*/) {
                 for (int i = 0; i < MATERIALARRAY.length; i++) {
                     if (MATERIALARRAY[i] != null) {
-                        if (MATERIALARRAY[i].hasAnimation()) {
+                        if ((MATERIALARRAY[i].hasAnimation() && (TILELAYER > 3 + TILELAYERSTART) || MATERIALARRAY[i].showNormal())) {
                             MATERIALARRAY[i].UpdateTileset();
                             MATERIALLIST[i] = MATERIALLISTUPDATING[i];
                         }

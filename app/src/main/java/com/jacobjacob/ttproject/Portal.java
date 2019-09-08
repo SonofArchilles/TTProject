@@ -3,6 +3,8 @@ package com.jacobjacob.ttproject;
 import android.graphics.Rect;
 import android.util.Log;
 
+import com.jacobjacob.ttproject.Tile.Tile;
+
 import java.util.ArrayList;
 
 import static com.jacobjacob.ttproject.Util.KDTREECOPY;

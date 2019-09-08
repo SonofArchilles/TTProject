@@ -17,6 +17,9 @@ public class Move {
     public void Move(Vector direction) {
 
         Vector directionoriginal = direction;
+
+        directionoriginal.setX((float)(direction.getValue(0) / 2));
+        directionoriginal.setY((float)(direction.getValue(1) / 2));
         directionoriginal.setZ((float)(direction.getValue(2) * 20));
 
         //Collisionscale = 100;

@@ -10,6 +10,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.jacobjacob.ttproject.Input.CustomButtons;
+import com.jacobjacob.ttproject.Tile.KdTree;
+import com.jacobjacob.ttproject.Tile.Tile;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -22,6 +26,8 @@ public class Util {
     public static int HEIGHTSCREEN;
     public static int SEED = 24512654;
 
+    public static boolean OPENGL;
+    public static boolean SETTINGS_OPENGL;
 
     //public static double  EPSILON = 0.04;
 
@@ -43,6 +49,7 @@ public class Util {
     public static Button MOVE_BACK;
     public static Button MOVE_RIGHT;
     public static ToggleButton INVENTORY_TOGGLE;
+    public static ToggleButton OPENGL_TOGGLE;
     public static ToggleButton FILLPLACE;
     public static ToggleButton DRAWKDTREE;
     public static ToggleButton REMOVETILES;
@@ -55,6 +62,12 @@ public class Util {
 
     public static Generate GENERATE = new Generate();
     public static OpenSimplexNoise NOISE = new OpenSimplexNoise(SEED);
+
+    public static Vector TOUCHPOSITION = new Vector();
+    public static boolean TOUCHCUSTOMBUTTONS = false;
+
+    public static int TOUCHSTATE = 0; // 0 == Touch down | 1 == Touchmoving | 2 == Touchup
+
 
     public static Vector Cameraposition = new Vector(0, 0, -320); // -10 tiletexture 1
     public static Vector CameraZ = new Vector(0, 0, 1);
@@ -98,10 +111,12 @@ public class Util {
 
     public static int TEXTUREWIDTH = 20;
 
-    public static String FILE_NAME = "newtextfile.txt";
+    public static String FILE_NAME = "lvla.txt";
+    public static String SETTINS_NAME = "settings.txt";
 
     public static ArrayList<String> FILE_NAMES = new ArrayList<>(Arrays.asList("lvla.txt", "lvlb.txt", "lvlc.txt", "lvld.txt", "lvle.txt"));
     public static Spinner LOADLVLSPINNER;
+    public static int LEVELINT = 0;
 
     /**
      * INVENTORY
@@ -114,8 +129,8 @@ public class Util {
     public static float INVENTORYDISPLAYSIZE = 4;
 
     public static LevelEditor LE = new LevelEditor();
-    public static WriteFile WF = new WriteFile();
-    public static ReadFile RF = new ReadFile();
+    public static com.jacobjacob.ttproject.Savefile.WriteFile WF = new com.jacobjacob.ttproject.Savefile.WriteFile();
+    public static com.jacobjacob.ttproject.Loadfile.ReadFile RF = new com.jacobjacob.ttproject.Loadfile.ReadFile();
 
     public static boolean DISPAYTOAST = false;
     public static boolean DISPLAYINVENTORY = false;
@@ -135,7 +150,10 @@ public class Util {
     public static int FILLTILECOLOR = Color.argb(150, 0, 255, 0);
 
     public static int TILELAYER = 0;
+    public static int TILELAYERSTART = 1;
 
+    public static int COLORDEBUG = Color.rgb(255, 255, 255);
+    public static int COLORTILELAYER0;// = Color.rgb(255,235,145);
     public static int COLORTILELAYER1;// = Color.rgb(255,235,145);
     public static int COLORTILELAYER2;// = Color.rgb(130,120,50);
     public static int COLORTILELAYER3;// = Color.rgb(150,200,70);
@@ -146,9 +164,15 @@ public class Util {
     //public static ArrayList<Material> MATERIALARRAY = new ArrayList<>();
     public static Bitmap[][] MATERIALLIST;
     public static Bitmap[][] MATERIALLISTUPDATING;
+    public static Bitmap[][] MATERIALNORMALS;
+
+
     public static Material[] MATERIALARRAY = new Material[TEXTUREWIDTH * TEXTUREWIDTH];
     public static Material STARTINGMATERIAL = new Material(1, 0, 0, 0, Color.argb(255, 120, 170, 100), Color.argb(255, 174, 160, 108), Color.argb(255, 10, 255, 255));
     public static boolean UPDATETILESET = false;
+
+    public static boolean CREATEFASTNORMALS = true;
+    public static float NORMALSTRENGTH = 0.2f; //0.5f
 
     public static KdTree KDTREE = new KdTree();
     public static KdTree KDTREECOPY = KDTREE;
@@ -166,4 +190,6 @@ public class Util {
     public static boolean BOTHPORTALSACTIVE = true;
 
     public static Rect HITBOX;
+
+    public static ArrayList<CustomButtons> CUSTOMBUTTONSLIST = new ArrayList<>();
 }

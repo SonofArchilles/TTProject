@@ -75,14 +75,6 @@ public class Camera {
         //MainActivity.uHandeler.updateScreen();
     }
 
-    public int getL() {
-        return l;
-    }
-
-    public void setL(int l) {
-        this.l = l;
-    }
-
     public int getR() {
         return r;
     }
@@ -91,13 +83,6 @@ public class Camera {
         this.r = r;
     }
 
-    public int getT() {
-        return t;
-    }
-
-    public void setT(int t) {
-        this.t = t;
-    }
 
     public int getB() {
         return b;
@@ -109,10 +94,6 @@ public class Camera {
 
     public Vector getUP() {
         return UP;
-    }
-
-    public void setUP(Vector UP) {
-        this.UP = UP;
     }
 
     public Vector getEye2D() {
@@ -141,54 +122,8 @@ public class Camera {
             this.eye2D = this.eye2D.addVector(eye);
         }
     }
-    public void setEyeVector(Vector eye) {
-        if (eye != null) {
-            this.eye = eye;
-        }
-    }
-
-    public Vector getZ() {
-        return Z;
-    }
-
-    public void setZ(Vector z) {
-        this.Z = z;
-    }
-
     public Vector getW() {
         return W.normalize(); //W
-    }
-
-    public void setW(Vector w) {
-        this.W = w;
-    }
-
-    public Vector getU() {
-        return U;
-    }
-
-    public void setU(Vector u) {
-        this.U = u;
-    }
-
-    public Vector getV() {
-        return V;
-    }
-
-    public void setV(Vector v) {
-        this.V = v;
-    }
-
-    public double getD() {
-        return d;
-    }
-
-    public void setD(double d) {
-        this.d = d;
-    }
-
-    public Vector getW_d_negated() {
-        return W_d_negated;
     }
 
     public void setW_d_negated(Vector w_d_negated) {

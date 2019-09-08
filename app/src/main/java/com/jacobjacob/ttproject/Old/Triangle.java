@@ -1,4 +1,6 @@
-package com.jacobjacob.ttproject;
+package com.jacobjacob.ttproject.Old;
+
+import com.jacobjacob.ttproject.Vector;
 
 public class Triangle implements Object{
     private Vector A,B,C,Normal;
