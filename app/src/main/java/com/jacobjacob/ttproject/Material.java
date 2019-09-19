@@ -3,23 +3,10 @@ package com.jacobjacob.ttproject;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 
-import static com.jacobjacob.ttproject.LevelEditor.SelectedMaterial;
-import static com.jacobjacob.ttproject.Util.ANIMATIONPROGRESS;
-import static com.jacobjacob.ttproject.Util.COLORTILELAYER0;
-import static com.jacobjacob.ttproject.Util.COLORTILELAYER1;
-import static com.jacobjacob.ttproject.Util.COLORTILELAYER2;
-import static com.jacobjacob.ttproject.Util.COLORTILELAYER3;
-import static com.jacobjacob.ttproject.Util.CREATEFASTNORMALS;
-import static com.jacobjacob.ttproject.Util.STARTTIME;
-import static com.jacobjacob.ttproject.Util.SeekbarALPHA;
-import static com.jacobjacob.ttproject.Util.SeekbarANIMATON;
-import static com.jacobjacob.ttproject.Util.SeekbarBLUE;
-import static com.jacobjacob.ttproject.Util.SeekbarGREEN;
-import static com.jacobjacob.ttproject.Util.SeekbarRED;
-import static com.jacobjacob.ttproject.Util.TILELAYER;
-import static com.jacobjacob.ttproject.Util.TILELAYERSTART;
-import static com.jacobjacob.ttproject.Util.TILETEXTURE;
-import static com.jacobjacob.ttproject.Util.UPDATETILESET;
+import java.util.Random;
+
+import static com.jacobjacob.ttproject.LevelEditor.*;
+import static com.jacobjacob.ttproject.Util.*;
 
 //Test
 public class Material {
@@ -389,6 +376,23 @@ public class Material {
             TILETEXTURE.CreateTilemap(this.Number, this.Layer1, this.Layer2, this.Layer3, this.ColorLayer0, this.ColorLayer1, this.ColorLayer2, this.ColorLayer3);
             UpdateMaterialTilesetNormal();
         }
+    }
+
+    /**
+     * Creates a random Material each Time its called
+     * Layer1 to 3 are random
+     */
+    public void CreateRandomMaterialTileset() {
+        //if (TILELAYER < TILELAYERSTART + 4) {
+            Random rand = new Random();
+            int randomLayer1 = rand.nextInt(9);
+            int randomLayer2 = rand.nextInt(9);
+            int randomLayer3 = rand.nextInt(9);
+
+
+            TILETEXTURE.CreateTilemap(this.Number, /*/this.Layer1/*/randomLayer1/**/, /*/this.Layer2/*/randomLayer2/**/, /*/this.Layer3/*/randomLayer3/**/, this.ColorLayer0, this.ColorLayer1, this.ColorLayer2, this.ColorLayer3);
+            //UpdateMaterialTilesetNormal();
+        //}
     }
 
     public void CreateMaterialTileset() {

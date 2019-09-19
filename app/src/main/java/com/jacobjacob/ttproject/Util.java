@@ -10,7 +10,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import com.jacobjacob.ttproject.Input.CustomButtons;
+import com.jacobjacob.ttproject.Light.PointLight;
+import com.jacobjacob.ttproject.UI.CustomButtons;
 import com.jacobjacob.ttproject.Tile.KdTree;
 import com.jacobjacob.ttproject.Tile.Tile;
 
@@ -90,9 +91,12 @@ public class Util {
 
     public static Thread RENDERER;
     public static Thread TILEUPDATE;
+    public static Thread UILOOPTHREAD;
 
     public static float FPS = 120;
     public static boolean RUNNING = true;
+    public static boolean UIRUNNING = true;
+    public static boolean UIUPDATING = true;
     public static long LASTUPDATETIME = System.currentTimeMillis();
     public static long LASTUPDATETIMETILEUPDATE = System.currentTimeMillis();
     public static long STARTTIME = System.currentTimeMillis();
@@ -100,6 +104,7 @@ public class Util {
     public static int FRAME = 0;
     public static boolean FRAMEDRAWN = true;
 
+    public static boolean RELOADMATERIALS; // realoads all the Materials in the lvl. Ideal for changing lvls
 
     public static int TILESIZE;
     public static int TILESIZETEXTURE;
@@ -165,14 +170,33 @@ public class Util {
     public static Bitmap[][] MATERIALLIST;
     public static Bitmap[][] MATERIALLISTUPDATING;
     public static Bitmap[][] MATERIALNORMALS;
+    //public static Bitmap[][] MATERIALNORMALSUPDATING;
 
 
     public static Material[] MATERIALARRAY = new Material[TEXTUREWIDTH * TEXTUREWIDTH];
     public static Material STARTINGMATERIAL = new Material(1, 0, 0, 0, Color.argb(255, 120, 170, 100), Color.argb(255, 174, 160, 108), Color.argb(255, 10, 255, 255));
     public static boolean UPDATETILESET = false;
 
-    public static boolean CREATEFASTNORMALS = true;
-    public static float NORMALSTRENGTH = 0.2f; //0.5f
+    public static boolean CREATEFASTNORMALS = true; /** false = every Tile gets its uniquely generated normal map, true = rotated normal maps, is maybe 3x faster/**/
+    public static float NORMALSTRENGTH = 0.1f; //0.5f // 0.2
+
+    public static int MATERIALSTOTEXTURE = 60; /** Number of Materials that should be loaded into textures for Opengl*/
+    public static boolean MATERIALSTOTEXTURELOADING;
+    public static boolean ANIMATIONTOTEXTURELOADING;
+
+
+    public static float CUSTOM_BUTTON_SEEKBAR_RED;
+    public static float CUSTOM_BUTTON_SEEKBAR_GREEN;
+    public static float CUSTOM_BUTTON_SEEKBAR_BLUE;
+
+
+
+
+    public static ArrayList<PointLight> LIGHTS = new ArrayList();
+
+
+
+    public static ArrayList<Tile> VISIBLETILES;// = KDTREE.getVisibleTilesInCurrentTree(); // KDTREECOPY
 
     public static KdTree KDTREE = new KdTree();
     public static KdTree KDTREECOPY = KDTREE;

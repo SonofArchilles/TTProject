@@ -1,10 +1,7 @@
 package com.jacobjacob.ttproject;
 
 //import static com.jacobjacob.ttproject.Util.FRAMEDRAWN;
-import static com.jacobjacob.ttproject.Util.HEIGHT;
-import static com.jacobjacob.ttproject.Util.MOVE;
-import static com.jacobjacob.ttproject.Util.WIDTH;
-import static com.jacobjacob.ttproject.Util.mousemovespeed;
+import static com.jacobjacob.ttproject.Util.*;
 
 
 public class Camera {

@@ -116,7 +116,7 @@ public class UpdateHandler/* extends AppCompatActivity*/ {
                     if (MATERIALARRAY[i] != null) {
                         if ((MATERIALARRAY[i].hasAnimation() && (TILELAYER > 3 + TILELAYERSTART) || MATERIALARRAY[i].showNormal())) {
                             MATERIALARRAY[i].UpdateTileset();
-                            MATERIALLIST[i] = MATERIALLISTUPDATING[i];
+                            MATERIALLIST[i] = MATERIALLISTUPDATING[i]; // fills the main list with bitmaps with the updated Bitmap
                         }
                     }
                 }

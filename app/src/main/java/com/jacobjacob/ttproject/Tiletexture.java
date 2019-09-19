@@ -15,30 +15,14 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-import static com.jacobjacob.ttproject.Util.CONTEXT;
-import static com.jacobjacob.ttproject.Util.MATERIALARRAY;
-import static com.jacobjacob.ttproject.Util.MATERIALLIST;
-import static com.jacobjacob.ttproject.Util.MATERIALLISTUPDATING;
-import static com.jacobjacob.ttproject.Util.MATERIALNORMALS;
-import static com.jacobjacob.ttproject.Util.NORMALSTRENGTH;
-import static com.jacobjacob.ttproject.Util.PLACETILE;
-import static com.jacobjacob.ttproject.Util.TEXTUREWIDTH;
-import static com.jacobjacob.ttproject.Util.TILELAYER;
-import static com.jacobjacob.ttproject.Util.TILELAYERSTART;
-import static com.jacobjacob.ttproject.Util.TILESIZE;
-import static com.jacobjacob.ttproject.Util.TILESIZEORIGINAL;
-import static com.jacobjacob.ttproject.Util.TILESIZETEXTURE;
-import static com.jacobjacob.ttproject.Util.TILESOFSINGLEKIND;
+import static com.jacobjacob.ttproject.Util.*;
 
 public class Tiletexture {
     private ArrayList<Bitmap> Bitmaplist;
 
-    //private Bitmap[][] MATERIALLIST;
-    //TODO das und das anpassen
     ArrayList<Bitmap> RGBTilesLAYER1 = new ArrayList<>();
     ArrayList<Bitmap> RGBTilesLAYER2 = new ArrayList<>();
     ArrayList<Bitmap> RGBTilesLAYER3 = new ArrayList<>();
-    private ArrayList<Bitmap> BitmaplistLLOD; // low level of detail
 
     private Bitmap texture;     //32 x 32
     //private Bitmap texturellod;     //
@@ -184,11 +168,11 @@ public class Tiletexture {
      */
     public Bitmap getBitmap(int ID, int MATERIALint) { // no animations possible yet
 
-        if (!PLACETILE/*MATERIALNORMALS[MATERIALint] != null && MATERIALint * 5 < Bitmaplist.size() && MATERIALARRAY[MATERIALint].showNormal()*/) {
+        if (!PLACETILE &&   TILELAYER < TILELAYERSTART + 4/*MATERIALNORMALS[MATERIALint] != null && MATERIALint * 5 < Bitmaplist.size() && MATERIALARRAY[MATERIALint].showNormal()*/) {
             try {
                 return MATERIALNORMALS[MATERIALint][ID];
             } catch (Exception e) {
-                Log.d("TILETEXTURE","Tile not in Normal Array!");
+                Log.d("TILETEXTURE", "Tile not in Normal Array!");
             }
         }
 
@@ -202,30 +186,30 @@ public class Tiletexture {
     }
 
 
-    public void deleteTextures() {
-        for (int i = 0; i < TEXTUREWIDTH; i++) {
-            try {
-                GLES20.glDeleteTextures(15, Textures[i], 0);
+    public void deleteTextures(int MaterialTextureIntToDelete) {
 
-            } catch (Exception e) {
-                Log.d("Textures: ", "Failed Deleting Textures" + e);
-            }
+        try {
+            GLES20.glDeleteTextures(16, Textures[MaterialTextureIntToDelete], 0);
+
+        } catch (Exception e) {
+            Log.d("Textures: ", "Failed Deleting Textures" + e);
         }
+
     }
 
-    public void deleteNormals() {
-        for (int i = 0; i < TEXTUREWIDTH; i++) {
-            try {
-                GLES20.glDeleteTextures(15, TextureNormals[i], 0);
-            } catch (Exception e) {
-                Log.d("Textures: ", "Failed Deleting Textures" + e);
-            }
+    public void deleteNormals(int MaterialTextureIntToDelete) {
+
+        try {
+            GLES20.glDeleteTextures(16, TextureNormals[MaterialTextureIntToDelete], 0);
+        } catch (Exception e) {
+            Log.d("Textures: ", "Failed Deleting Textures" + e);
         }
+
     }
 
 
     /**
-     * Updates the Material loads the Bitmap as a Texture
+     * Updates the Material and loads the Bitmap as a Texture
      *
      * @param MaterialToUpdate The Material that gets a new Texture
      */
@@ -237,7 +221,7 @@ public class Tiletexture {
 
 
     /**
-     * Updates the Material loads the Bitmap as a Texture. This is the normal map- Texture
+     * Updates the Material and loads the Bitmap as a Texture. This is the normal map- Texture
      *
      * @param MaterialToUpdate The Material that gets a new Texture
      */
@@ -247,7 +231,11 @@ public class Tiletexture {
         updateTexturesNormals(MaterialToUpdate);
     }
 
-
+    /**
+     * Loads the given Texture into Opengl es memory
+     *
+     * @param TextureToUpdate the int of The Material that has to be loadet
+     */
     public void updateTextures(int TextureToUpdate) {
 
         int[] textureHandle = new int[16];
@@ -281,6 +269,11 @@ public class Tiletexture {
         }
     }
 
+    /**
+     * Loads the given normal Texture into Opengl es memory
+     *
+     * @param TextureToUpdate the int of The Material that has to be loadet
+     */
     public void updateTexturesNormals(int TextureToUpdate) {
 
 
@@ -582,7 +575,7 @@ public class Tiletexture {
 
         Bitmap[] FinishedTilemap = getFinnishedBitmaplist(SingleTilemap);
 
-        for (int i = 0; i < FinishedTilemap.length-1; i++) {
+        for (int i = 0; i < FinishedTilemap.length - 1; i++) {
             FinishedTilemap[i] = OverlayTilemap(FinishedTilemap[15], FinishedTilemap[i]);
         }
 
@@ -591,6 +584,7 @@ public class Tiletexture {
 
     /**
      * Transforms a bmp[] with 5 Tiles into one with 15 Tiles
+     *
      * @param SingleTilemap The 5 Tiles as Input
      * @return The 15 Finished Tiles
      */
@@ -635,7 +629,6 @@ public class Tiletexture {
     }
 
 
-    //TODO Create accurate normals
     public void CreateNormals(int intMaterial, int Layer1, int Layer2, int Layer3, int alpha1, int alpha2, int alpha3) {
 
         Bitmap[] SingleTilemap = new Bitmap[15]; // Tiles from 0 to 15 as Bitmap
@@ -717,7 +710,6 @@ public class Tiletexture {
                     float Ver = (float) (ColorLayerUP - ColorLayerDOWN) / Scale; // value from 0 to 1
 
 
-
                     Vector vb = /*/new Vector(Hor, 0, Sca).normalize();/*/new Vector(NORMALSTRENGTH, 0, Hor).normalize();/**/
                     Vector va = /*/new Vector(0, Ver, Sca).normalize();/*/new Vector(0, NORMALSTRENGTH, Ver).normalize();/**/
 
@@ -750,7 +742,7 @@ public class Tiletexture {
         Bitmap[] FinishedTilemap = getFinnishedBitmaplist(SingleTilemap);
 
         for (int i = 0; i < FinishedTilemap.length; i++) {
-            FinishedTilemap[i] = OverlayTilemap(FinishedTilemap[FinishedTilemap.length-1], FinishedTilemap[i]);
+            FinishedTilemap[i] = OverlayTilemap(FinishedTilemap[FinishedTilemap.length - 1], FinishedTilemap[i]);
         }
 
         MATERIALNORMALS[intMaterial] = FinishedTilemap;
@@ -848,7 +840,6 @@ public class Tiletexture {
                 float Ver = (float) (ColorLayerUP - ColorLayerDOWN) / Scale; // value from 0 to 1
 
 
-
                 Vector vb = new Vector(NORMALSTRENGTH, 0, Hor).normalize();/**/
                 Vector va = new Vector(0, NORMALSTRENGTH, Ver).normalize();/**/
 
@@ -874,7 +865,7 @@ public class Tiletexture {
         return Current;
     }
 
-    //TODO Create accurate normals
+
     public void CreateAccurateNormals(int intMaterial, int Layer1, int Layer2, int Layer3, int alpha1, int alpha2, int alpha3) {
 
         Bitmap[] SingleTilemap = new Bitmap[16]; // Tiles from 0 to 15 as Bitmap
@@ -898,7 +889,7 @@ public class Tiletexture {
             int b = 0;
 
             for (int j = 0; j < FinishedTilemap.length; j++) {
-                FinishedTilemap[j] = OverlayTilemap(FinishedTilemap[FinishedTilemap.length-1], FinishedTilemap[j]);
+                FinishedTilemap[j] = OverlayTilemap(FinishedTilemap[FinishedTilemap.length - 1], FinishedTilemap[j]);
             }
             GreyTilemaps[i] = FinishedTilemap;
         }
@@ -907,7 +898,7 @@ public class Tiletexture {
             SingleTilemap[i] = returnNormalBmp(i, GreyTilemaps[0][i], GreyTilemaps[1][i], GreyTilemaps[2][i], alpha1, alpha2, alpha3);
         }
         int a = 0;
-        for (int j = 0; j < SingleTilemap.length-1; j++) {
+        for (int j = 0; j < SingleTilemap.length - 1; j++) {
             SingleTilemap[j] = OverlayTilemap(SingleTilemap[15]/*SingleTilemap[SingleTilemap.length-1]*/, SingleTilemap[j]);
         }
 

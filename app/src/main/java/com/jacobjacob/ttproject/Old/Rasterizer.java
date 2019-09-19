@@ -13,10 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import static com.jacobjacob.ttproject.Util.BACKGROUNDCOLOR;
-import static com.jacobjacob.ttproject.Util.HEIGHT;
-import static com.jacobjacob.ttproject.Util.WIDTH;
-import static com.jacobjacob.ttproject.Util.camera;
+import static com.jacobjacob.ttproject.Util.*;
 
 public class Rasterizer {
     static Bitmap bmp;

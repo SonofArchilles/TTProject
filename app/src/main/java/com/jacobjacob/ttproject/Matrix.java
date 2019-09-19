@@ -1,9 +1,7 @@
 package com.jacobjacob.ttproject;
 
 
-import static com.jacobjacob.ttproject.Util.FOV;
-import static com.jacobjacob.ttproject.Util.HEIGHTSCREEN;
-import static com.jacobjacob.ttproject.Util.WIDTHSCREEN;
+import static com.jacobjacob.ttproject.Util.*;
 
 public class Matrix {
     public float[][] matrix = new float[4][4];

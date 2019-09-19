@@ -28,74 +28,17 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.jacobjacob.ttproject.UI.Inputloop;
+
 import static com.jacobjacob.ttproject.LevelEditor.SelectedMaterial;
-import static com.jacobjacob.ttproject.Util.ADDLEFT;
-import static com.jacobjacob.ttproject.Util.ADDRIGHT;
-import static com.jacobjacob.ttproject.Util.ANIMATIONPROGRESS;
-import static com.jacobjacob.ttproject.Util.ANIMATIONPROGRESSPERCENT;
-import static com.jacobjacob.ttproject.Util.COLORTILELAYER0;
-import static com.jacobjacob.ttproject.Util.COLORTILELAYER1;
-import static com.jacobjacob.ttproject.Util.COLORTILELAYER2;
-import static com.jacobjacob.ttproject.Util.COLORTILELAYER3;
-import static com.jacobjacob.ttproject.Util.CONTEXT;
-import static com.jacobjacob.ttproject.Util.CUSTOMBUTTONSLIST;
-import static com.jacobjacob.ttproject.Util.DESTROYTILES;
-import static com.jacobjacob.ttproject.Util.DISPLAYFRAMES;
-import static com.jacobjacob.ttproject.Util.DISPLAYINVENTORY;
-import static com.jacobjacob.ttproject.Util.DRAWFILLTILERECT;
-import static com.jacobjacob.ttproject.Util.DRAWKDTREE;
-import static com.jacobjacob.ttproject.Util.DRAWKDTREEBOOL;
-import static com.jacobjacob.ttproject.Util.FILE_NAME;
-import static com.jacobjacob.ttproject.Util.FILE_NAMES;
-import static com.jacobjacob.ttproject.Util.FILLPLACE;
-import static com.jacobjacob.ttproject.Util.FILLTILERECT;
-import static com.jacobjacob.ttproject.Util.FILLTILES;
-import static com.jacobjacob.ttproject.Util.FRAMES;
-import static com.jacobjacob.ttproject.Util.HEIGHTSCREEN;
-import static com.jacobjacob.ttproject.Util.INVENTORY_TOGGLE;
-import static com.jacobjacob.ttproject.Util.KDTREECURRENTLYBUILDING;
-import static com.jacobjacob.ttproject.Util.LE;
-import static com.jacobjacob.ttproject.Util.LOADLVLSPINNER;
-import static com.jacobjacob.ttproject.Util.MATERIALARRAY;
-import static com.jacobjacob.ttproject.Util.MOVE_BACK;
-import static com.jacobjacob.ttproject.Util.MOVE_DOWN;
-import static com.jacobjacob.ttproject.Util.MOVE_FORWARD;
-import static com.jacobjacob.ttproject.Util.MOVE_LEFT;
-import static com.jacobjacob.ttproject.Util.MOVE_RIGHT;
-import static com.jacobjacob.ttproject.Util.MOVE_UP;
-import static com.jacobjacob.ttproject.Util.NOISE;
-import static com.jacobjacob.ttproject.Util.OPENGL;
-import static com.jacobjacob.ttproject.Util.OPENGL_TOGGLE;
-import static com.jacobjacob.ttproject.Util.PLACETILE;
-import static com.jacobjacob.ttproject.Util.REMOVETILES;
-import static com.jacobjacob.ttproject.Util.RENDERER;
-import static com.jacobjacob.ttproject.Util.RF;
-import static com.jacobjacob.ttproject.Util.SETTINGS_OPENGL;
-import static com.jacobjacob.ttproject.Util.SeekbarALPHA;
-import static com.jacobjacob.ttproject.Util.SeekbarANIMATON;
-import static com.jacobjacob.ttproject.Util.SeekbarBLUE;
-import static com.jacobjacob.ttproject.Util.SeekbarGREEN;
-import static com.jacobjacob.ttproject.Util.SeekbarRED;
-import static com.jacobjacob.ttproject.Util.TEXTUREWIDTH;
-import static com.jacobjacob.ttproject.Util.TILEEDIT;
-import static com.jacobjacob.ttproject.Util.TILELAYER;
-import static com.jacobjacob.ttproject.Util.TILELAYERSTART;
-import static com.jacobjacob.ttproject.Util.TILETEXTURE;
-import static com.jacobjacob.ttproject.Util.TILEUPDATE;
-import static com.jacobjacob.ttproject.Util.TOUCHCUSTOMBUTTONS;
-import static com.jacobjacob.ttproject.Util.TOUCHPOSITION;
-import static com.jacobjacob.ttproject.Util.TOUCHSTATE;
-import static com.jacobjacob.ttproject.Util.UPDATETILESET;
-import static com.jacobjacob.ttproject.Util.WF;
-import static com.jacobjacob.ttproject.Util.WIDTHSCREEN;
-import static com.jacobjacob.ttproject.Util.camera;
-import static com.jacobjacob.ttproject.Util.movespeed;
+import static com.jacobjacob.ttproject.Util.*;
 
 public class MainActivity extends AppCompatActivity {
 
     public float xmove, ymove, xmove2, ymove2;
     public static ImageView IMAGE;
     public static boolean UHANDELERSTARTED = false;
+    public static boolean UILOOPER = false;
     public static com.jacobjacob.ttproject.OpenGL.MainSurfaceView mainSurfaceView;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -118,23 +61,15 @@ public class MainActivity extends AppCompatActivity {
         HEIGHTSCREEN = size.y;
 
 
-        //FrameLayout Layer = new FrameLayout(this.getApplicationContext());
-        //Layer.addView(findViewById());
-
-        /**/
-        //OPENGL = true;
-
-        // try {
         CONTEXT = this.getApplicationContext();
 
-        RF.ReadSettings();
+        try {
+            RF.ReadSettings();
+        }catch (Exception e){
+            Log.d("ReadSettings","Settings maybe not there");
+        }
 
-        //}catch (Exception e){
-        //    Log.d("Read: ", "Settings file broken " + e);
-        //}
-        //OPENGL = !OPENGL;
-
-        //Log.d("Openglbool ", String.valueOf(OPENGL));
+        //OPENGL = true;
 
 
         if (OPENGL) {
@@ -168,6 +103,21 @@ public class MainActivity extends AppCompatActivity {
                 MATERIALARRAY[i].CreateMaterialTilesetNormal();
             }
 
+
+            if (!UILOOPER) {
+                UILOOPER = true;
+                UILOOPTHREAD = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Looper.prepare();
+                        Inputloop INPUTLOOP = new Inputloop();
+                        INPUTLOOP.start();
+                        //function one or whatever
+                    }
+                });
+                UILOOPTHREAD.start();
+            }
+
         } /**/ else {
             //setContentView(mainSurfaceView);
 
@@ -179,8 +129,11 @@ public class MainActivity extends AppCompatActivity {
             LE.Inventory();
 
             NOISE.setSeed(System.currentTimeMillis() / 1000);
-            LE.LoadLevel();
-
+            try {
+                LE.LoadLevel();
+            }catch (Exception e){
+                Log.d("LoadLevel","Couldn't be loaded");
+            }
             SeekbarALPHA = new SeekBar(CONTEXT);
             SeekbarRED = new SeekBar(CONTEXT);
             SeekbarGREEN = new SeekBar(CONTEXT);
@@ -262,7 +215,11 @@ public class MainActivity extends AppCompatActivity {
             LOADLVLSPINNER.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+
                     LE.SaveLevel();
+
+                    LEVELINT = i;
                     FILE_NAME = adapterView.getSelectedItem().toString();
 
                     LE.LoadLevel();
@@ -714,11 +671,12 @@ public class MainActivity extends AppCompatActivity {
 
                 TOUCHPOSITION = new Vector(event.getX(), event.getY());
 
+                /*/
                 if (OPENGL) { // update the custom buttons
                     for (int i = 0; i < CUSTOMBUTTONSLIST.size(); i++) {
                         CUSTOMBUTTONSLIST.get(i).UpdateButton();
                     }
-                }
+                }/**/
 
                 xmove2 = event.getX() - xmove;
                 ymove2 = event.getY() - ymove;
@@ -726,7 +684,7 @@ public class MainActivity extends AppCompatActivity {
 
                 camera.move(-xmove2 + event.getX(), -ymove2 + event.getY());
 
-                if ((OPENGL && !TOUCHCUSTOMBUTTONS) || !OPENGL) {
+                if (!OPENGL) {
                     if (DISPLAYINVENTORY) {
                         LE.setSelectTilefromInventory(event.getX(), event.getY());
                     } else {
@@ -755,11 +713,12 @@ public class MainActivity extends AppCompatActivity {
                 TOUCHSTATE = 1;
 
                 TOUCHCUSTOMBUTTONS = false;
+                /*/
                 if (OPENGL) { // update the custom buttons
                     for (int i = 0; i < CUSTOMBUTTONSLIST.size(); i++) {
                         CUSTOMBUTTONSLIST.get(i).UpdateButton();
                     }
-                }
+                }/**/
 
                 TOUCHPOSITION = new Vector(event.getX(), event.getY());
 
@@ -768,7 +727,8 @@ public class MainActivity extends AppCompatActivity {
 
                 camera.move(xmove, ymove);
 
-                if ((OPENGL && !TOUCHCUSTOMBUTTONS) || !OPENGL) {
+
+                if (!OPENGL) {
                     if (DISPLAYINVENTORY) {
                         LE.setSelectTilefromInventory(event.getX(), event.getY());
                     } else {
@@ -800,6 +760,8 @@ public class MainActivity extends AppCompatActivity {
 
                 TOUCHSTATE = 2;
 
+                TOUCHPOSITION = new Vector(event.getX(), event.getY());
+
                 //TOUCHCUSTOMBUTTONS = false;
                 //if (OPENGL) { // update the custom buttons
                 //    for (int i = 0; i < CUSTOMBUTTONSLIST.size(); i++) {
@@ -808,7 +770,7 @@ public class MainActivity extends AppCompatActivity {
                 //}
                 camera.move(xmove, ymove);
 
-                if ((OPENGL && !TOUCHCUSTOMBUTTONS) || !OPENGL) {
+                if (!OPENGL) {
                     if (DISPLAYINVENTORY) {
                         LE.SELECTEDTILEIDINVENTORY();
                     } else {

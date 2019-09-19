@@ -1,9 +1,13 @@
 package com.jacobjacob.ttproject.Loadfile;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.jacobjacob.ttproject.Material;
+import com.jacobjacob.ttproject.R;
 import com.jacobjacob.ttproject.Tile.KdTree;
 import com.jacobjacob.ttproject.Tile.Tile;
 import com.jacobjacob.ttproject.Vector;
@@ -12,21 +16,11 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import static com.jacobjacob.ttproject.Util.CONTEXT;
-import static com.jacobjacob.ttproject.Util.DISPAYTOAST;
-import static com.jacobjacob.ttproject.Util.FILE_NAME;
-import static com.jacobjacob.ttproject.Util.KDTREE;
-import static com.jacobjacob.ttproject.Util.KDTREECOPY;
-import static com.jacobjacob.ttproject.Util.KDTREECURRENTLYBUILDING;
-import static com.jacobjacob.ttproject.Util.MATERIALARRAY;
-import static com.jacobjacob.ttproject.Util.OPENGL;
-import static com.jacobjacob.ttproject.Util.SETTINS_NAME;
-import static com.jacobjacob.ttproject.Util.STARTINGMATERIAL;
-import static com.jacobjacob.ttproject.Util.TEXTUREWIDTH;
-import static com.jacobjacob.ttproject.Util.UPDATEVIEW;
+import static com.jacobjacob.ttproject.Util.*;
 
 
 public class ReadFile {
@@ -72,28 +66,29 @@ public class ReadFile {
         FileInputStream fis = null;
 
         try {
-            fis = CONTEXT.openFileInput(SETTINS_NAME);
+            if (CONTEXT.openFileInput(SETTINS_NAME) != null) {
+                fis = CONTEXT.openFileInput(SETTINS_NAME);
 
-            InputStreamReader isr = new InputStreamReader(fis);
-            BufferedReader br = new BufferedReader(isr);
-            StringBuilder sb = new StringBuilder();
-            String text;
+                InputStreamReader isr = new InputStreamReader(fis);
+                BufferedReader br = new BufferedReader(isr);
+                StringBuilder sb = new StringBuilder();
+                String text;
 
-            while ((text = br.readLine()) != null) {
-                sb.append(text).append("\n");
+                while ((text = br.readLine()) != null) {
+                    sb.append(text).append("\n");
 
-                String[] parts = text.split(" ");
+                    String[] parts = text.split(" ");
 
-                if (String.valueOf(parts[0]).equals("OPENGL")) {
-                    if (String.valueOf(parts[1]).equals("true")) {
-                        OPENGL = true;
-                    } else if (String.valueOf(parts[1]).equals("false")) {
-                        OPENGL = false;
+                    if (String.valueOf(parts[0]).equals("OPENGL")) {
+                        if (String.valueOf(parts[1]).equals("true")) {
+                            OPENGL = true;
+                        } else if (String.valueOf(parts[1]).equals("false")) {
+                            OPENGL = false;
+                        }
                     }
+
                 }
-
             }
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -133,12 +128,38 @@ public class ReadFile {
         FileInputStream fis = null;
 
         try {
+
             fis = CONTEXT.openFileInput(FILE_NAME);
 
-            InputStreamReader isr = new InputStreamReader(fis);
+
+            InputStream inputStream;
+
+            /*/ // Reads the .txt file directly, no changes possible yet
+            if (LEVELINT == 0) {
+                inputStream = CONTEXT.getResources().openRawResource(R.raw.lvla);
+            }else if (LEVELINT == 1) {
+                inputStream = CONTEXT.getResources().openRawResource(R.raw.lvlb);
+            }else if (LEVELINT == 2) {
+                inputStream = CONTEXT.getResources().openRawResource(R.raw.lvlc);
+            }else if (LEVELINT == 3) {
+                inputStream = CONTEXT.getResources().openRawResource(R.raw.lvld);
+            }else{
+                inputStream = CONTEXT.getResources().openRawResource(R.raw.lvle);
+            }/*/
+            // seems to read the file from somewhere else, changes can be saved
+            inputStream = CONTEXT.openFileInput(FILE_NAMES.get(LEVELINT));
+            /**/
+
+
+            InputStreamReader isr = new InputStreamReader(inputStream);
+
+            //InputStreamReader isr = new InputStreamReader(fis);
+
             BufferedReader br = new BufferedReader(isr);
             StringBuilder sb = new StringBuilder();
             String text;
+
+
 
             while ((text = br.readLine()) != null) {
                 sb.append(text).append("\n");
@@ -216,7 +237,7 @@ public class ReadFile {
                 Log.d("Loadtxt: ", "Success!");
             }
             //mEditText.setText(sb.toString());
-
+            //}
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             Log.d("Read File", "Crash1");
@@ -256,7 +277,7 @@ public class ReadFile {
         KDTREE.setTilesInCurrentTree(AllTiles); // 16ms
         KDTREE.CreatenewKDTree();
 
-        KDTREECOPY = KDTREE;
+        //KDTREECOPY = KDTREE;
 
 
         //KDTREECOPY = new KdTree();

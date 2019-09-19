@@ -8,13 +8,7 @@ import com.jacobjacob.ttproject.Vector;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static com.jacobjacob.ttproject.Util.HEIGHTSCREEN;
-import static com.jacobjacob.ttproject.Util.KDTREEMAXITEMS;
-import static com.jacobjacob.ttproject.Util.TILESIZE;
-import static com.jacobjacob.ttproject.Util.WIDTHSCREEN;
-import static com.jacobjacob.ttproject.Util.ZOOMFACTOR;
-import static com.jacobjacob.ttproject.Util.camera;
-
+import static com.jacobjacob.ttproject.Util.*;
 public class KdTreeChunks {
 
 

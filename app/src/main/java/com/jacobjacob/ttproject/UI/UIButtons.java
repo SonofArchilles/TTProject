@@ -1,4 +1,4 @@
-package com.jacobjacob.ttproject.Input;
+package com.jacobjacob.ttproject.UI;
 
 import com.jacobjacob.ttproject.Vector;
 

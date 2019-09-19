@@ -2,6 +2,7 @@ package com.jacobjacob.ttproject.OpenGL;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
@@ -9,9 +10,7 @@ import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.jacobjacob.ttproject.Input.CustomButtons;
 import com.jacobjacob.ttproject.Light.PointLight;
-import com.jacobjacob.ttproject.Tile.Tile;
 import com.jacobjacob.ttproject.Vector;
 
 import java.nio.ByteBuffer;
@@ -22,15 +21,7 @@ import java.util.ArrayList;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import static com.jacobjacob.ttproject.Util.BACKGROUNDCOLOR;
-import static com.jacobjacob.ttproject.Util.CUSTOMBUTTONSLIST;
-import static com.jacobjacob.ttproject.Util.HEIGHTSCREEN;
-import static com.jacobjacob.ttproject.Util.KDTREE;
-import static com.jacobjacob.ttproject.Util.TILESIZE;
-import static com.jacobjacob.ttproject.Util.TILETEXTURE;
-import static com.jacobjacob.ttproject.Util.WIDTHSCREEN;
-import static com.jacobjacob.ttproject.Util.ZOOMFACTOR;
-import static com.jacobjacob.ttproject.Util.camera;
+import static com.jacobjacob.ttproject.Util.*;
 
 
 public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Renderer {
@@ -131,10 +122,44 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
             + "varying vec4 v_Color;          \n"                          // This is the color from the vertex shader interpolated across the
             // triangle per fragment.
             + "void main()                    \n"                          // The entry point for our fragment shader.
-            + "{                              \n" + "   gl_FragColor = v_Color;     \n"        // Pass the color directly through the pipeline.
+            + "{                              \n"
+            + "   gl_FragColor = v_Color;     \n"        // Pass the color directly through the pipeline.
             + "}                              \n";
 
-    /*/
+
+
+    final String vertex_shader_texture =
+            "uniform mat4 u_MVPMatrix;"
+
+            + "uniform mat4 u_MVMatrix;" + "\n"
+
+            + "attribute vec4 a_Position;" + "\n"
+
+            + "varying vec3 v_Position;" + "\n"
+
+            + "attribute vec2 a_TexCoordinate;" + "\n"
+            + "varying vec2 v_TexCoordinate;" + "\n"
+
+            + "void main()\n" + "{\n"
+
+            + "v_Position = vec3(u_MVMatrix * a_Position);\n"
+
+            + "v_TexCoordinate = a_TexCoordinate;\n"
+
+            + "gl_Position = u_MVPMatrix * a_Position;\n"
+
+            + "}";
+
+    final String fragment_shader_texture =
+            "precision mediump float;" +
+              "uniform sampler2D u_Texture;\n"    // The input texture
+
+            + "varying vec2 v_TexCoordinate;\n"  // interpolated Texture coordinate same for texture and normaltexture
+            + "void main()" + "{\n"
+            + "gl_FragColor = texture2D(u_Texture, v_TexCoordinate);\n" // Multiply the color by the diffuse illumination level and texture value to get final output color.\n"
+            + "}";
+
+    /**/
         final String per_pixel_vertex_shader =
                 "uniform mat4 u_MVPMatrix;"// A constant representing the combined model/view/projection matrix.
                 + "uniform mat4 u_MVMatrix;" + "\n"// A constant representing the combined model/view matrix.
@@ -167,6 +192,7 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
                 // Multiply the vertex by the matrix to get the final point in normalized screen coordinates.
                 + "gl_Position = u_MVPMatrix * a_Position;\n" + "}";
         /**/
+    /*/
     final String per_pixel_vertex_shader = "uniform mat4 u_MVPMatrix;" + "uniform mat4 u_MVMatrix;" + "\n"
 
             + "attribute vec4 a_Position;" + "\n" + "varying vec3 v_Position;" + "\n"
@@ -187,7 +213,32 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
 
             + "gl_Position = u_MVPMatrix * a_Position;\n"
 
+            + "}";/**/
+/*/
+    final String per_pixel_vertex_shader =
+            "uniform mat4 u_MVPMatrix;"
+
+            + "uniform mat4 u_MVMatrix;"
+
+            + "attribute vec4 a_Position;"
+            + "varying vec3 v_Position;"
+
+            + "attribute vec2 a_TexCoordinate;"
+            + "varying vec2 v_TexCoordinate;"
+
+
+            + "void main(){"
+
+            + "v_Position = vec3(u_MVMatrix * a_Position);"
+
+            + "v_TexCoordinate = a_TexCoordinate;"
+
+            + "gl_Position = u_MVPMatrix * a_Position;"
+
             + "}";
+
+
+    /**/
 
 /*/
     final String per_pixel_fragment_shader =
@@ -413,42 +464,243 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
     /**/
 
     /**/ //Toonshading :
-    final String per_pixel_fragment_shader = "precision mediump float;" + "uniform sampler2D u_Texture;\n"    // The input texture
+    final String per_pixel_fragment_shader =
+            "precision mediump float;" + "uniform sampler2D u_Texture;\n"    // The input texture
             + "uniform sampler2D n_Texture;\n"
 
             + "uniform vec3 v_Light;" + "\n"         // Vector from the Light to the Tile
+
+            + "uniform vec4 v_Light_Color;" + "\n"         // Vector from the Light to the Tile
 
             //+"varying vec3 v_Position;"
             + "uniform vec3 v_Tile;"
 
             + "varying vec2 v_TexCoordinate;\n"  // interpolated Texture coordinate same for texture and normaltexture
 
-            + "float brightness;" + "\n" + "vec4 color_vec;" + "vec3 vec_normalTex;" + "float dist;"
+            + "float brightness;" + "\n"
 
-            + "const float levels = -6.0;"
+            + "vec4 color_vec;"
+
+            + "vec3 vec_normalTex;"
+
+            + "float dist;"
+
+            + "const float levels = -7.0;"
 
 
-            + "void main()" + "{\n"
+            + "void main(){"
 
-            + "float distance = length(v_Light - v_Tile - vec3(v_TexCoordinate,0));\n"// Get a lighting direction vector from the light to the vertex.\n"
+            + "vec4 colorvec = (texture2D(u_Texture, v_TexCoordinate));"
 
-            + "float distancepixel = length(vec2(v_Light - v_Tile - vec3(v_TexCoordinate,0)));\n"// Get a lighting direction vector from the light to the vertex.\n"
 
-            + "vec3 lightVector = normalize(v_Light - v_Tile - vec3(v_TexCoordinate,0));\n"
+            + "vec3 Light_Tile = v_Light - v_Tile - vec3(v_TexCoordinate,0);"
 
-            + "vec_normalTex = vec3(texture2D(n_Texture, v_TexCoordinate))-0.5;" + "\n"
 
-            + "float diffuse = max(dot(vec_normalTex, lightVector), 0.0);\n" // 0 to 1
+            + "float distance = length(Light_Tile);"// Get a lighting direction vector from the light to the vertex.\n"
 
-            + "diffuse = (diffuse * (1.0 / (1.0 + (0.05 * distance))) + 0.2);\n" // + 0.5 * (1.0 / (1.0 + (0.005 * distance)))
+            + "float distancepixel = length(vec2(Light_Tile));"// Get a lighting direction vector from the light to the vertex.\n"
 
-            + "vec4 colorvec = (diffuse * texture2D(u_Texture, v_TexCoordinate));" //diffuse*
+            + "vec3 lightVector = normalize(Light_Tile);"
+
+
+
+            + "vec_normalTex = vec3(texture2D(n_Texture, v_TexCoordinate))-0.5;"
+
+            + "float diffuseold = max(dot(vec_normalTex, lightVector), 0.0);" // 0 to 1
+
+            + "float diffuse = (diffuseold * (1.0 / (1.0 + (0.05 * distance))) + 0.2);" // + 0.5 * (1.0 / (1.0 + (0.005 * distance)))
+
+            + "colorvec = diffuse * colorvec;" //diffuse*
             //+ " if(distancepixel < 0.1){"
-            + "colorvec = colorvec+colorvec * (1.0/(1.0+10.0*distancepixel));"//vec4(1.0,1.0,1.0,1.0);"
+            + "float diff2 = (1.0/(1.0+10.0*distancepixel));"
+
+            + "colorvec = colorvec + colorvec * diff2 * diffuseold;"//vec4(1.0,1.0,1.0,1.0);"
             //+"}"
-            + "if(levels > 0.0){" + "colorvec = floor(colorvec * levels)/levels;" + "}" + "gl_FragColor = colorvec;" // Multiply the color by the diffuse illumination level and texture value to get final output color.\n"
+            + "colorvec = colorvec + v_Light_Color * diff2 + v_Light_Color *diffuseold * (1.0/(1.0+distance));"
+
+            + "if(levels > 0.0){" +
+                    "colorvec = floor(colorvec * levels)/levels;"
+            + "}" +
+
+
+            "gl_FragColor = colorvec;" // Multiply the color by the diffuse illumination level and texture value to get final output color.\n"
+
             + "}";
     /**/
+
+
+    /**multiple Lights test 2: */
+    /*/
+
+
+    final String per_pixel_vertex_shader =
+            "uniform mat4 u_MVPMatrix;"
+
+                    + "uniform mat4 u_MVMatrix;"
+
+                    + "attribute vec4 a_Position;"
+                    + "varying vec3 v_Position;"
+
+                    + "attribute vec2 a_TexCoordinate;"
+                    + "varying vec2 v_TexCoordinate;"
+
+
+                    //+ "uniform vec1 n_Lights;"
+                    //+ "uniform vec3 v_Light[n_Lights.x];"        // Vector from the Light to the Tile
+                    //+ "uniform vec4 v_Light_color[n_Lights.x];"
+
+
+
+
+                    + "void main(){"
+
+                    + "v_Position = vec3(u_MVMatrix * a_Position);"
+
+                    + "v_TexCoordinate = a_TexCoordinate;"
+
+                    + "gl_Position = u_MVPMatrix * a_Position;"
+
+                    + "}";
+
+    final String per_pixel_fragment_shader =
+            "precision mediump float;" + "uniform sampler2D u_Texture;\n"    // The input texture
+                    + "uniform sampler2D n_Texture;\n"
+
+                    + "uniform vec1 n_Lights;"
+
+                    + "uniform vec3 v_Light"//[n_Lights.x];"        // Vector from the Light to the Tile
+
+                    + "uniform vec4 v_Light_color"//[n_Lights.x];"
+
+                    + "uniform vec3 v_Tile;"
+
+                    + "varying vec2 v_TexCoordinate;"  // interpolated Texture coordinate same for texture and normaltexture
+
+                    + "float brightness;"
+
+                    + "vec4 color_vec;"
+
+                    + "vec3 vec_normalTex;"
+
+                    + "float dist;"
+
+                    + "const float levels = -7.0;"
+
+
+                    + "void main()" + "{"
+
+
+
+                    + "float distance = length(v_Light - v_Tile - vec3(v_TexCoordinate,0));"// Get a lighting direction vector from the light to the vertex.\n"
+
+                    + "float distancepixel = length(vec2(v_Light - v_Tile - vec3(v_TexCoordinate,0)));"// Get a lighting direction vector from the light to the vertex.\n"
+
+                    + "vec3 lightVector = normalize(v_Light - v_Tile - vec3(v_TexCoordinate,0));"
+
+                    + "vec_normalTex = vec3(texture2D(n_Texture, v_TexCoordinate))-0.5;"
+
+                    + "float diffuse = max(dot(vec_normalTex, lightVector), 0.0);" // 0 to 1
+
+                    + "diffuse = (diffuse * (1.0 / (1.0 + (0.05 * distance))) + 0.2);" // + 0.5 * (1.0 / (1.0 + (0.005 * distance)))
+
+                    + "vec4 colorvec = (diffuse * texture2D(u_Texture, v_TexCoordinate));" //diffuse*
+
+                    + "float diff2 = (1.0/(1.0+10.0*distancepixel));"
+
+                    + "colorvec = colorvec+colorvec * diff2;"
+
+                    + "colorvec = colorvec + vec4(1,1,0,1) * diff2;" + "if(levels > 0.0){"
+                    + "colorvec = floor(colorvec * levels)/levels;"
+                    + "}" +
+                    "gl_FragColor = colorvec;"
+                    + "}";
+    /**/
+
+
+    /**multiple Lights: */
+/*/
+    final String per_pixel_fragment_shader =
+            "precision mediump float;"
+
+                    + "uniform sampler2D u_Texture;\n"    // The input texture
+
+                    + "uniform sampler2D n_Texture;\n"
+
+                    + "uniform vec3 v_Light;"         // Vec3 Position Light
+
+                    + "uniform vec4 v_Light_color;"   // Vec4 Color of the Light
+
+                    + "uniform vec3 v_Tile;"
+
+                    + "varying vec2 v_TexCoordinate;\n"  // interpolated Texture coordinate same for texture and normaltexture
+
+                    + "float brightness;" + "\n"
+
+                    + "vec4 color_vec;"
+
+                    + "vec3 vec_normalTex;"
+
+                    + "float dist;"
+
+                    + "const float levels = -7.0;"
+
+
+                    + "void main() {\n"
+
+
+                    + "colorvec = texture2D(u_Texture, v_TexCoordinate);" // Color of the Texture without changes
+
+                    + "vec_normalTex = vec3(texture2D(n_Texture, v_TexCoordinate))-0.5;"
+
+                    + "vec3 Tex_Coord = vec3(v_TexCoordinate,0);"
+
+
+
+
+
+                    //+" for(int i = 0; i < v_Light.length();i++){" //v_Light.length()/3.0
+
+                    +    "vec3 Light_vec = vec3(1.0f);"//vec3(v_Light[i*3.0],v_Light[i*3.0 + 1.0], v_Light[i*3.0 + 2.0]);"
+
+                    +    "vec4 Light_color = vec4(1.0);"//vec4(v_Light_color[i * 4.0],v_Light_color[i * 4.0 + 1.0],v_Light_color[i * 4.0 + 2.0],v_Light_color[i * 4.0 + 3.0])"
+
+
+
+
+                    +    "vec3 Light_Tile = Light_vec - v_Tile - Tex_Coord;"
+
+
+                    +    "float distance = length(Light_Tile);"// Get a lighting direction vector from the light to the vertex.\n"
+
+                    +    "float distancepixel = length(vec2(Light_Tile));"// Get a lighting direction vector from the light to the vertex.\n"
+
+                    +    "vec3 lightVector = normalize(Light_Tile);"
+
+
+
+                    +    "float diffuse = max(dot(vec_normalTex, lightVector), 0.0);" // 0 to 1
+
+                    +    "diffuse = (diffuse * (1.0 / (1.0 + (0.05 * distance))) + 0.2);" // + 0.5 * (1.0 / (1.0 + (0.005 * distance)))
+
+                    +    "colorvec = (diffuse * colorvec);"
+
+                    +    "float diff2 = (1.0/(1.0+10.0*distancepixel));"
+
+                    +    "colorvec = colorvec+colorvec * diff2;"
+                            //+"}"
+                    +    "colorvec = colorvec + vec4(1,1,0,1) * diff2;" +
+
+                    "if(levels > 0.0){"
+                    + "colorvec = floor(colorvec * levels)/levels;"
+                    + "}" +
+
+                    //"}"+
+
+
+                    "gl_FragColor = colorvec;\n" // Multiply the color by the diffuse illumination level and texture value to get final output color.\n"
+                    + "}";
+/**/
+
 
     int Program[] = new int[2];
 
@@ -489,12 +741,17 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
 
         //TILETEXTURE.updateTextures();        // working
         //TILETEXTURE.updateTexturesNormals(); // working
-        for (int i = 0; i < 40; i++) {
+        for (int i = 0; i < MATERIALSTOTEXTURE; i++) {
             TILETEXTURE.UpdateMaterialTexture(i);
             TILETEXTURE.UpdateMaterialNormalTexture(i);
         }
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+
+        LIGHTS.add(new PointLight(new Vector(10,10).multiplydouble(TILESIZE),Color.argb(255,255,255,1)));
+        LIGHTS.add(new PointLight(new Vector(10,-10).multiplydouble(TILESIZE),Color.argb(255,255,0,1)));
+        LIGHTS.add(new PointLight(new Vector(-10,-10).multiplydouble(TILESIZE),Color.argb(0,255,255,1)));
+        LIGHTS.add(new PointLight(new Vector(-10,10).multiplydouble(TILESIZE),Color.argb(255,0,255,1)));
     }
 
 
@@ -529,6 +786,11 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
     @Override
     public void onDrawFrame(GL10 glUnused) {
 
+        UIUPDATING = true;
+
+        TestLoops();
+
+
         GLES20.glUseProgram(Program[0]);
 
         camera.UpdateEye2D();
@@ -541,10 +803,10 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
         //TODO Parallel thread that always saves all the visible Tiles, if not, the renderer is slower :(
 
 
-        ArrayList<Tile> visible = KDTREE.getVisibleTilesInCurrentTree(); // KDTREECOPY
+        //ArrayList<Tile> visible = KDTREE.getVisibleTilesInCurrentTree(); // KDTREECOPY
 
 
-        Log.d("Tiles: ", String.valueOf(visible.size()));
+        Log.d("Tiles: ", String.valueOf(VISIBLETILES.size()));
 
 
         Vector Cal = new Vector();
@@ -554,9 +816,14 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
         mTextureUniformHandle = GLES20.glGetUniformLocation(Program[0], "u_Texture");
         TextureUniformHandleNormal = GLES20.glGetUniformLocation(Program[0], "n_Texture");
 
-        //LightUniformHandle = GLES20.glGetAttribLocation(Program[0],"a_Light");
-        //LightUniformHandle = GLES20.glGetAttribLocation(Program[0],"v_Light");
+
+
+        LightUniformNumberHandle = GLES20.glGetUniformLocation(Program[0],"n_Lights");
         LightUniformHandle = GLES20.glGetUniformLocation(Program[0], "v_Light");
+        LightColorUniformHandle = GLES20.glGetUniformLocation(Program[0], "v_Light_Color");
+
+
+
         PositionTileUniformHandle = GLES20.glGetUniformLocation(Program[0], "v_Tile");
 
 
@@ -576,16 +843,22 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
         FloatBuffer mSquareTextureCoordinates;
         mSquareTextureCoordinates = ByteBuffer.allocateDirect(cubeTextureCoordinateData.length * mBytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer();
         mSquareTextureCoordinates.put(cubeTextureCoordinateData).position(0);
+
+
         // Pass in the texture coordinate information
         mSquareTextureCoordinates.position(0);
         GLES20.glVertexAttribPointer(mTextureCoordinateHandle, mTextureCoordinateDataSize, GLES20.GL_FLOAT, false, 0, mSquareTextureCoordinates);
         GLES20.glEnableVertexAttribArray(mTextureCoordinateHandle);
 
 
+
+
+        /**/
+
         Vector LightVec = camera.getEye2D(); // position of the Light
 
-        float Rotationtime = 5000.0f; // in ms
-        float Rotationdistance = 3;
+        float Rotationtime = 5000.0f; // in ms 5000
+        float Rotationdistance = 3;//3
 
         float A = SystemClock.uptimeMillis() % Rotationtime;
         float Time = A / Rotationtime; // float from 0 to 1. It takes 5s to reset
@@ -596,35 +869,78 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
         float Y = (float) (Rotationdistance * Math.cos(Math.PI * 2 * Time)); // rotating point in a distance of 5 tiles / units
 
 
-        //X = 0;
-        //Y = 0;
-
         float[] LightPositionData = {(float) (LightVec.getValue(0) / TILESIZE) + X, (float) (LightVec.getValue(1) / TILESIZE) + Y, 10.0f / TILESIZE}; // light x, y, z
         GLES20.glUniform3f(LightUniformHandle, LightPositionData[0], LightPositionData[1], LightPositionData[2]);
+        float[] LightColorData = { CUSTOM_BUTTON_SEEKBAR_RED, CUSTOM_BUTTON_SEEKBAR_GREEN, CUSTOM_BUTTON_SEEKBAR_BLUE}; // light x, y, z
+        GLES20.glUniform4f(LightColorUniformHandle,LightColorData[0],LightColorData[1],LightColorData[2],1);
 
 
-        for (int i = 0; i < visible.size(); i++) {
+
+        /*/
+
+
+        GLES20.glUniform1f(LightUniformNumberHandle,LIGHTS.size());
+
+
+        float[] LightCoordinates = new float[LIGHTS.size() * 3];
+        float[] LightColors = new float[LIGHTS.size() * 4];
+
+        for (int i = 0; i < LIGHTS.size();i++){
+            LightCoordinates[i*3    ] = (float)LIGHTS.get(i).getPositionvec().getX()/ TILESIZE;
+            LightCoordinates[i*3 + 1] = (float)LIGHTS.get(i).getPositionvec().getY()/ TILESIZE;
+            LightCoordinates[i*3 + 2] = (float)10.0f / TILESIZE;//LIGHTS.get(i).getPositionvec().getZ();
+
+            LightColors[i*4    ] = ((float)Color.red(LIGHTS.get(i).getColorint())/255.0f);
+            LightColors[i*4 + 1] = ((float)Color.green(LIGHTS.get(i).getColorint())/255.0f);
+            LightColors[i*4 + 2] = ((float)Color.blue(LIGHTS.get(i).getColorint())/255.0f);
+            LightColors[i*4 + 3] = ((float)Color.alpha(LIGHTS.get(i).getColorint())/255.0f);
+
+        }
+
+        FloatBuffer mLightCoordinates;
+        mLightCoordinates = ByteBuffer.allocateDirect(LightCoordinates.length * mBytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        mLightCoordinates.put(LightCoordinates).position(0);
+
+
+        FloatBuffer mLightColors;
+        mLightColors = ByteBuffer.allocateDirect(LightColors.length * mBytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        mLightColors.put(LightColors).position(0);
+
+        //GLES20.glGetUniformfv(Program[0],LightUniformHandle,LightCoordinates,0);
+
+        GLES20.glUniform3fv(LightUniformHandle,LIGHTS.size(),mLightCoordinates);
+        GLES20.glUniform4fv(LightColorUniformHandle,LIGHTS.size(),LightColors,0);
+
+
+/**/
+
+
+
+
+        for (int i = 0; i < VISIBLETILES.size(); i++) {
+
             try {
+                if (VISIBLETILES.get(i).isOnScreen()) {
+
+                    Cal = Cal.getScreencoordinatesFromTileCoordinates(VISIBLETILES.get(i).getPosition());
 
 
-                Cal = Cal.getScreencoordinatesFromTileCoordinates(visible.get(i).getPosition());
+                    float left = (float) Cal.getValue(0);//(float) visible.get(i).getPositionRAW().getX() * Scale;//width / height;
+                    float top = (float) Cal.getValue(1);//(float) visible.get(i).getPositionRAW().getY() * Scale;
+                    float right = (float) Cal.getValue(0) + TILESIZEzoom;//(float) (visible.get(i).getPositionRAW().getX() + 1) * Scale;
+                    float bottom = (float) Cal.getValue(1) + TILESIZEzoom;//(float) (visible.get(i).getPositionRAW().getY() + 1) * Scale;
 
 
-                float left = (float) Cal.getValue(0);//(float) visible.get(i).getPositionRAW().getX() * Scale;//width / height;
-                float top = (float) Cal.getValue(1);//(float) visible.get(i).getPositionRAW().getY() * Scale;
-                float right = (float) Cal.getValue(0) + TILESIZEzoom;//(float) (visible.get(i).getPositionRAW().getX() + 1) * Scale;
-                float bottom = (float) Cal.getValue(1) + TILESIZEzoom;//(float) (visible.get(i).getPositionRAW().getY() + 1) * Scale;
+                    left = 2 * ((left / WIDTHSCREEN) * 2 - 1);
+                    top = 2 * (1 - (top / HEIGHTSCREEN) * 2);
+                    right = 2 * ((right / WIDTHSCREEN) * 2 - 1);
+                    bottom = 2 * (1 - (bottom / HEIGHTSCREEN) * 2);
 
-
-                left = 2 * ((left / WIDTHSCREEN) * 2 - 1);
-                top = 2 * (1 - (top / HEIGHTSCREEN) * 2);
-                right = 2 * ((right / WIDTHSCREEN) * 2 - 1);
-                bottom = 2 * (1 - (bottom / HEIGHTSCREEN) * 2);
-
-                try {
-                    drawTexture(left, top, right, bottom, visible.get(i).getIDint(), visible.get(i).getMaterial(), visible.get(i).getPosition());
-                } catch (Exception e) {
-                    Log.d("Render Texture: ", e + "");
+                    try {
+                        drawTextureLight(left, top, right, bottom, VISIBLETILES.get(i).getIDint(), VISIBLETILES.get(i).getMaterial(), VISIBLETILES.get(i).getPosition());
+                    } catch (Exception e) {
+                        Log.d("Render Texture: ", e + "");
+                    }
                 }
             } catch (Exception e) {
                 Log.d("KDTREE: ", "Tile null error");
@@ -638,51 +954,32 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
 
         GLES20.glUseProgram(Program[1]);
 
+
+        /*/
         for (CustomButtons CB : CUSTOMBUTTONSLIST) {
             drawSquare(CB.getLeft(), CB.getTop(), CB.getRight(), CB.getBottom(), CB.getColor());
+        }/**/
+
+        for (int j = 0; j < CUSTOMBUTTONSLIST.size(); j++) {
+            ArrayList<Rect> Boxes = CUSTOMBUTTONSLIST.get(j).getBoxes();
+            ArrayList<Integer> BoxesColor = CUSTOMBUTTONSLIST.get(j).getColors();
+            for (int i = 0; i < Boxes.size(); i++) {
+                drawSquare(Boxes.get(i).left/128.0f, Boxes.get(i).top/128.0f, Boxes.get(i).right/128.0f, Boxes.get(i).bottom/128.0f,BoxesColor.get(i)); // BoxesColor.get(i)
+            }
         }
+
+
         GLES20.glDisableVertexAttribArray(mPositionHandle);
         GLES20.glDisableVertexAttribArray(mColorHandle);
         GLES20.glDisableVertexAttribArray(mTextureCoordinateHandle);
         GLES20.glDisableVertexAttribArray(mPositionHandle);
         GLES20.glDisableVertexAttribArray(LightUniformHandle);
+        GLES20.glDisableVertexAttribArray(LightColorUniformHandle);
         GLES20.glDisableVertexAttribArray(mMVPMatrixHandle);
 
 
-        //GLES20.glFlush();
     }
 
-
-    /**
-     * Draws a triangle from the given vertex data.
-     *
-     * @param aTriangleBuffer The buffer containing the vertex data.
-     */
-    /*/
-    private void drawTriangle(final FloatBuffer aTriangleBuffer) {
-        // Pass in the position information
-        aTriangleBuffer.position(mPositionOffset);
-        GLES20.glVertexAttribPointer(mPositionHandle, mPositionDataSize, GLES20.GL_FLOAT, false, mStrideBytes, aTriangleBuffer);
-
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
-
-        // Pass in the color information
-        aTriangleBuffer.position(mColorOffset);
-        GLES20.glVertexAttribPointer(mColorHandle, mColorDataSize, GLES20.GL_FLOAT, false, mStrideBytes, aTriangleBuffer);
-
-        GLES20.glEnableVertexAttribArray(mColorHandle);
-
-        // This multiplies the view matrix by the model matrix, and stores the result in the MVP matrix
-        // (which currently contains model * view).
-        Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, mModelMatrix, 0);
-
-        // This multiplies the modelview matrix by the projection matrix, and stores the result in the MVP matrix
-        // (which now contains model * view * projection).
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
-
-        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3);
-    }/**/
 
     /**
      * Draws a square / rect on the glsurface / screen using the shader and opengl coordinates
@@ -746,18 +1043,7 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
     }
 
 
-    /**
-     * This will be used to pass in model normal information.
-     */
-    private int mNormalHandle;
-
-
-    /**
-     * Size of the normal data in elements.
-     */
-    private final int mNormalDataSize = 3;
-
-    private void drawTexture(float left, float top, float right, float bottom, int ID, int Materialint, Vector Position) { // 6 Values = 2 Triangles
+    private void drawTextureLight(float left, float top, float right, float bottom, int ID, int Materialint, Vector Position) { // 6 Values = 2 Triangles
 
 
         TextureDataHandleNormal = TILETEXTURE.getTextureNormals(ID, Materialint);//TILETEXTURE.getTexture(ID, Materialint);
@@ -829,6 +1115,70 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
     }
 
 
+    private void drawTexture(float left, float top, float right, float bottom, int ID, int Materialint) { // 6 Values = 2 Triangles
+
+
+        TextureDataHandleNormal = TILETEXTURE.getTextureNormals(ID, Materialint);//TILETEXTURE.getTexture(ID, Materialint);
+        // Bind the texture to this unit.
+
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+
+
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, TextureDataHandleNormal);
+
+        // Tell the texture uniform sampler to use this texture in the shader by binding to texture unit 0.
+        GLES20.glUniform1i(TextureUniformHandleNormal, 0);
+
+
+        mTextureDataHandle = TILETEXTURE.getTexture(ID, Materialint);/**/
+
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
+
+        // Bind the texture to this unit.
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle);
+
+        // Tell the texture uniform sampler to use this texture in the shader by binding to texture unit 0.
+        GLES20.glUniform1i(mTextureUniformHandle, 1);
+
+        //TODO Make working draw Texture class with new shaders to be able to draw textured buttons later
+
+        /** Store our model data in a float buffer. */
+
+        float[] squarePositionData = {left, bottom, 0.0f, left, top, 0.0f, right, top, 0.0f, right, bottom, 0.0f, right, top, 0.0f, left, bottom, 0.0f};
+
+
+        FloatBuffer mSquarePositions = ByteBuffer.allocateDirect(squarePositionData.length * mBytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        mSquarePositions.put(squarePositionData).position(0);
+
+        // Pass in the position information
+        mSquarePositions.position(0);
+        GLES20.glVertexAttribPointer(mPositionHandle, mPositionDataSize, GLES20.GL_FLOAT, false, 0, mSquarePositions);
+        GLES20.glEnableVertexAttribArray(mPositionHandle);
+
+
+        // This multiplies the view matrix by the model matrix, and stores the result in the MVP matrix
+        // (which currently contains model * view).
+        Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, mModelMatrix, 0);
+
+        //// Pass in the modelview matrix.
+        //GLES20.glUniformMatrix4fv(mMVMatrixHandle, 1, false, mMVPMatrix, 0);
+
+        // This multiplies the modelview matrix by the projection matrix, and stores the result in the MVP matrix
+        // (which now contains model * view * projection).
+        Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
+
+        // Pass in the combined matrix.
+        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
+
+        // Draw the cube.
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
+    }
+
+    /**
+     * Passes the number of Lights into the fragment shader
+     */
+    private int LightUniformNumberHandle;
+
     /**
      * This will be used to pass in the Tile itself.
      */
@@ -838,6 +1188,12 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
      * This will be used to pass in the light(s).
      */
     private int LightUniformHandle;//
+
+
+    /**
+     * This will be used to pass in the light(s) Color.
+     */
+    private int LightColorUniformHandle;
 
     /**
      * This will be used to pass in the texture.
@@ -867,10 +1223,6 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
      * This is a handle to our textures normal data.
      */
     private int TextureDataHandleNormal;
-    /**
-     * This is a handle to our cube shading program.
-     */
-    private int mProgramHandle;
 
 
     private int createProgram(String vertexShader, String fragmentShader) {
@@ -966,5 +1318,23 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
 
 
         return programHandle;
+    }
+
+
+
+    private void TestLoops() { // Now updates all the Animations
+
+        for (int i = 0; i < MATERIALARRAY.length; i++) { //TODO Updates the Texture if the Material has an Animation in a different, parallel Thread!
+            try {
+                if (MATERIALARRAY[i].hasAnimation()) {
+                    TILETEXTURE.deleteTextures(i); // Both working perfectly!!
+                    TILETEXTURE.updateTextures(i); // Both working perfectly!!
+
+                }
+            } catch (Exception e) {
+
+            }
+        }
+
     }
 }

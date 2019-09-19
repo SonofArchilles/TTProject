@@ -17,19 +17,7 @@ import com.jacobjacob.ttproject.Vector;
 
 import java.util.ArrayList;
 
-import static com.jacobjacob.ttproject.Util.CONTEXT;
-import static com.jacobjacob.ttproject.Util.MATERIALARRAY;
-import static com.jacobjacob.ttproject.Util.MATERIALLIST;
-import static com.jacobjacob.ttproject.Util.MATERIALLISTUPDATING;
-import static com.jacobjacob.ttproject.Util.MATERIALNORMALS;
-import static com.jacobjacob.ttproject.Util.PLACETILE;
-import static com.jacobjacob.ttproject.Util.TEXTUREWIDTH;
-import static com.jacobjacob.ttproject.Util.TILELAYER;
-import static com.jacobjacob.ttproject.Util.TILELAYERSTART;
-import static com.jacobjacob.ttproject.Util.TILESIZE;
-import static com.jacobjacob.ttproject.Util.TILESIZEORIGINAL;
-import static com.jacobjacob.ttproject.Util.TILESIZETEXTURE;
-import static com.jacobjacob.ttproject.Util.TILESOFSINGLEKIND;
+import static com.jacobjacob.ttproject.Util.*;
 
 
 public class LoadTexture { //rgb

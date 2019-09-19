@@ -4,10 +4,7 @@ import com.jacobjacob.ttproject.Tile.Tile;
 
 import java.util.ArrayList;
 
-import static com.jacobjacob.ttproject.Util.FRAMES;
-import static com.jacobjacob.ttproject.Util.NOISE;
-import static com.jacobjacob.ttproject.Util.TILESIZE;
-import static com.jacobjacob.ttproject.Util.camera;
+import static com.jacobjacob.ttproject.Util.*;
 
 public class Generate {
 

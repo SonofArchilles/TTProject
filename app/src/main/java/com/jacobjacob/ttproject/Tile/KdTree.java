@@ -8,13 +8,7 @@ import com.jacobjacob.ttproject.Vector;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static com.jacobjacob.ttproject.Util.HEIGHTSCREEN;
-import static com.jacobjacob.ttproject.Util.KDTREEMAXITEMS;
-import static com.jacobjacob.ttproject.Util.TILESIZE;
-import static com.jacobjacob.ttproject.Util.WIDTHSCREEN;
-import static com.jacobjacob.ttproject.Util.ZOOMFACTOR;
-import static com.jacobjacob.ttproject.Util.camera;
-
+import static com.jacobjacob.ttproject.Util.*;
 public class KdTree {
 
     private ArrayList<Tile> TilesInCurrentTree;
@@ -69,7 +63,7 @@ public class KdTree {
     public void addTilesInCurrentTree(ArrayList<Tile> tilesInCurrentTree) {
         try {
             this.TilesInCurrentTree.addAll(tilesInCurrentTree);
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -144,7 +138,7 @@ public class KdTree {
                 Split();
             }
             //KDTREECURRENTLYBUILDING = false;
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -268,14 +262,17 @@ public class KdTree {
 
         if (this.hasChildren) {
             // Checks own Visibility
-            Rect Screenboundaries = new Rect(0, 0, WIDTHSCREEN, HEIGHTSCREEN);
-
 
             Vector a = new Vector(this.BoundaryOld.left, this.BoundaryOld.top).multiplydouble(TILESIZE);
             Vector b = new Vector(this.BoundaryOld.right, this.BoundaryOld.bottom).multiplydouble(TILESIZE);
 
             a = a.getScreencoordinatesFromTileCoordinates(a);
             b = b.getScreencoordinatesFromTileCoordinates(b);
+
+            int boundaryextra = (int) b.subtract(a).getValue(0);
+
+            Rect Screenboundaries = new Rect(-boundaryextra * 5, -boundaryextra * 5, WIDTHSCREEN + boundaryextra * 5, HEIGHTSCREEN + boundaryextra * 5);
+
 
             Rect CURRENTOnScreen = new Rect((int) a.getValue(0), (int) a.getValue(1), (int) b.getValue(0), (int) b.getValue(1));
 
@@ -286,21 +283,21 @@ public class KdTree {
                     for (int i = 0; i < this.Children.size(); i++) {
                         try {
                             returnTilesfromChildren.addAll(this.Children.get(i).getVisibleTilesInCurrentTree());
-                        }catch (Exception e){
-                            Log.d("KDTREE","CHILD = null" + e);
+                        } catch (Exception e) {
+                            Log.d("KDTREE", "CHILD = null" + e);
                         }
                     }
                 }
             }
         } else {
             try {
-                for (int i = 0; i < this.TilesInCurrentTree.size();i++) {
-                    if (this.TilesInCurrentTree.get(i).isOnScreen()){
+                for (int i = 0; i < this.TilesInCurrentTree.size(); i++) {
+                    if (this.TilesInCurrentTree.get(i).isOnScreen()) {
                         returnTilesfromChildren.add(this.TilesInCurrentTree.get(i));
                     }
                 }
                 //returnTilesfromChildren.addAll(this.TilesInCurrentTree);
-            }catch (Exception e){
+            } catch (Exception e) {
 
             }
         }

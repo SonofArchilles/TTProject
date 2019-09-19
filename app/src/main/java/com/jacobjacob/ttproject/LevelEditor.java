@@ -1,32 +1,14 @@
 package com.jacobjacob.ttproject;
 
 import android.graphics.Rect;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.jacobjacob.ttproject.Tile.Tile;
 
 import java.util.ArrayList;
 
-import static com.jacobjacob.ttproject.Util.CHUNKCOLOR;
-import static com.jacobjacob.ttproject.Util.FILLTILECOLOR;
-import static com.jacobjacob.ttproject.Util.FRAMES;
-import static com.jacobjacob.ttproject.Util.HEIGHTSCREEN;
-import static com.jacobjacob.ttproject.Util.INVENTORY;
-import static com.jacobjacob.ttproject.Util.INVENTORYDISPLAYSIZE;
-import static com.jacobjacob.ttproject.Util.INVENTORYSELECTTILECOLOR;
-import static com.jacobjacob.ttproject.Util.INVENTORYSIZE;
-import static com.jacobjacob.ttproject.Util.INVENTORYVERTICAL;
-import static com.jacobjacob.ttproject.Util.KDTREE;
-import static com.jacobjacob.ttproject.Util.KDTREECOPYING;
-import static com.jacobjacob.ttproject.Util.MATERIALARRAY;
-import static com.jacobjacob.ttproject.Util.MAXFILLTILES;
-import static com.jacobjacob.ttproject.Util.RF;
-import static com.jacobjacob.ttproject.Util.SELECTEDIDINVENTORY;
-import static com.jacobjacob.ttproject.Util.STARTINGMATERIAL;
-import static com.jacobjacob.ttproject.Util.TEXTUREWIDTH;
-import static com.jacobjacob.ttproject.Util.TILESIZE;
-import static com.jacobjacob.ttproject.Util.UPDATEVIEW;
-import static com.jacobjacob.ttproject.Util.WF;
-import static com.jacobjacob.ttproject.Util.WIDTHSCREEN;
+import static com.jacobjacob.ttproject.Util.*;
 
 
 public class LevelEditor {
@@ -278,6 +260,9 @@ public class LevelEditor {
 
         ArrayList<Tile> AllTiles = KDTREE.getTilesInCurrentTree();
 
+        Log.d("LevelEditor SaveFile","Number of Tiles to save: " + String.valueOf(AllTiles.size()));
+
+
         for (int i = 0; i < AllTiles.size(); i++) {
             Tile thisTile = AllTiles.get(i);
             String currentTile = (int) thisTile.getPositionRAW().getValue(0) + " " + (int) thisTile.getPositionRAW().getValue(1) + " " + (int) thisTile.getIDint() + " " + (int) thisTile.getFrames() + " " + (int) thisTile.getMaterial() + " " + (int) thisTile.getStarttime();
@@ -302,6 +287,9 @@ public class LevelEditor {
 
         String TilestoSave = String.valueOf(Tiles);
         //int a = 4;
+
+        Log.d("SaveString",TilestoSave);
+
         WF.WriteFile(TilestoSave);
     }
 

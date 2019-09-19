@@ -5,13 +5,7 @@ import android.graphics.Rect;
 
 import com.jacobjacob.ttproject.Vector;
 
-import static com.jacobjacob.ttproject.Util.HEIGHT;
-import static com.jacobjacob.ttproject.Util.HEIGHTSCREEN;
-import static com.jacobjacob.ttproject.Util.TILESIZE;
-import static com.jacobjacob.ttproject.Util.TILETEXTURE;
-import static com.jacobjacob.ttproject.Util.WIDTHSCREEN;
-import static com.jacobjacob.ttproject.Util.ZOOMFACTOR;
-import static com.jacobjacob.ttproject.Util.camera;
+import static com.jacobjacob.ttproject.Util.*;
 
 //import static com.jacobjacob.ttproject.MainActivity.uHandeler;
 
