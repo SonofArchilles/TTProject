@@ -788,8 +788,11 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
 
         UIUPDATING = true;
 
+        /*/
         TestLoops();
-
+        /*/
+        TestLoops2();
+        /**/
 
         GLES20.glUseProgram(Program[0]);
 
@@ -1343,6 +1346,22 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
             }
             if (TestUPDATEMATERIALS && UPDATERELOADEDMATERIALS) {
                 UPDATERELOADEDMATERIALS = false;
+            }
+        }
+
+    }
+    private void TestLoops2() { // Now updates all the Animations that are visible on Screen!
+
+        //boolean TestUPDATEMATERIALS = UPDATERELOADEDMATERIALS;
+
+        if (AnimationsToUpdate.size() > 0) {
+            for (int i = 0; i < AnimationsToUpdate.size(); i++) { //TODO Updates the Texture if the Material has an Animation in a different, parallel Thread!
+                try {
+                    TILETEXTURE.deleteTextures(AnimationsToUpdate.get(i)); // Both working perfectly!!
+                    TILETEXTURE.updateTextures(AnimationsToUpdate.get(i)); // Both working perfectly!!
+                }catch (Exception e){
+                    Log.d("MainRendererTestLoops2","Out of Bounds");
+                }
             }
         }
 

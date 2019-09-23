@@ -483,4 +483,24 @@ public class CustomButtons {
         UpdateBox();
     }
 
+    /**
+     * Flips the Width and Height of the Button, but keeps the Position.
+     * Previous changes like top to bottom of have to be redone, they are ignored
+     *
+     *
+     *  ____
+     * |    |       FLIP!
+     * |    |            ___________
+     * |    |   ===\\   |           |
+     * |    |   ===//   |___________|
+     * |____|
+     */
+    public void FlipOrientation(){
+
+        float old_Width = this.Width;
+        this.Width = this.Height;
+        this.Height = old_Width;
+        UpdateBox();
+    }
+
 }

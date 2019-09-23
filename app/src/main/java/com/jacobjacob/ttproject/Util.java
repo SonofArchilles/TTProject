@@ -179,8 +179,11 @@ public class Util {
     public static Material STARTINGMATERIAL = new Material(1, 0, 0, 0, Color.argb(255, 120, 170, 100), Color.argb(255, 174, 160, 108), Color.argb(255, 10, 255, 255));
     public static boolean UPDATETILESET = false;
 
-    public static boolean CREATEFASTNORMALS = false; /** false = every Tile gets its uniquely generated normal map, true = rotated normal maps, is maybe 3x faster/**/
+    public static boolean CREATEFASTNORMALS = true; /** false = every Tile gets its uniquely generated normal map, true = rotated normal maps, is maybe 3x faster/**/
     public static float NORMALSTRENGTH = 0.1f; //0.5f // 0.2
+
+
+    public static ArrayList<Integer> AnimationsToUpdate; // int array of all the Materials on screen that have animations themselves
 
     public static int MATERIALSTOTEXTURE = 60; /** Number of Materials that should be loaded into textures for Opengl*/
     public static boolean MATERIALSTOTEXTURELOADING;

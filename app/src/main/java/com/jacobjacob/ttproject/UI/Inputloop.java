@@ -1,5 +1,7 @@
 package com.jacobjacob.ttproject.UI;
 
+import android.util.Log;
+
 import com.jacobjacob.ttproject.Tile.Tile;
 
 import java.util.ArrayList;
@@ -9,28 +11,40 @@ import static com.jacobjacob.ttproject.Util.*;
 
 public class Inputloop {
 
-    public Inputloop() { }
+    public Inputloop() {
+    }
 
     ArrayList<Tile> visible = new ArrayList<>();
+    ArrayList<Integer> animations = new ArrayList<>();
+
 
     public void start() {
         while (UIRUNNING) {
             if (UIUPDATING) {
                 UIUPDATING = false; // makes sure the thread only updates when a frame is drawn
-                VISIBLETILES  = visible;
-                //TOUCHCUSTOMBUTTONS = false; // Doesen't update the inventory or buttonplacement if not necessary
+                VISIBLETILES = visible;
+                AnimationsToUpdate = animations;
 
                 //TODO remove slow loading edges
 
+                animations = new ArrayList<>();
 
+                for (int i = 0; i < visible.size();i++){
+                    if (MATERIALARRAY[visible.get(i).getMaterial()].hasAnimation() && !animations.contains(visible.get(i).getMaterial())){
+                        animations.add(visible.get(i).getMaterial());//MATERIALARRAY[i].getNumber());
+                    }
+                }
+                for (int i = 0; i < animations.size();i++){
+                    MATERIALARRAY[animations.get(i)].UpdateTileset();
+                    MATERIALLIST[animations.get(i)] = MATERIALLISTUPDATING[animations.get(i)];
+                }
+
+
+
+                if (!RELOADMATERIALS) {
                     for (int i = 0; i < MATERIALARRAY.length; i++) { //TODO Updates the Texture if the Material has an Animation in a different, parallel Thread!
                         try {
-                            if (!RELOADMATERIALS) {
-                                if (MATERIALARRAY[i].hasAnimation()) {
-                                    MATERIALARRAY[i].UpdateTileset();
-                                    MATERIALLIST[i] = MATERIALLISTUPDATING[i];
-                                }
-                            }else {
+                            if (RELOADMATERIALS){
 
                                 MATERIALARRAY[i].CreateMaterialTileset();
 
@@ -40,18 +54,18 @@ public class Inputloop {
                                 MATERIALLIST[i] = MATERIALLISTUPDATING[i];
 
 
-
                                 //MATERIALNORMALS[i] = MATERIALNORMALSUPDATING[i];
                             }
                         } catch (Exception e) {
 
                         }
                     }
+                }
 
-                    if (RELOADMATERIALS){
-                        UPDATERELOADEDMATERIALS = true;
-                        RELOADMATERIALS = false;
-                    }
+                if (RELOADMATERIALS) {
+                    UPDATERELOADEDMATERIALS = true;
+                    RELOADMATERIALS = false;
+                }
 
 
                 if (TOUCHSTATE == 0) {
@@ -93,7 +107,6 @@ public class Inputloop {
         }
         UpdateTouchUp();
     }
-
 
 
     //TODO UpdateTouchMove
