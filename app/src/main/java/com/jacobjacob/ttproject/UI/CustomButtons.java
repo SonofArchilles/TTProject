@@ -15,8 +15,8 @@ public class CustomButtons {
 
     Vector Position;
     float Width, Height;
-    String Text;
-    int Type, color = Color.rgb(120, 120, 120), color2;
+    String Type,VariableToChange;
+    int  color = Color.rgb(120, 120, 120), color2;
     Rect Box;
     Rect BoxDraw;
     boolean ButtonUpdated = false;
@@ -26,48 +26,53 @@ public class CustomButtons {
     private int Accuracy = 128;
 
 
-    float left, right, top, bottom;
+    float left_Opengl, right_Opengl, top_Opengl, bottom_Opengl,left, right, top, bottom;
 
-    //TODO Button implementations and Seekbar code for r g and b as well as a and the animationtime
 
-    //TODO implement Text to compare it to variables and change them with either Progress = float, Bool or Vector for joystick
     //TODO buttonsnapping ==> Tell Button to get Placed to the right, left, top or Bottom side of one or more Buttons
 
 
     boolean[] booleansToChange = new boolean[1];
 
+
+
+
     /**
      * Create a new Button with a Position, a Width and a Height as well as a Type
      *
-     * @param Type     either a joystick or a button
+     * @param ButtonType  "Joystick" - changes the Cameraposition  "Button" - updates when pressed down "ToggleButton" - only updates when pressed once "Seekbar" - slider to adjust value
+     * @param VariableToChange The Sting of the Variables name that should be changed
      * @param Position The Position in Screenspacecoordinates and is directly at the center of the shape, could get inverted if OpenGl coordinates kick in
      * @param Width    total width from left to right of the shape
      * @param Height   total height from top to bottom
      * @param Colorint The color of the Button
      */
-    public CustomButtons(int Type, Vector Position, float Width, float Height, int Colorint) {
+    public CustomButtons(String ButtonType,String VariableToChange, Vector Position, float Width, float Height, int Colorint) {
         this.Position = Position;
         this.Width = Width;
         this.Height = Height;
-        this.Type = Type;
-        if (Type != 5) {
+
+
+        this.Type = ButtonType;
+        this.VariableToChange = VariableToChange;
+        if (Type != "Seekbar") {
             this.color = Colorint;
         }
-        float left = (float) (this.Position.getX() - (this.Width / 2));
-        float right = (float) (this.Position.getX() + (this.Width / 2));
-        float top = (float) (this.Position.getY() - (this.Height / 2));
-        float bottom = (float) (this.Position.getY() + (this.Height / 2));
+        this.left = (float) (this.Position.getX() - (this.Width / 2));
+        this.right = (float) (this.Position.getX() + (this.Width / 2));
+        this.top = (float) (this.Position.getY() - (this.Height / 2));
+        this.bottom = (float) (this.Position.getY() + (this.Height / 2));
 
-        this.Box = new Rect((int) (left), (int) (top), (int) (right), (int) (bottom));
-
-
-        this.left = 2 * ((left / WIDTHSCREEN) * 2 - 1);
-        this.top = -2 * ((top / HEIGHTSCREEN) * 2 - 1);
-        this.right = 2 * ((right / WIDTHSCREEN) * 2 - 1);
-        this.bottom = -2 * ((bottom / HEIGHTSCREEN) * 2 - 1);
+        this.Box = new Rect((int) (this.left), (int) (this.top), (int) (this.right), (int) (this.bottom));
 
 
-        this.BoxDraw = new Rect((int) (this.left * this.Accuracy), (int) (this.top * this.Accuracy), (int) (this.right * this.Accuracy), (int) (this.bottom * this.Accuracy));
+        this.left_Opengl = 2 * ((this.left / WIDTHSCREEN) * 2 - 1);
+        this.top_Opengl = -2 * ((this.top / HEIGHTSCREEN) * 2 - 1);
+        this.right_Opengl = 2 * ((this.right / WIDTHSCREEN) * 2 - 1);
+        this.bottom_Opengl = -2 * ((this.bottom / HEIGHTSCREEN) * 2 - 1);
+
+
+        this.BoxDraw = new Rect((int) (this.left_Opengl * this.Accuracy), (int) (this.top_Opengl * this.Accuracy), (int) (this.right_Opengl * this.Accuracy), (int) (this.bottom_Opengl * this.Accuracy));
         this.Colors.add(this.color);
         this.color2 = Colorint;
         this.Colors.add(this.color2);
@@ -75,50 +80,8 @@ public class CustomButtons {
     }
 
 
-    /**
-     * Create a new Button with a Position, a Width and a Height as well as a Type
-     *
-     * @param Type             either a joystick or a button
-     * @param Position         The Position in Screenspacecoordinates and is directly at the center of the shape, could get inverted if OpenGl coordinates kick in
-     * @param Width            total width from left to right of the shape
-     * @param Height           total height from top to bottom
-     * @param Colorint         The color of the Button
-     * @param BooleansToChange The Bool to change inside a List with the lenght of 1
-     */
-    public CustomButtons(int Type, Vector Position, float Width, float Height, int Colorint, boolean[] BooleansToChange) {
-        this.Position = Position;
-        this.Width = Width;
-        this.Height = Height;
-        this.Type = Type;
-        if (Type != 5) {
-            this.color = Colorint;
-        }
-
-        float left = (float) (this.Position.getX() - (this.Width / 2));
-        float top = (float) (this.Position.getY() - (this.Height / 2));
-        float right = (float) (this.Position.getX() + (this.Width / 2));
-        float bottom = (float) (this.Position.getY() + (this.Height / 2));
-
-        this.Box = new Rect((int) (left), (int) (top), (int) (right), (int) (bottom));
 
 
-        this.left = 2 * ((left / WIDTHSCREEN) * 2 - 1);
-        this.top = -2 * ((top / HEIGHTSCREEN) * 2 - 1);
-        this.right = 2 * ((right / WIDTHSCREEN) * 2 - 1);
-        this.bottom = -2 * ((bottom / HEIGHTSCREEN) * 2 - 1);
-
-        this.booleansToChange = BooleansToChange;
-
-
-        this.BoxDraw = new Rect((int) (this.left * this.Accuracy), (int) (this.top * this.Accuracy), (int) (this.right * this.Accuracy), (int) (this.bottom * this.Accuracy));
-        this.Colors.add(this.color);
-        this.color2 = Colorint;
-        this.Colors.add(this.color2);
-        this.Boxes.add(this.BoxDraw);
-    }
-
-
-    //TODO Better Buttons class. Maybe an Interface
 
     /**
      * Joystickcode to Control the Cameras x and y Values
@@ -164,7 +127,7 @@ public class CustomButtons {
         Vector PositionTouch = (TOUCHPOSITION.subtract(this.Position.subtract(new Vector(this.Width / 2, this.Height / 2)))).multiply(new Vector(1 / this.Width, 1 / Height)); // Top left - Position of Touch
 
 
-        Rect SeekBox = new Rect();
+        Rect SeekBox;
         float Scale;
         if (this.Width > this.Height) {
             this.Progress = (float) PositionTouch.getX();
@@ -197,9 +160,9 @@ public class CustomButtons {
     }
 
     public void MoveUPDOWN() {
-        if (this.Type == 1) {
+        if (this.VariableToChange == "MoveDown") {
             camera.move2D(new Vector(0, 0, movespeed / 5)); // moves the Camera down
-        } else {
+        } else if (this.VariableToChange == "MoveUp") {
             camera.move2D(new Vector(0, 0, -movespeed / 5)); // moves the Camera up
         }
     }
@@ -231,48 +194,44 @@ public class CustomButtons {
 
             TOUCHCUSTOMBUTTONS = true;
 
-            if (this.Type == 0) {
+            if (this.Type == "Joystick") {
                 CustomJoyStick();
             }
-            if (this.Type == 1 || this.Type == 2) {
+            if (this.Type == "Button") { // Button that updates always when it is pressed
                 MoveUPDOWN();
+                //TODO Add other Buttons to Update
+
+
             }
-            if (this.Type == 3) {
+            if (this.Type == "ToggleButton") {
                 if (TOUCHSTATE == 0 && !this.ButtonUpdated) { // if the touch is down, not if moving or up
                     this.ButtonUpdated = true;
 
-                    SelectLVL();
-
-                    RELOADMATERIALS = true;
-
-                }
-            }
-            if (this.Type == 4) {
-                if (TOUCHSTATE == 0 && !this.ButtonUpdated) {
-                    this.ButtonUpdated = true;
-
-                    //TODO find a way to pass the bool variables into the class and change them inside
-                    SETTINGS_OPENGL = !SETTINGS_OPENGL;
-
-                    if (SETTINGS_OPENGL) {
-                        this.Colors.set(0, FILLTILECOLOR);
-
-                        Debug newDebug = new Debug();
-                        newDebug.TilesToClippboard();
+                    if (this.VariableToChange == "SELECTLVL") {
+                        SelectLVL();
+                        RELOADMATERIALS = true;
 
 
+                    }else if (this.VariableToChange == "OPENGL"){
 
+                        SETTINGS_OPENGL = !SETTINGS_OPENGL;
 
+                        if (SETTINGS_OPENGL) {
+                            this.Colors.set(0, FILLTILECOLOR);
 
-                    } else {
-                        this.Colors.set(0, CHUNKCOLOR);
+                            Debug newDebug = new Debug();
+                            newDebug.TilesToClippboard();
+
+                        } else {
+                            this.Colors.set(0, CHUNKCOLOR);
+                        }
+                        WF.SaveSettings();
                     }
-                    WF.SaveSettings();
 
                 }
             }
 
-            if (this.Type == 5) { // Seekbar
+            if (this.Type == "Seekbar") { // Seekbar
                 CustomSeekbar();
             }
 
@@ -303,18 +262,34 @@ public class CustomButtons {
         return this.Colors;
     }
 
+    /**
+     * left in Screencoordinates
+     * @return left
+     */
     public float getLeft() {
         return this.left;
     }
 
+    /**
+     * right in Screencoordinates
+     * @return right
+     */
     public float getRight() {
         return this.right;
     }
 
+    /**
+     * top Screencoordinates
+     * @return top
+     */
     public float getTop() {
         return this.top;
     }
 
+    /**
+     * bottom in Screencoordinates
+     * @return bottom
+     */
     public float getBottom() {
         return this.bottom;
     }
@@ -322,4 +297,190 @@ public class CustomButtons {
     public int getColor() {
         return this.color;
     }
+
+    public Vector getPosition() {
+        return Position;
+    }
+
+    /**
+     * Updates the Drawn Box and the Hitbox
+     */
+    private void UpdateBox(){
+
+        this.left = (float) (this.Position.getX() - (this.Width / 2));
+        this.right = (float) (this.Position.getX() + (this.Width / 2));
+        this.top = (float) (this.Position.getY() - (this.Height / 2));
+        this.bottom = (float) (this.Position.getY() + (this.Height / 2));
+
+        this.Box = new Rect((int) (this.left), (int) (this.top), (int) (this.right), (int) (this.bottom));
+
+
+        this.left_Opengl = 2 * ((this.left / WIDTHSCREEN) * 2 - 1);
+        this.top_Opengl = -2 * ((this.top / HEIGHTSCREEN) * 2 - 1);
+        this.right_Opengl = 2 * ((this.right / WIDTHSCREEN) * 2 - 1);
+        this.bottom_Opengl = -2 * ((this.bottom / HEIGHTSCREEN) * 2 - 1);
+
+
+        this.BoxDraw = new Rect((int) (this.left_Opengl * this.Accuracy), (int) (this.top_Opengl * this.Accuracy), (int) (this.right_Opengl * this.Accuracy), (int) (this.bottom_Opengl * this.Accuracy));
+        this.Boxes.clear();
+        this.Boxes.add(this.BoxDraw);
+    }
+
+    /**
+     * Places this Button on the right side of the input Button
+     *  _           _
+     * |_| <-dist- |_|
+     *
+     * input       this Button
+     *
+     * @param LeftButton The Button to the Left of this Button
+     * @param dist Distance between the Buttons in Screen Coordinates
+     */
+    public void LeftToRightOf(CustomButtons LeftButton,float dist){
+
+        float newPositionX = LeftButton.getRight() + dist + this.Width/2;
+
+        this.Position = new Vector(newPositionX,this.Position.getY());
+        UpdateBox();
+    }
+
+
+    /**
+     * Places this Button on the left side of the input Button
+     *  _           _
+     * |_| -dist-> |_|
+     *
+     * this Button input
+     *
+     * @param RightButton The Button to the Right of this Button
+     * @param dist Distance between the Buttons in Screen Coordinates
+     */
+    public void RightToLeftOf(CustomButtons RightButton,float dist){
+
+        float newPositionX = RightButton.getLeft() - dist - this.Width/2;
+
+        this.Position = new Vector(newPositionX,this.Position.getY());
+        UpdateBox();
+    }
+
+
+    /**
+     * Places this Button on the bottom side of the input Button
+     *  _
+     * |_|  input
+     *
+     *  ^
+     *  | dist
+     *  _
+     * |_|  this Button
+     *
+     *
+     * @param TopButton The Button to the Top of this Button
+     * @param dist Distance between the Buttons in Screen Coordinates
+     */
+    public void TopToBottomOf(CustomButtons TopButton,float dist){
+
+        float newPositionY = TopButton.getBottom() + dist + this.Height/2;
+
+        this.Position = new Vector(this.Position.getX(),newPositionY);
+        UpdateBox();
+    }
+
+    /**
+     * Places this Button on the top side of the input Button
+     *  _
+     * |_|  this Button
+     *
+     *  | dist
+     *  ⌄
+     *  _
+     * |_|  input
+     *
+     *
+     * @param BottomButton The Button to the Bottom of this Button
+     * @param dist Distance between the Buttons in Screen Coordinates
+     */
+    public void BottomToTopOf(CustomButtons BottomButton,float dist){
+
+        float newPositionY = BottomButton.getTop() - dist - this.Height/2;
+
+        this.Position = new Vector(this.Position.getX(),newPositionY);
+        UpdateBox();
+    }
+
+    /**
+     * Places this Button on the Top_Height + dist of the input Button
+     *   ___________________
+     *  |                   |
+     *  _                   | dist vertical
+     * |_|  this           _|_
+     *                     |_| input Button
+     *
+     * @param TopButton The Button to the Top of this Button
+     * @param dist Distance between the Buttons in Screen Coordinates
+     */
+    public void TopToTopOf(CustomButtons TopButton,float dist){
+
+        float newPositionY = TopButton.getTop() + dist + this.Height/2;
+
+        this.Position = new Vector(this.Position.getX(),newPositionY);
+        UpdateBox();
+    }
+
+    /**
+     * Places this Button on the Bottom_Height + dist of the input Button
+     *  _
+     * |_|  this            _
+     *  |   dist vertical  |_| input Button
+     *  |___________________|
+     *
+     * @param BottomButton The Button to the Right of this Button
+     * @param dist Distance between the Buttons in Screen Coordinats
+     */
+    public void BottomToBottomOf(CustomButtons BottomButton,float dist){
+
+        float newPositionY = BottomButton.getBottom() + dist - this.Height/2;
+
+        this.Position = new Vector(this.Position.getX(),newPositionY);
+        UpdateBox();
+    }
+
+    /**
+     * Places this Button on the Bottom_Left + dist of the input Button
+     *         _
+     *  |-----|_|  this
+     *  | dist horizontal
+     *  |   _
+     *  |--|_|   input Button
+     *
+     * @param LeftButton The Button to the Right of this Button
+     * @param dist Distance between the Buttons in Screen Coordinats
+     */
+    public void LeftToLeftOf(CustomButtons LeftButton,float dist){
+
+        float newPositionX = LeftButton.getLeft() + dist + this.Width/2;
+
+        this.Position = new Vector(newPositionX,this.Position.getY());
+        UpdateBox();
+    }
+
+    /**
+     * Places this Button on the Bottom_Left + dist of the input Button
+     *         _
+     *  this  |_|-|
+     *            |  dist horizontal
+     *      _     |
+     *     |_|----|  input Button
+     *
+     * @param RightButton The Button to the Right of this Button
+     * @param dist Distance between the Buttons in Screen Coordinats
+     */
+    public void RightToRightOf(CustomButtons RightButton,float dist){
+
+        float newPositionX = RightButton.getRight() + dist - this.Width/2;
+
+        this.Position = new Vector(newPositionX,this.Position.getY());
+        UpdateBox();
+    }
+
 }

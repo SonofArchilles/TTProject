@@ -31,18 +31,26 @@ public class Inputloop {
                                     MATERIALLIST[i] = MATERIALLISTUPDATING[i];
                                 }
                             }else {
-                                MATERIALARRAY[i].UpdateTileset();
+
+                                MATERIALARRAY[i].CreateMaterialTileset();
+
+                                //MATERIALARRAY[i].UpdateTileset();
                                 MATERIALARRAY[i].CreateMaterialTilesetNormal();
 
                                 MATERIALLIST[i] = MATERIALLISTUPDATING[i];
 
-                                RELOADMATERIALS = false;
+
 
                                 //MATERIALNORMALS[i] = MATERIALNORMALSUPDATING[i];
                             }
                         } catch (Exception e) {
 
                         }
+                    }
+
+                    if (RELOADMATERIALS){
+                        UPDATERELOADEDMATERIALS = true;
+                        RELOADMATERIALS = false;
                     }
 
 
@@ -85,6 +93,8 @@ public class Inputloop {
         }
         UpdateTouchUp();
     }
+
+
 
     //TODO UpdateTouchMove
     public void UpdateTouch() {

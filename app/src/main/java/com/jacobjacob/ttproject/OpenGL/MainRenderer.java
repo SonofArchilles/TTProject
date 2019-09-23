@@ -1324,15 +1324,25 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
 
     private void TestLoops() { // Now updates all the Animations
 
+        boolean TestUPDATEMATERIALS = UPDATERELOADEDMATERIALS;
+
         for (int i = 0; i < MATERIALARRAY.length; i++) { //TODO Updates the Texture if the Material has an Animation in a different, parallel Thread!
             try {
                 if (MATERIALARRAY[i].hasAnimation()) {
                     TILETEXTURE.deleteTextures(i); // Both working perfectly!!
                     TILETEXTURE.updateTextures(i); // Both working perfectly!!
 
+                }else {
+                    if (UPDATERELOADEDMATERIALS && TestUPDATEMATERIALS){ // only loads the Bitmap to Textures if another lvl is loaded
+                        TILETEXTURE.deleteTextures(i); // Both working perfectly!!
+                        TILETEXTURE.updateTextures(i); // Both working perfectly!!
+                    }
                 }
             } catch (Exception e) {
 
+            }
+            if (TestUPDATEMATERIALS && UPDATERELOADEDMATERIALS) {
+                UPDATERELOADEDMATERIALS = false;
             }
         }
 

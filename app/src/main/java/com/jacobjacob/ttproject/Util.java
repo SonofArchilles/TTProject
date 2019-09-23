@@ -104,7 +104,9 @@ public class Util {
     public static int FRAME = 0;
     public static boolean FRAMEDRAWN = true;
 
-    public static boolean RELOADMATERIALS; // realoads all the Materials in the lvl. Ideal for changing lvls
+    public static boolean RELOADMATERIALS; // realoads all the Materials in the lvl as bitmap
+    public static boolean UPDATERELOADEDMATERIALS; // takes all the reloaded Bitmap loads them as Textures
+
 
     public static int TILESIZE;
     public static int TILESIZETEXTURE;
@@ -177,7 +179,7 @@ public class Util {
     public static Material STARTINGMATERIAL = new Material(1, 0, 0, 0, Color.argb(255, 120, 170, 100), Color.argb(255, 174, 160, 108), Color.argb(255, 10, 255, 255));
     public static boolean UPDATETILESET = false;
 
-    public static boolean CREATEFASTNORMALS = true; /** false = every Tile gets its uniquely generated normal map, true = rotated normal maps, is maybe 3x faster/**/
+    public static boolean CREATEFASTNORMALS = false; /** false = every Tile gets its uniquely generated normal map, true = rotated normal maps, is maybe 3x faster/**/
     public static float NORMALSTRENGTH = 0.1f; //0.5f // 0.2
 
     public static int MATERIALSTOTEXTURE = 60; /** Number of Materials that should be loaded into textures for Opengl*/
