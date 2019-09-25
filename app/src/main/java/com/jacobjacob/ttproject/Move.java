@@ -2,144 +2,119 @@ package com.jacobjacob.ttproject;
 
 import android.graphics.Rect;
 
-import static com.jacobjacob.ttproject.Util.camera;
+import com.jacobjacob.ttproject.Tile.Tile;
+
+import java.util.ArrayList;
+
+import static com.jacobjacob.ttproject.Util.*;
 
 
 public class Move {
 
-    Rect Tilehitbox;
-    Rect Hitbox;
-    int Collisionscale;
+    Rect Tilehitbox, OldTilehitbox;
+    Rect Hitbox, OldHitbox;
 
     public Move() {
     }
 
     public void Move(Vector direction) {
 
-        Vector directionoriginal = direction;
+        direction.setZ((float) direction.getZ() * 20);
 
-        directionoriginal.setX((float)(direction.getValue(0) / 2));
-        directionoriginal.setY((float)(direction.getValue(1) / 2));
-        directionoriginal.setZ((float)(direction.getValue(2) * 20));
 
-        //Collisionscale = 100;
-        //float HitboxWidth = 1;
-        //float HitboxHeight = 1;
-        ////float diagonal = (float) Math.sqrt(HitboxWidth * HitboxWidth + HitboxHeight * HitboxHeight);
+        float HitboxWidth = TILESIZE  - 4; // Hitbox has Width and Height of a Tile now
+        float HitboxHeight = TILESIZE - 4; // Hitbox has Width and Height of a Tile now
+        Vector Position = camera.getEye2D();
 
-        ////Log.d("Original direction", "X:" + String.valueOf(direction.getValue(0)) + "Y:" + String.valueOf(direction.getValue(1)));
 
-        //Vector Position = new Vector().getTileCoordinatesfromScreencoordinates(WIDTHSCREEN / 2, HEIGHTSCREEN / 2);
-        ////Camera is in the middle of the screen, therefore Widthscreen/2, Heightscreen/2
+        float middleX = (float) (Position.getValue(0));
+        float middleY = (float) (Position.getValue(1));
 
-        //float middleX = (float) (Position.getValue(0)/**/);/*/ + 0.5 * HitboxWidth);/**/
-        //float middleY = (float) (Position.getValue(1)/**/);/*/ + 0.5 * HitboxHeight);/**/
+        float halfWidth = HitboxWidth / 2;
+        float halfHeight = HitboxHeight / 2;
 
-        //float halfWidth = HitboxWidth / 2;
-        //float halfHeight = HitboxHeight / 2;
+        Vector HitboxCollider = direction;
+        this.Hitbox = new Rect((int) (middleX - halfWidth + HitboxCollider.getX()), (int) (middleY - halfHeight + HitboxCollider.getY()), (int) (middleX + halfWidth + HitboxCollider.getX()), (int) (middleY + halfHeight + HitboxCollider.getY()));
+        this.OldHitbox = new Rect((int) (middleX - halfWidth), (int) (middleY - halfHeight), (int) (middleX + halfWidth), (int) (middleY + halfHeight));
 
-        //Rect Hitbox = new Rect((int) (middleX - halfWidth), (int) (middleY - halfHeight), (int) (middleX + halfWidth), (int) (middleY + halfHeight));
-        //HITBOX = Hitbox;
 
-        //ArrayList<Tile> closeTiles = KDTREE.getTilesInsideBoundary(new Rect((Hitbox.left - 1), (Hitbox.top - 1), (Hitbox.right + 1), (Hitbox.bottom + 1)));
+        Rect Hitbox2 = new Rect((int) ((middleX - halfWidth) / TILESIZE), (int) ((middleY - halfHeight) / TILESIZE), (int) ((middleX + halfWidth) / TILESIZE), (int) ((middleY + halfHeight) / TILESIZE));
 
-        ////Hitbox = new Rect((int) (Collisionscale * (middleX - halfWidth)), (int) (Collisionscale * (middleY - halfHeight)), (int) (Collisionscale * (middleX + halfWidth)), (int) (Collisionscale * (middleY + halfHeight)));
-        //this.Hitbox = new Rect((int) (Collisionscale * (middleX - halfWidth)), (int) (Collisionscale * (middleY - halfHeight)), (int) (Collisionscale * (middleX + halfWidth)), (int) (Collisionscale * (middleY + halfHeight)));;
-        ////HITBOX = Hitbox;
-        //for (int i = 0; i < closeTiles.size(); i++) {
-        //    if (closeTiles.get(i).getBoundaries().intersect(Hitbox)) {
+        int Scale = 1;
+        ArrayList<Tile> closeTiles = KDTREE.getTilesInsideBoundary(new Rect((int) (Hitbox2.left) - Scale, (int) (Hitbox2.top) - Scale, (int) (Hitbox2.right) + Scale, (int) (Hitbox2.bottom) + Scale)); // TILESIZE equals 1 in the Tiles inside boundary method
+        COLLISIONTILES = closeTiles;
+        COLLIDEDTILES = new ArrayList<>();
 
-        //        Rect TileRect = new Rect(Collisionscale * closeTiles.get(i).getBoundaries().left, Collisionscale * closeTiles.get(i).getBoundaries().top, Collisionscale * closeTiles.get(i).getBoundaries().right, Collisionscale * closeTiles.get(i).getBoundaries().bottom);
-        //        this.Tilehitbox = TileRect;
-        //        direction = getNewDirection(direction);
-        //    }
 
-        //}
+        ArrayList<Rect> Hitboxes = new ArrayList<>();
 
-        //Log.d("New direction", "X:" + String.valueOf(direction.getValue(0)) + "Y:" + String.valueOf(direction.getValue(1)));
-        //Log.d("LIST SIZE", String.valueOf(closeTiles.size()));
+        Hitboxes.add(this.Hitbox);
 
-        //camera.setEye2D(direction);
-        camera.setEye2D(directionoriginal);
-    }
+        HitboxCollider = new Vector(direction.getX(), 0);
+        Hitboxes.add(new Rect((int) (middleX - halfWidth + HitboxCollider.getX()), (int) (middleY - halfHeight + HitboxCollider.getY()), (int) (middleX + halfWidth + HitboxCollider.getX()), (int) (middleY + halfHeight + HitboxCollider.getY())));
 
-    private Vector getNewDirection(Vector direction) {
-/*/
-        Vector HitboxMiddle = new Vector((this.Hitbox.left + this.Hitbox.right) / 2, (this.Hitbox.top + this.Hitbox.bottom) / 2);
-        Vector TileMiddle = new Vector((this.Tilehitbox.left + this.Tilehitbox.right) / 2, (this.Tilehitbox.top + this.Tilehitbox.bottom) / 2);
+        HitboxCollider = new Vector(0, direction.getY());
+        Hitboxes.add(new Rect((int) (middleX - halfWidth + HitboxCollider.getX()), (int) (middleY - halfHeight + HitboxCollider.getY()), (int) (middleX + halfWidth + HitboxCollider.getX()), (int) (middleY + halfHeight + HitboxCollider.getY())));
 
-        float newValue;
-        if (direction.getValue(0) != 0) {
-            if (HitboxMiddle.getValue(0) < TileMiddle.getValue(0)) { // Hitbox is left of Tile
-                if (direction.getValue(0) > 0) { // only matters if it wants to move right
-                    newValue = LeftmovingRight();
-                    if (newValue < direction.getValue(0)) {
-                        direction.setX(newValue);
 
+        HITBOX = new ArrayList<>();
+        HITBOX.addAll(Hitboxes);
+        HITBOX.add(this.OldHitbox);
+
+        for (int j = Hitboxes.size() - 1; 0 <= j; j--) {
+            for (int i = 0; i < closeTiles.size(); i++) {
+                if (closeTiles.get(i).getMaterial() == SELECTEDMATERIAL) {
+
+                    this.Tilehitbox = new Rect(TILESIZE * closeTiles.get(i).getBoundaries().left, TILESIZE * closeTiles.get(i).getBoundaries().top, TILESIZE * closeTiles.get(i).getBoundaries().right, TILESIZE * closeTiles.get(i).getBoundaries().bottom);
+                    this.OldTilehitbox = this.Tilehitbox;
+
+                    if (j == 1 || j == 2 || j == 0 && direction.getX() != 0 && direction.getY() != 0) {
+                        direction = CollideRectangle2(direction, Hitboxes.get(j), closeTiles.get(i), j);
                     }
                 }
-            } else { // Hitbox is right of Tile
-                if (direction.getValue(0) < 0) { // only matters if it wants to move left
-                    newValue = RightmovingLeft();
-                    //if (newValue > direction.getValue(0)) {
-                        direction.setX(newValue);
-                    //}
-                }
             }
-            //direction.setX((float) (direction.getValue(0) * TILESIZE));
+
         }
-        if (direction.getValue(1) != 0) {
-            if (HitboxMiddle.getValue(1) < TileMiddle.getValue(1)) { // Hitbox is above Tile
-                if (direction.getValue(1) > 0) { // only matters if it wants to move down
-                    newValue = UpmovingDown();
-                    if (newValue < direction.getValue(1)) {
-                        direction.setY(newValue);
+        camera.setEye2D(direction);
+    }
+
+
+    public Vector CollideRectangle2(Vector direction, Rect Hitbox, Tile Collided, int count) {
+
+        int Hitboxsize = 0;
+
+        if (Hitbox.bottom + Hitboxsize < this.Tilehitbox.top || Hitbox.top - Hitboxsize > this.Tilehitbox.bottom || Hitbox.left - Hitboxsize > this.Tilehitbox.right || Hitbox.right + Hitboxsize < this.Tilehitbox.left) {
+            return direction;
+        } else {
+            if (!COLLIDEDTILES.contains(Collided)) {
+                COLLIDEDTILES.add(Collided);
+            }
+
+            if (count == 0 || count == 2) {
+
+                if (direction.getY() != 0) {
+                    if (Hitbox.bottom >= this.Tilehitbox.top && this.OldHitbox.bottom < this.OldTilehitbox.top) {
+                        direction.setY(0);
+
+                    }
+                    if (Hitbox.top <= this.Tilehitbox.bottom && this.OldHitbox.top > this.OldTilehitbox.bottom) {
+                        direction.setY(0);
                     }
                 }
-            } else {
-                if (direction.getValue(1) < 0) { // only matters if it wants to move up
-                    newValue = DownmovingUp();
-                    //if (newValue > direction.getValue(1)) {
-                        direction.setY(newValue);
-                    //}
+            }
+            if (count == 0 || count == 1) {
+
+                if (direction.getX() != 0) {
+                    if (Hitbox.right >= this.Tilehitbox.left && this.OldHitbox.right < this.OldTilehitbox.left) {
+                        direction.setX(0);
+                    }
+                    if (Hitbox.left <= this.Tilehitbox.right && this.OldHitbox.left > this.OldTilehitbox.right) {
+                        direction.setX(0);
+                    }
                 }
             }
-            //direction.setY((float) (direction.getValue(1) * TILESIZE));
+            return direction;
         }
-
-        int min = 2;
-        int min2 = 0;
-        if (direction.getValue(0) < min && 0 < direction.getValue(0)) {
-            direction.setX(min2);
-        }
-
-        if (direction.getValue(1) < min && 0 < direction.getValue(1)) {
-            direction.setY(min2);
-        }
-
-        if (direction.getValue(0) > -min && 0 > direction.getValue(0)) {
-            direction.setX(-min2);
-        }
-
-        if (direction.getValue(1) > -min && 0 > direction.getValue(1)) {
-            direction.setY(-min2);
-        }/**/
-        return direction;
     }
 
-    private float LeftmovingRight() {
-        return (this.Tilehitbox.left - this.Tilehitbox.right) / Collisionscale;
-    }
-
-    private float RightmovingLeft() {
-        return (this.Hitbox.right - this.Tilehitbox.left) / Collisionscale;
-    }
-
-    private float UpmovingDown() {
-        return (this.Tilehitbox.top - this.Hitbox.bottom) / Collisionscale;
-    }
-
-    private float DownmovingUp() {
-        return (this.Hitbox.top - this.Tilehitbox.bottom) / Collisionscale;
-    }
 }

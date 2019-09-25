@@ -226,6 +226,18 @@ public class CustomButtons {
                             this.Colors.set(0, CHUNKCOLOR);
                         }
                         WF.SaveSettings();
+                    }else if (this.VariableToChange == "DRAWHITBOX"){
+                        DRAWHITBOX = !DRAWHITBOX;
+
+                        if (DRAWHITBOX) {
+                            this.Colors.set(0, FILLTILECOLOR);
+
+                            Debug newDebug = new Debug();
+                            newDebug.TilesToClippboard();
+
+                        } else {
+                            this.Colors.set(0, CHUNKCOLOR);
+                        }
                     }
 
                 }
@@ -233,6 +245,10 @@ public class CustomButtons {
 
             if (this.Type == "Seekbar") { // Seekbar
                 CustomSeekbar();
+
+                if (this.VariableToChange == "SELECTEDMATERIAL"){
+                    SELECTEDMATERIAL = (int)(this.Progress * MATERIALSTOTEXTURE); // To select the Materials to check the Collisions
+                }
             }
 
         }
@@ -500,6 +516,80 @@ public class CustomButtons {
         float old_Width = this.Width;
         this.Width = this.Height;
         this.Height = old_Width;
+        UpdateBox();
+    }
+
+    /**
+     * Places the Button to the right side of the Screen with a certain distance from the edge
+     *                   edge |
+     *             _          |
+     *      this  |_|--dist---|
+     *                        |
+     *                        |
+     * @param dist distance from the edge
+     */
+    public void RightToRightOfScreen(float dist){
+
+        float newPositionX = WIDTHSCREEN - dist - this.Width/2;
+
+        this.Position = new Vector(newPositionX,this.Position.getY());
+
+        UpdateBox();
+    }
+
+
+    /**
+     * Places the Button to the left side of the Screen with a certain distance from the edge
+     *  |
+     *  |          _
+     *  |--dist---|_| this
+     *  |
+     *  | edge
+     * @param dist distance from the edge
+     */
+    public void LeftToLeftOfScreen(float dist){
+
+        float newPositionX = dist + this.Width/2;
+
+        this.Position = new Vector(newPositionX,this.Position.getY());
+
+        UpdateBox();
+    }
+
+    /**
+     * Places the Button to the left side of the Screen with a certain distance from the edge
+     *
+     *  _________________ edge
+     *         |
+     *    dist |  _
+     *         |-|_| this
+     *
+     * @param dist distance from the edge
+     */
+    public void TopToTopOfScreen(float dist){
+
+        float newPositionY = dist + this.Height/2;
+
+        this.Position = new Vector(this.Position.getX(),newPositionY);
+
+        UpdateBox();
+    }
+
+    /**
+     * Places the Button to the left side of the Screen with a certain distance from the edge
+     *            _
+     *         |-|_| this
+     *    dist |
+     *  _______|_________ edge
+     *
+     * @param dist distance from the edge
+     */
+    public void BottomToBottomOfScreen(float dist){
+
+        float newPositionY = HEIGHTSCREEN - dist - this.Height/2;
+
+        this.Position = new Vector(this.Position.getX(),newPositionY);
+
         UpdateBox();
     }
 

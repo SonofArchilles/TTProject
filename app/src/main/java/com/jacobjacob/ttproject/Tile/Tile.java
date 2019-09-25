@@ -16,6 +16,7 @@ public class Tile {
     //private boolean onScreen;
     //private boolean inTilechunks;
     private Rect Boundaries;
+    private Rect OldBoundaries;
     private int Starttime;
 
     //private boolean Autotile = false; // if this tiles appearance should be changed
@@ -29,6 +30,7 @@ public class Tile {
         this.Material = Material;
 
         this.Boundaries = new Rect((int) this.PositionRAW.getValue(0), (int) this.PositionRAW.getValue(1), (int) (this.PositionRAW.getValue(0) + 1), (int) (this.PositionRAW.getValue(1) + 1));
+        this.OldBoundaries = this.Boundaries;
     }
 
     public Tile(Vector Position, int Material, int Frames) {
@@ -39,6 +41,7 @@ public class Tile {
         this.Frames = Frames;
 
         this.Boundaries = new Rect((int) this.PositionRAW.getValue(0), (int) this.PositionRAW.getValue(1), (int) (this.PositionRAW.getValue(0) + 1), (int) (this.PositionRAW.getValue(1) + 1));
+        this.OldBoundaries = this.Boundaries;
     }
 
     public Vector getScreenposition() {
@@ -138,6 +141,14 @@ public class Tile {
         if (this.Boundaries != null) {
 
             return this.Boundaries;
+        } else {
+            return null;
+        }
+    }
+    public Rect getOldBoundaries() {
+        if (this.OldBoundaries != null) {
+
+            return this.OldBoundaries;
         } else {
             return null;
         }

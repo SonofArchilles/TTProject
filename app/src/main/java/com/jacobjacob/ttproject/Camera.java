@@ -13,8 +13,8 @@ public class Camera {
     private Vector UP = new Vector(0, 1, 0);   // up-Vector
 
     private Vector eye = new Vector(0, 0, 10); // Cameraposition
-    private Vector eye2D = new Vector(0,0,700);
-    private Vector eye2DFRAME = new Vector(0,0,700);
+    private Vector eye2D = new Vector(0,0,3000);
+    private Vector eye2DFRAME = new Vector(0,0,1400);
 
     private Vector Z = new Vector(0, 0, 1);    // Position the Camera looks at
 

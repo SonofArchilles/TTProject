@@ -70,7 +70,7 @@ public class Util {
     public static int TOUCHSTATE = 0; // 0 == Touch down | 1 == Touchmoving | 2 == Touchup
 
 
-    public static Vector Cameraposition = new Vector(0, 0, -320); // -10 tiletexture 1
+    public static Vector Cameraposition = new Vector(0, 0, -30); // -10 tiletexture 1
     public static Vector CameraZ = new Vector(0, 0, 1);
     public static Camera camera = new Camera(Cameraposition, CameraZ);
     public static Move MOVE = new Move();
@@ -183,6 +183,10 @@ public class Util {
     public static float NORMALSTRENGTH = 0.1f; //0.5f // 0.2
 
 
+    public static boolean DRAWHITBOX = true; /**Draw the Materials with Hitboxes in red, the checked Hitboxes in yellow and the Players Hitbox in green**/
+
+
+
     public static ArrayList<Integer> AnimationsToUpdate; // int array of all the Materials on screen that have animations themselves
 
     public static int MATERIALSTOTEXTURE = 60; /** Number of Materials that should be loaded into textures for Opengl*/
@@ -202,6 +206,12 @@ public class Util {
 
 
     public static ArrayList<Tile> VISIBLETILES;// = KDTREE.getVisibleTilesInCurrentTree(); // KDTREECOPY
+    public static ArrayList<Tile> COLLISIONTILES; // all the checked Hitboxes in a certain radius
+    public static ArrayList<Tile> COLLIDEDTILES; // all the collided Tiles
+    public static ArrayList<Rect> HITBOX;
+    public static int SELECTEDMATERIAL; // the Material which should be displayed and should be collided with
+
+
 
     public static KdTree KDTREE = new KdTree();
     public static KdTree KDTREECOPY = KDTREE;
@@ -218,7 +228,6 @@ public class Util {
     public static ArrayList<Portal> PORTALLIST = new ArrayList<>(Arrays.asList(PORTAL, PORTAL0));
     public static boolean BOTHPORTALSACTIVE = true;
 
-    public static Rect HITBOX;
 
     public static ArrayList<CustomButtons> CUSTOMBUTTONSLIST = new ArrayList<>();
 }

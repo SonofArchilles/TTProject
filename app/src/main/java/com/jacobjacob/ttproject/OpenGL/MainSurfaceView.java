@@ -13,7 +13,8 @@ import static com.jacobjacob.ttproject.Util.*;
 
 public class MainSurfaceView extends GLSurfaceView {
 
-    public static CustomButtons Joystick,MoveUp,MoveDown,SELECTLEVEL,SELECTOPENGL,SEEKBARTEST,SEEKBARTEST2,SEEKBARTEST3;
+
+    public static CustomButtons Joystick,MoveUp,MoveDown,TOGGLELEVEL,TOGGLEOPENGL,TOGGLEHITBOX,SEEKBARTESTRED,SEEKBARTESTGREEN,SEEKBARTESTBLUE,SEEKBARSELECTMATERIAL;
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -30,16 +31,19 @@ public class MainSurfaceView extends GLSurfaceView {
         MoveDown = new CustomButtons("Button","MoveDown", new Vector(WIDTHSCREEN * 0.22f, HEIGHTSCREEN * 0.88f), (float) (WIDTHSCREEN * 0.05f), (float) (WIDTHSCREEN * 0.05f), Color.rgb(120, 120, 120));
         MoveUp = new CustomButtons("Button","MoveUp", new Vector(WIDTHSCREEN * 0.22f, HEIGHTSCREEN * 0.72f), (float) (WIDTHSCREEN * 0.05f), (float) (WIDTHSCREEN * 0.05f), Color.rgb(120, 120, 120));
 
-        SELECTLEVEL = new CustomButtons("ToggleButton","SELECTLVL", new Vector(WIDTHSCREEN * 0.3f, HEIGHTSCREEN * 0.72f), (float) (WIDTHSCREEN * 0.1f), (float) (WIDTHSCREEN * 0.05f), Color.rgb(140, 120, 120));
+
+        TOGGLELEVEL = new CustomButtons("ToggleButton","SELECTLVL", new Vector(WIDTHSCREEN * 0.3f, HEIGHTSCREEN * 0.72f), (float) (WIDTHSCREEN * 0.1f), (float) (WIDTHSCREEN * 0.05f), Color.rgb(140, 120, 120));
+        TOGGLEOPENGL = new CustomButtons("ToggleButton","OPENGL", new Vector(WIDTHSCREEN * 0.3f, HEIGHTSCREEN * 0.88f), (float) (WIDTHSCREEN * 0.1f), (float) (WIDTHSCREEN * 0.05f), Color.rgb(140, 120, 120));
+        TOGGLEHITBOX = new CustomButtons("ToggleButton","DRAWHITBOX", new Vector(WIDTHSCREEN * 0.3f, HEIGHTSCREEN * 0.88f), (float) (WIDTHSCREEN * 0.1f), (float) (WIDTHSCREEN * 0.05f), Color.rgb(140, 120, 120));
 
 
 
-        SELECTOPENGL = new CustomButtons("ToggleButton","OPENGL", new Vector(WIDTHSCREEN * 0.3f, HEIGHTSCREEN * 0.88f), (float) (WIDTHSCREEN * 0.1f), (float) (WIDTHSCREEN * 0.05f), Color.rgb(140, 120, 120));
+        SEEKBARTESTRED = new CustomButtons("Seekbar","RED", new Vector(WIDTHSCREEN * 0.88f, HEIGHTSCREEN * 0.5f), (float) (WIDTHSCREEN * 0.05f), (float) (WIDTHSCREEN * 0.3f), Color.rgb(255, 0, 0));
+        SEEKBARTESTGREEN = new CustomButtons("Seekbar","GREEN", new Vector(WIDTHSCREEN * 0.82f, HEIGHTSCREEN * 0.5f), (float) (WIDTHSCREEN * 0.05f), (float) (WIDTHSCREEN * 0.3f), Color.rgb(0, 255, 0));
+        SEEKBARTESTBLUE = new CustomButtons("Seekbar","BLUE", new Vector(WIDTHSCREEN * 0.95f, HEIGHTSCREEN * 0.5f), (float) (WIDTHSCREEN * 0.05f), (float) (WIDTHSCREEN * 0.3f), Color.rgb(0, 0, 255));
 
-        SEEKBARTEST = new CustomButtons("Seekbar","", new Vector(WIDTHSCREEN * 0.88f, HEIGHTSCREEN * 0.5f), (float) (WIDTHSCREEN * 0.05f), (float) (WIDTHSCREEN * 0.3f), Color.rgb(255, 0, 0));
-        SEEKBARTEST3 = new CustomButtons("Seekbar","", new Vector(WIDTHSCREEN * 0.82f, HEIGHTSCREEN * 0.5f), (float) (WIDTHSCREEN * 0.05f), (float) (WIDTHSCREEN * 0.3f), Color.rgb(0, 0, 255));
+        SEEKBARSELECTMATERIAL = new CustomButtons("Seekbar","SELECTEDMATERIAL", new Vector(WIDTHSCREEN * 0.52f, HEIGHTSCREEN * 0.88f), (float) (WIDTHSCREEN * 0.3f), (float) (WIDTHSCREEN * 0.05f), Color.rgb(170, 170, 170));
 
-        SEEKBARTEST2 = new CustomButtons("Seekbar","", new Vector(WIDTHSCREEN * 0.52f, HEIGHTSCREEN * 0.88f), (float) (WIDTHSCREEN * 0.3f), (float) (WIDTHSCREEN * 0.05f), Color.rgb(0, 255, 0));
 
         float DistStandard = WIDTHSCREEN * 0.015f; // Distance between the two Buttons
 
@@ -49,6 +53,8 @@ public class MainSurfaceView extends GLSurfaceView {
         //MoveUp.BottomToTopOf(MoveDown,0);
         //MoveDown.TopToBottomOf(MoveUp,DistStandard);
 
+        Joystick.LeftToLeftOfScreen(0);
+        Joystick.BottomToBottomOfScreen(0);
 
         MoveDown.LeftToRightOf(Joystick,DistStandard);
         MoveDown.BottomToBottomOf(Joystick,0);
@@ -56,25 +62,29 @@ public class MainSurfaceView extends GLSurfaceView {
         MoveUp.LeftToRightOf(Joystick,DistStandard);
         MoveUp.BottomToTopOf(MoveDown,DistStandard);
 
-        SELECTLEVEL.LeftToRightOf(MoveUp,DistStandard);
-        SELECTLEVEL.TopToTopOf(MoveUp,0);
+        TOGGLELEVEL.LeftToRightOf(MoveUp,DistStandard);
+        TOGGLELEVEL.TopToTopOf(MoveUp,0);
 
-        SELECTOPENGL.LeftToRightOf(MoveDown,DistStandard);
-        SELECTOPENGL.BottomToBottomOf(MoveDown,0);
+        TOGGLEOPENGL.LeftToRightOf(MoveDown,DistStandard);
+        TOGGLEOPENGL.BottomToBottomOf(MoveDown,0);
 
-        SEEKBARTEST2.LeftToRightOf(SELECTOPENGL,DistStandard);
-        SEEKBARTEST2.TopToTopOf(SELECTOPENGL,0);
 
-        SEEKBARTEST3.RightToLeftOf(SEEKBARTEST,DistStandard);
-        SEEKBARTEST.BottomToBottomOf(SEEKBARTEST2,0);
-        SEEKBARTEST3.TopToTopOf(SEEKBARTEST,0);
+        SEEKBARTESTBLUE.BottomToBottomOf(TOGGLEOPENGL,0);
 
-        /*/ // Puts the green Seekbar next to the blue one on the left side
-        SEEKBARTEST2.FlipOrientation();
-        SEEKBARTEST2.TopToTopOf(SEEKBARTEST3,0);
-        SEEKBARTEST2.RightToLeftOf(SEEKBARTEST3,DistStandard);
-        /**/
+        SEEKBARTESTGREEN.TopToTopOf(SEEKBARTESTBLUE,0);
+        SEEKBARTESTGREEN.RightToLeftOf(SEEKBARTESTBLUE,DistStandard);
 
+
+        SEEKBARTESTRED.TopToTopOf(SEEKBARTESTGREEN,0);
+        SEEKBARTESTRED.RightToLeftOf(SEEKBARTESTGREEN,DistStandard);
+
+
+
+        SEEKBARSELECTMATERIAL.LeftToRightOf(TOGGLEOPENGL,DistStandard);
+        SEEKBARSELECTMATERIAL.TopToTopOf(TOGGLEOPENGL,0);
+
+        TOGGLEHITBOX.TopToTopOfScreen(DistStandard);
+        TOGGLEHITBOX.RightToRightOfScreen(DistStandard);
 
         //SELECTOPENGL.FlipOrientation();
 
@@ -82,11 +92,15 @@ public class MainSurfaceView extends GLSurfaceView {
         CUSTOMBUTTONSLIST.add(Joystick);
         CUSTOMBUTTONSLIST.add(MoveUp);
         CUSTOMBUTTONSLIST.add(MoveDown);
-        CUSTOMBUTTONSLIST.add(SELECTLEVEL);
-        CUSTOMBUTTONSLIST.add(SELECTOPENGL);
-        CUSTOMBUTTONSLIST.add(SEEKBARTEST);
-        CUSTOMBUTTONSLIST.add(SEEKBARTEST2);
-        CUSTOMBUTTONSLIST.add(SEEKBARTEST3);
+
+        CUSTOMBUTTONSLIST.add(TOGGLEOPENGL);
+        CUSTOMBUTTONSLIST.add(TOGGLELEVEL);
+        CUSTOMBUTTONSLIST.add(TOGGLEHITBOX);
+
+        CUSTOMBUTTONSLIST.add(SEEKBARTESTRED);
+        CUSTOMBUTTONSLIST.add(SEEKBARTESTGREEN);
+        CUSTOMBUTTONSLIST.add(SEEKBARTESTBLUE);
+        CUSTOMBUTTONSLIST.add(SEEKBARSELECTMATERIAL);
 
     }
 }

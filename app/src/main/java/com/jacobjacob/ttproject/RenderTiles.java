@@ -299,12 +299,14 @@ public class RenderTiles {
             this.Screenboundaries = new Rect((int) (-TILESIZEzoom), (int) (-TILESIZEzoom), (int) (WIDTHSCREEN + TILESIZEzoom), (int) (HEIGHTSCREEN + TILESIZEzoom));
         }
         if (HITBOX != null) {
-            this.paint.setColor(FILLTILECOLOR);
-            Vector A = /**/new Vector().getScreencoordinatesFromTileCoordinates(/**/new Vector(HITBOX.left * TILESIZE, HITBOX.top * TILESIZE)/**/)/**/;
-            Vector B = /**/new Vector().getScreencoordinatesFromTileCoordinates(/**/new Vector(HITBOX.right * TILESIZE, HITBOX.bottom * TILESIZE)/**/)/**/;
+            for (int i = 0; i < HITBOX.size(); i++) {
+                this.paint.setColor(FILLTILECOLOR);
+                Vector A = /**/new Vector().getScreencoordinatesFromTileCoordinates(/**/new Vector(HITBOX.get(i).left * TILESIZE,  HITBOX.get(i).top * TILESIZE)/**/)/**/;
+                Vector B = /**/new Vector().getScreencoordinatesFromTileCoordinates(/**/new Vector(HITBOX.get(i).right * TILESIZE, HITBOX.get(i).bottom * TILESIZE)/**/)/**/;
 
-            Rect Hitbox = new Rect((int) A.getValue(0), (int) A.getValue(1), (int) B.getValue(0), (int) B.getValue(1));
-            this.canvas.drawRect(Hitbox, paint);
+                Rect Hitbox = new Rect((int) A.getValue(0), (int) A.getValue(1), (int) B.getValue(0), (int) B.getValue(1));
+                this.canvas.drawRect(Hitbox, paint);
+            }
         }
 
         float TILESIZEzoom = (float) Math.ceil(TILESIZE * (camera.getEye2D().getValue(2) / ZOOMFACTOR)); // Width the Tile has on Screen

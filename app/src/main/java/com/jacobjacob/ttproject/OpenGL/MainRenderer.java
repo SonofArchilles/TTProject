@@ -122,14 +122,11 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
             + "varying vec4 v_Color;          \n"                          // This is the color from the vertex shader interpolated across the
             // triangle per fragment.
             + "void main()                    \n"                          // The entry point for our fragment shader.
-            + "{                              \n"
-            + "   gl_FragColor = v_Color;     \n"        // Pass the color directly through the pipeline.
+            + "{                              \n" + "   gl_FragColor = v_Color;     \n"        // Pass the color directly through the pipeline.
             + "}                              \n";
 
 
-
-    final String vertex_shader_texture =
-            "uniform mat4 u_MVPMatrix;"
+    final String vertex_shader_texture = "uniform mat4 u_MVPMatrix;"
 
             + "uniform mat4 u_MVMatrix;" + "\n"
 
@@ -137,8 +134,7 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
 
             + "varying vec3 v_Position;" + "\n"
 
-            + "attribute vec2 a_TexCoordinate;" + "\n"
-            + "varying vec2 v_TexCoordinate;" + "\n"
+            + "attribute vec2 a_TexCoordinate;" + "\n" + "varying vec2 v_TexCoordinate;" + "\n"
 
             + "void main()\n" + "{\n"
 
@@ -150,48 +146,44 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
 
             + "}";
 
-    final String fragment_shader_texture =
-            "precision mediump float;" +
-              "uniform sampler2D u_Texture;\n"    // The input texture
+    final String fragment_shader_texture = "precision mediump float;" + "uniform sampler2D u_Texture;\n"    // The input texture
 
             + "varying vec2 v_TexCoordinate;\n"  // interpolated Texture coordinate same for texture and normaltexture
-            + "void main()" + "{\n"
-            + "gl_FragColor = texture2D(u_Texture, v_TexCoordinate);\n" // Multiply the color by the diffuse illumination level and texture value to get final output color.\n"
+            + "void main()" + "{\n" + "gl_FragColor = texture2D(u_Texture, v_TexCoordinate);\n" // Multiply the color by the diffuse illumination level and texture value to get final output color.\n"
             + "}";
 
     /**/
-        final String per_pixel_vertex_shader =
-                "uniform mat4 u_MVPMatrix;"// A constant representing the combined model/view/projection matrix.
-                + "uniform mat4 u_MVMatrix;" + "\n"// A constant representing the combined model/view matrix.
-                + "attribute vec4 a_Position;" + "\n"// Per-vertex position information we will pass in.
-                + "attribute vec2 a_TexCoordinate;" + "\n" // Per-vertex texture coordinate information we will pass in.
+    final String per_pixel_vertex_shader = "uniform mat4 u_MVPMatrix;"// A constant representing the combined model/view/projection matrix.
+            + "uniform mat4 u_MVMatrix;" + "\n"// A constant representing the combined model/view matrix.
+            + "attribute vec4 a_Position;" + "\n"// Per-vertex position information we will pass in.
+            + "attribute vec2 a_TexCoordinate;" + "\n" // Per-vertex texture coordinate information we will pass in.
 
-                + "varying vec3 v_Position;" + "\n"// This will be passed into the fragment shader.
-
-
-                + "attribute vec3 a_Light;" + "\n"         // Vector from the Light to the Tile
-
-                + "varying vec3 v_Light;" + "\n"         // Vector from the Light to the Tile
+            + "varying vec3 v_Position;" + "\n"// This will be passed into the fragment shader.
 
 
-                //+ "varying vec3 v_Normal;" + "\n"// This will be passed into the fragment shader.
-                + "varying vec2 v_TexCoordinate;" + "\n"   // This will be passed into the fragment shader.
-                // The entry point for our vertex shader.
+            + "attribute vec3 a_Light;" + "\n"         // Vector from the Light to the Tile
 
-                + "void main()\n" + "{\n"
-                // Transform the vertex into eye space.
-                + "v_Position = vec3(u_MVMatrix * a_Position);\n"
-                // Pass through the texture coordinate.
-                + "v_TexCoordinate = a_TexCoordinate;\n"
+            + "varying vec3 v_Light;" + "\n"         // Vector from the Light to the Tile
 
-                + "v_Light = a_Light;"
 
-                // Transform the normal's orientation into eye space.
-                //+ "    v_Normal = vec3(u_MVMatrix * vec4(a_Normal, 0.0));\n"
-                // gl_Position is a special variable used to store the final position.
-                // Multiply the vertex by the matrix to get the final point in normalized screen coordinates.
-                + "gl_Position = u_MVPMatrix * a_Position;\n" + "}";
-        /**/
+            //+ "varying vec3 v_Normal;" + "\n"// This will be passed into the fragment shader.
+            + "varying vec2 v_TexCoordinate;" + "\n"   // This will be passed into the fragment shader.
+            // The entry point for our vertex shader.
+
+            + "void main()\n" + "{\n"
+            // Transform the vertex into eye space.
+            + "v_Position = vec3(u_MVMatrix * a_Position);\n"
+            // Pass through the texture coordinate.
+            + "v_TexCoordinate = a_TexCoordinate;\n"
+
+            + "v_Light = a_Light;"
+
+            // Transform the normal's orientation into eye space.
+            //+ "    v_Normal = vec3(u_MVMatrix * vec4(a_Normal, 0.0));\n"
+            // gl_Position is a special variable used to store the final position.
+            // Multiply the vertex by the matrix to get the final point in normalized screen coordinates.
+            + "gl_Position = u_MVPMatrix * a_Position;\n" + "}";
+    /**/
     /*/
     final String per_pixel_vertex_shader = "uniform mat4 u_MVPMatrix;" + "uniform mat4 u_MVMatrix;" + "\n"
 
@@ -464,8 +456,7 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
     /**/
 
     /**/ //Toonshading :
-    final String per_pixel_fragment_shader =
-            "precision mediump float;" + "uniform sampler2D u_Texture;\n"    // The input texture
+    final String per_pixel_fragment_shader = "precision mediump float;" + "uniform sampler2D u_Texture;\n"    // The input texture
             + "uniform sampler2D n_Texture;\n"
 
             + "uniform vec3 v_Light;" + "\n"         // Vector from the Light to the Tile
@@ -503,7 +494,6 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
             + "vec3 lightVector = normalize(Light_Tile);"
 
 
-
             + "vec_normalTex = vec3(texture2D(n_Texture, v_TexCoordinate))-0.5;"
 
             + "float diffuseold = max(dot(vec_normalTex, lightVector), 0.0);" // 0 to 1
@@ -518,9 +508,7 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
             //+"}"
             + "colorvec = colorvec + v_Light_Color * diff2 + v_Light_Color *diffuseold * (1.0/(1.0+distance));"
 
-            + "if(levels > 0.0){" +
-                    "colorvec = floor(colorvec * levels)/levels;"
-            + "}" +
+            + "if(levels > 0.0){" + "colorvec = floor(colorvec * levels)/levels;" + "}" +
 
 
             "gl_FragColor = colorvec;" // Multiply the color by the diffuse illumination level and texture value to get final output color.\n"
@@ -617,7 +605,9 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
     /**/
 
 
-    /**multiple Lights: */
+    /**
+     * multiple Lights:
+     */
 /*/
     final String per_pixel_fragment_shader =
             "precision mediump float;"
@@ -748,10 +738,10 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 
-        LIGHTS.add(new PointLight(new Vector(10,10).multiplydouble(TILESIZE),Color.argb(255,255,255,1)));
-        LIGHTS.add(new PointLight(new Vector(10,-10).multiplydouble(TILESIZE),Color.argb(255,255,0,1)));
-        LIGHTS.add(new PointLight(new Vector(-10,-10).multiplydouble(TILESIZE),Color.argb(0,255,255,1)));
-        LIGHTS.add(new PointLight(new Vector(-10,10).multiplydouble(TILESIZE),Color.argb(255,0,255,1)));
+        LIGHTS.add(new PointLight(new Vector(10, 10).multiplydouble(TILESIZE), Color.argb(255, 255, 255, 1)));
+        LIGHTS.add(new PointLight(new Vector(10, -10).multiplydouble(TILESIZE), Color.argb(255, 255, 0, 1)));
+        LIGHTS.add(new PointLight(new Vector(-10, -10).multiplydouble(TILESIZE), Color.argb(0, 255, 255, 1)));
+        LIGHTS.add(new PointLight(new Vector(-10, 10).multiplydouble(TILESIZE), Color.argb(255, 0, 255, 1)));
     }
 
 
@@ -820,11 +810,9 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
         TextureUniformHandleNormal = GLES20.glGetUniformLocation(Program[0], "n_Texture");
 
 
-
-        LightUniformNumberHandle = GLES20.glGetUniformLocation(Program[0],"n_Lights");
+        LightUniformNumberHandle = GLES20.glGetUniformLocation(Program[0], "n_Lights");
         LightUniformHandle = GLES20.glGetUniformLocation(Program[0], "v_Light");
         LightColorUniformHandle = GLES20.glGetUniformLocation(Program[0], "v_Light_Color");
-
 
 
         PositionTileUniformHandle = GLES20.glGetUniformLocation(Program[0], "v_Tile");
@@ -874,8 +862,8 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
 
         float[] LightPositionData = {(float) (LightVec.getValue(0) / TILESIZE) + X, (float) (LightVec.getValue(1) / TILESIZE) + Y, 10.0f / TILESIZE}; // light x, y, z
         GLES20.glUniform3f(LightUniformHandle, LightPositionData[0], LightPositionData[1], LightPositionData[2]);
-        float[] LightColorData = { CUSTOM_BUTTON_SEEKBAR_RED, CUSTOM_BUTTON_SEEKBAR_GREEN, CUSTOM_BUTTON_SEEKBAR_BLUE}; // light x, y, z
-        GLES20.glUniform4f(LightColorUniformHandle,LightColorData[0],LightColorData[1],LightColorData[2],1);
+        float[] LightColorData = {CUSTOM_BUTTON_SEEKBAR_RED, CUSTOM_BUTTON_SEEKBAR_GREEN, CUSTOM_BUTTON_SEEKBAR_BLUE}; // light x, y, z
+        GLES20.glUniform4f(LightColorUniformHandle, LightColorData[0], LightColorData[1], LightColorData[2], 1);
 
 
 
@@ -918,8 +906,6 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
 /**/
 
 
-
-
         for (int i = 0; i < VISIBLETILES.size(); i++) {
 
             try {
@@ -957,17 +943,18 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
 
         GLES20.glUseProgram(Program[1]);
 
+        if (DRAWHITBOX) {
+            DrawHitbox();
+        } else {
+            DrawCharacter();
+        }
 
-        /*/
-        for (CustomButtons CB : CUSTOMBUTTONSLIST) {
-            drawSquare(CB.getLeft(), CB.getTop(), CB.getRight(), CB.getBottom(), CB.getColor());
-        }/**/
 
         for (int j = 0; j < CUSTOMBUTTONSLIST.size(); j++) {
             ArrayList<Rect> Boxes = CUSTOMBUTTONSLIST.get(j).getBoxes();
             ArrayList<Integer> BoxesColor = CUSTOMBUTTONSLIST.get(j).getColors();
             for (int i = 0; i < Boxes.size(); i++) {
-                drawSquare(Boxes.get(i).left/128.0f, Boxes.get(i).top/128.0f, Boxes.get(i).right/128.0f, Boxes.get(i).bottom/128.0f,BoxesColor.get(i)); // BoxesColor.get(i)
+                drawSquare(Boxes.get(i).left / 128.0f, Boxes.get(i).top / 128.0f, Boxes.get(i).right / 128.0f, Boxes.get(i).bottom / 128.0f, BoxesColor.get(i)); // BoxesColor.get(i)
             }
         }
 
@@ -995,10 +982,10 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
      */
     private void drawSquare(float left, float top, float right, float bottom, int color) { // 6 Values = 2 Triangles
 
-        float red = ((float) Color.red(color)) / 255;
-        float green = ((float) Color.green(color)) / 255;
-        float blue = ((float) Color.blue(color)) / 255;
-        float alpha = ((float) Color.alpha(color)) / 255;
+        float red = ((float) Color.red(color)) / 255.0f;
+        float green = ((float) Color.green(color)) / 255.0f;
+        float blue = ((float) Color.blue(color)) / 255.0f;
+        float alpha = ((float) Color.alpha(color)) / 255.0f;
 
 
         float[] squareVerticesData = {
@@ -1324,7 +1311,6 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
     }
 
 
-
     private void TestLoops() { // Now updates all the Animations
 
         boolean TestUPDATEMATERIALS = UPDATERELOADEDMATERIALS;
@@ -1335,8 +1321,8 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
                     TILETEXTURE.deleteTextures(i); // Both working perfectly!!
                     TILETEXTURE.updateTextures(i); // Both working perfectly!!
 
-                }else {
-                    if (UPDATERELOADEDMATERIALS && TestUPDATEMATERIALS){ // only loads the Bitmap to Textures if another lvl is loaded
+                } else {
+                    if (UPDATERELOADEDMATERIALS && TestUPDATEMATERIALS) { // only loads the Bitmap to Textures if another lvl is loaded
                         TILETEXTURE.deleteTextures(i); // Both working perfectly!!
                         TILETEXTURE.updateTextures(i); // Both working perfectly!!
                     }
@@ -1350,6 +1336,7 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
         }
 
     }
+
     private void TestLoops2() { // Now updates all the Animations that are visible on Screen!
 
         //boolean TestUPDATEMATERIALS = UPDATERELOADEDMATERIALS;
@@ -1359,11 +1346,154 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
                 try {
                     TILETEXTURE.deleteTextures(AnimationsToUpdate.get(i)); // Both working perfectly!!
                     TILETEXTURE.updateTextures(AnimationsToUpdate.get(i)); // Both working perfectly!!
-                }catch (Exception e){
-                    Log.d("MainRendererTestLoops2","Out of Bounds");
+                } catch (Exception e) {
+                    Log.d("MainRendererTestLoops2", "Out of Bounds");
                 }
             }
         }
 
+    }
+
+    /**
+     * Draws a square for now, could draw a texture later
+     */
+    private void DrawCharacter() {
+
+
+        Vector Cal = new Vector();
+        try {
+            int RectPosition = HITBOX.size() - 1;
+
+            Cal = Cal.getScreencoordinatesFromTileCoordinates(new Vector(HITBOX.get(RectPosition).left-1, HITBOX.get(RectPosition).top-1));//.multiplydouble(TILESIZE));
+
+            float left = (float) Cal.getValue(0);
+            float top = (float) Cal.getValue(1);
+            Cal = Cal.getScreencoordinatesFromTileCoordinates(new Vector(HITBOX.get(RectPosition).right+1, HITBOX.get(RectPosition).bottom+1));//.multiplydouble(TILESIZE));
+            float right = (float) Cal.getValue(0);
+            float bottom = (float) Cal.getValue(1);
+
+
+            left = 2 * ((left / WIDTHSCREEN) * 2 - 1);
+            top = 2 * (1 - (top / HEIGHTSCREEN) * 2);
+            right = 2 * ((right / WIDTHSCREEN) * 2 - 1);
+            bottom = 2 * (1 - (bottom / HEIGHTSCREEN) * 2);
+
+            int Colorint = Color.argb(140, 70, 170, 70);
+
+            drawSquare(left, top, right, bottom, Colorint);
+
+
+        } catch (Exception e) {
+            Log.d("MainRenderer", "Hitboxplayer");
+        }
+    }
+
+
+    private void DrawHitbox() {
+
+        Vector Cal = new Vector();
+        float TILESIZEzoom = (float) Math.ceil(TILESIZE * (camera.getEye2D().getValue(2) / ZOOMFACTOR));
+
+
+        /**Draw Collision Tiles or filter for a specific Material*/
+        for (int i = 0; i < VISIBLETILES.size(); i++) {
+            if (VISIBLETILES.get(i).getMaterial() == SELECTEDMATERIAL) {
+
+                Cal = Cal.getScreencoordinatesFromTileCoordinates(VISIBLETILES.get(i).getPosition());
+
+                float left = (float) Cal.getValue(0);
+                float top = (float) Cal.getValue(1);
+                float right = (float) Cal.getValue(0) + TILESIZEzoom;
+                float bottom = (float) Cal.getValue(1) + TILESIZEzoom;
+
+                left = 2 * ((left / WIDTHSCREEN) * 2 - 1);
+                top = 2 * (1 - (top / HEIGHTSCREEN) * 2);
+                right = 2 * ((right / WIDTHSCREEN) * 2 - 1);
+                bottom = 2 * (1 - (bottom / HEIGHTSCREEN) * 2);
+
+                drawSquare(left, top, right, bottom, Color.argb(120, 200, 100, 100));
+            }
+        }
+        /**Draw Collision Tiles or filter for a specific Material*/
+
+
+        /**Draw close Collision Tiles or filter for a specific Material*/
+        try {
+            for (int i = 0; i < COLLISIONTILES.size(); i++) {
+                if (COLLISIONTILES.get(i).getMaterial() == SELECTEDMATERIAL) {
+
+                    Cal = Cal.getScreencoordinatesFromTileCoordinates(COLLISIONTILES.get(i).getPosition());
+
+                    float left = (float) Cal.getValue(0);
+                    float top = (float) Cal.getValue(1);
+                    float right = (float) Cal.getValue(0) + TILESIZEzoom;
+                    float bottom = (float) Cal.getValue(1) + TILESIZEzoom;
+
+                    left = 2 * ((left / WIDTHSCREEN) * 2 - 1);
+                    top = 2 * (1 - (top / HEIGHTSCREEN) * 2);
+                    right = 2 * ((right / WIDTHSCREEN) * 2 - 1);
+                    bottom = 2 * (1 - (bottom / HEIGHTSCREEN) * 2);
+
+                    drawSquare(left, top, right, bottom, Color.argb(120, 175, 175, 100));
+                }
+            }
+        } catch (Exception e) {
+            Log.d("MainRenderer", "CollisionTiles");
+        }
+        /**Draw close Collision Tiles or filter for a specific Material*/
+
+        /**Draw collided Tiles*/
+        try {
+            for (int i = 0; i < COLLIDEDTILES.size(); i++) {
+                Cal = Cal.getScreencoordinatesFromTileCoordinates(COLLIDEDTILES.get(i).getPosition());
+
+                float left = (float) Cal.getValue(0);
+                float top = (float) Cal.getValue(1);
+                float right = (float) Cal.getValue(0) + TILESIZEzoom;
+                float bottom = (float) Cal.getValue(1) + TILESIZEzoom;
+
+                left = 2 * ((left / WIDTHSCREEN) * 2 - 1);
+                top = 2 * (1 - (top / HEIGHTSCREEN) * 2);
+                right = 2 * ((right / WIDTHSCREEN) * 2 - 1);
+                bottom = 2 * (1 - (bottom / HEIGHTSCREEN) * 2);
+
+                drawSquare(left, top, right, bottom, Color.argb(120, 225, 225, 100));
+            }
+        } catch (Exception e) {
+            Log.d("MainRenderer", "CollisionTiles");
+        }
+        /**Draw collided Tiles*/
+
+        /**Draw close Collision Tiles or filter for a specific Material*/
+        try {
+            for (int i = 0; i < HITBOX.size(); i++) { /** Draw all Hitboxes*/
+
+                if (i == 1 || i == 2 || i == HITBOX.size() - 1) {
+
+                    Cal = Cal.getScreencoordinatesFromTileCoordinates(new Vector(HITBOX.get(i).left, HITBOX.get(i).top));//.multiplydouble(TILESIZE));
+
+                    float left = (float) Cal.getValue(0);
+                    float top = (float) Cal.getValue(1);
+                    Cal = Cal.getScreencoordinatesFromTileCoordinates(new Vector(HITBOX.get(i).right, HITBOX.get(i).bottom));//.multiplydouble(TILESIZE));
+                    float right = (float) Cal.getValue(0);
+                    float bottom = (float) Cal.getValue(1);
+
+
+                    left = 2 * ((left / WIDTHSCREEN) * 2 - 1);
+                    top = 2 * (1 - (top / HEIGHTSCREEN) * 2);
+                    right = 2 * ((right / WIDTHSCREEN) * 2 - 1);
+                    bottom = 2 * (1 - (bottom / HEIGHTSCREEN) * 2);
+                    int Colorint = Color.argb(140, 100, 200, 100);
+                    if (i == HITBOX.size() - 1) {
+                        Colorint = Color.argb(140, 70, 170, 70);
+                    }
+                    drawSquare(left, top, right, bottom, Colorint);
+                }
+            }
+        } catch (Exception e) {
+            Log.d("MainRenderer", "Hitboxplayer");
+        }
+
+        /**Draw close Collision Tiles or filter for a specific Material*/
     }
 }
