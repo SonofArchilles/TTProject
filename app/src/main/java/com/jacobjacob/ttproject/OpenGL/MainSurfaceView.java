@@ -14,7 +14,7 @@ import static com.jacobjacob.ttproject.Util.*;
 public class MainSurfaceView extends GLSurfaceView {
 
 
-    public static CustomButtons Joystick,MoveUp,MoveDown,TOGGLELEVEL,TOGGLEOPENGL,TOGGLEHITBOX,SEEKBARTESTRED,SEEKBARTESTGREEN,SEEKBARTESTBLUE,SEEKBARSELECTMATERIAL;
+    public static CustomButtons Joystick,MoveUp,MoveDown,TOGGLELEVEL,TOGGLEOPENGL,TOGGLEHITBOX,TOGGLEDRAWKDTREE,SEEKBARTESTRED,SEEKBARTESTGREEN,SEEKBARTESTBLUE,SEEKBARSELECTMATERIAL;
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -35,6 +35,7 @@ public class MainSurfaceView extends GLSurfaceView {
         TOGGLELEVEL = new CustomButtons("ToggleButton","SELECTLVL", new Vector(WIDTHSCREEN * 0.3f, HEIGHTSCREEN * 0.72f), (float) (WIDTHSCREEN * 0.1f), (float) (WIDTHSCREEN * 0.05f), Color.rgb(140, 120, 120));
         TOGGLEOPENGL = new CustomButtons("ToggleButton","OPENGL", new Vector(WIDTHSCREEN * 0.3f, HEIGHTSCREEN * 0.88f), (float) (WIDTHSCREEN * 0.1f), (float) (WIDTHSCREEN * 0.05f), Color.rgb(140, 120, 120));
         TOGGLEHITBOX = new CustomButtons("ToggleButton","DRAWHITBOX", new Vector(WIDTHSCREEN * 0.3f, HEIGHTSCREEN * 0.88f), (float) (WIDTHSCREEN * 0.1f), (float) (WIDTHSCREEN * 0.05f), Color.rgb(140, 120, 120));
+        TOGGLEDRAWKDTREE = new CustomButtons("ToggleButton","DRAWKDTREE", new Vector(WIDTHSCREEN * 0.3f, HEIGHTSCREEN * 0.88f), (float) (WIDTHSCREEN * 0.1f), (float) (WIDTHSCREEN * 0.05f), Color.rgb(140, 120, 120));
 
 
 
@@ -86,6 +87,9 @@ public class MainSurfaceView extends GLSurfaceView {
         TOGGLEHITBOX.TopToTopOfScreen(DistStandard);
         TOGGLEHITBOX.RightToRightOfScreen(DistStandard);
 
+        TOGGLEDRAWKDTREE.RightToLeftOf(TOGGLEHITBOX,DistStandard);
+        TOGGLEDRAWKDTREE.TopToTopOf(TOGGLEHITBOX,0);
+
         //SELECTOPENGL.FlipOrientation();
 
 
@@ -96,6 +100,7 @@ public class MainSurfaceView extends GLSurfaceView {
         CUSTOMBUTTONSLIST.add(TOGGLEOPENGL);
         CUSTOMBUTTONSLIST.add(TOGGLELEVEL);
         CUSTOMBUTTONSLIST.add(TOGGLEHITBOX);
+        CUSTOMBUTTONSLIST.add(TOGGLEDRAWKDTREE);
 
         CUSTOMBUTTONSLIST.add(SEEKBARTESTRED);
         CUSTOMBUTTONSLIST.add(SEEKBARTESTGREEN);

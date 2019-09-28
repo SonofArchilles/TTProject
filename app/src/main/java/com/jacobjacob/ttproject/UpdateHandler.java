@@ -2,21 +2,7 @@ package com.jacobjacob.ttproject;
 
 import android.util.Log;
 
-import static com.jacobjacob.ttproject.Util.DRAWKDTREEBOOL;
-import static com.jacobjacob.ttproject.Util.FRAMEDRAWN;
-import static com.jacobjacob.ttproject.Util.KDTREECURRENTLYBUILDING;
-import static com.jacobjacob.ttproject.Util.LASTUPDATETIME;
-import static com.jacobjacob.ttproject.Util.MATERIALARRAY;
-import static com.jacobjacob.ttproject.Util.MATERIALLIST;
-import static com.jacobjacob.ttproject.Util.MATERIALLISTUPDATING;
-import static com.jacobjacob.ttproject.Util.RENDERERTILES;
-import static com.jacobjacob.ttproject.Util.RUNNING;
-import static com.jacobjacob.ttproject.Util.TILELAYER;
-import static com.jacobjacob.ttproject.Util.TILELAYERSTART;
-import static com.jacobjacob.ttproject.Util.TILESIZE;
-import static com.jacobjacob.ttproject.Util.UPDATEVIEW;
-import static com.jacobjacob.ttproject.Util.camera;
-import static com.jacobjacob.ttproject.Util.movespeed;
+import static com.jacobjacob.ttproject.Util.*;
 
 public class UpdateHandler/* extends AppCompatActivity*/ {
 
@@ -50,7 +36,7 @@ public class UpdateHandler/* extends AppCompatActivity*/ {
         //}
 
 
-        if (DRAWKDTREEBOOL) {
+        if (DRAWKDTREE) {
             RENDERERTILES.DrawKDTree(); // Draws the KD-Tree in Red to Green
         }
 

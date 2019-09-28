@@ -1,5 +1,6 @@
 package com.jacobjacob.ttproject.UI;
 
+import android.graphics.Rect;
 import android.util.Log;
 
 import com.jacobjacob.ttproject.Tile.Tile;
@@ -16,6 +17,7 @@ public class Inputloop {
 
     ArrayList<Tile> visible = new ArrayList<>();
     ArrayList<Integer> animations = new ArrayList<>();
+    ArrayList<Rect> visiblechunks = new ArrayList<>();
 
 
     public void start() {
@@ -23,6 +25,7 @@ public class Inputloop {
             if (UIUPDATING) {
                 UIUPDATING = false; // makes sure the thread only updates when a frame is drawn
                 VISIBLETILES = visible;
+                VISIBLEKDTREECHUNKS = visiblechunks;
                 AnimationsToUpdate = animations;
 
                 //TODO remove slow loading edges
@@ -42,7 +45,7 @@ public class Inputloop {
 
 
                 if (!RELOADMATERIALS) {
-                    for (int i = 0; i < MATERIALARRAY.length; i++) { //TODO Updates the Texture if the Material has an Animation in a different, parallel Thread!
+                    for (int i = 0; i < MATERIALARRAY.length; i++) {
                         try {
                             if (RELOADMATERIALS){
 
@@ -78,8 +81,9 @@ public class Inputloop {
                 }
 
 
-                visible = KDTREE.getVisibleTilesInCurrentTree();
-
+                //visible = KDTREE.getVisibleTilesInCurrentTree();
+                visible = KDTREECHUNKS.getVisibleTilesInCurrentTree();
+                visiblechunks = KDTREECHUNKS.getBoundaries();
             }
         }
     }
@@ -109,7 +113,6 @@ public class Inputloop {
     }
 
 
-    //TODO UpdateTouchMove
     public void UpdateTouch() {
         if (!TOUCHCUSTOMBUTTONS) {
             if (DISPLAYINVENTORY) {

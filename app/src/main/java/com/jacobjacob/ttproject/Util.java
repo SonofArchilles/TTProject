@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.jacobjacob.ttproject.Light.PointLight;
+import com.jacobjacob.ttproject.Tile.KdTreeChunks;
 import com.jacobjacob.ttproject.UI.CustomButtons;
 import com.jacobjacob.ttproject.Tile.KdTree;
 import com.jacobjacob.ttproject.Tile.Tile;
@@ -52,7 +53,7 @@ public class Util {
     public static ToggleButton INVENTORY_TOGGLE;
     public static ToggleButton OPENGL_TOGGLE;
     public static ToggleButton FILLPLACE;
-    public static ToggleButton DRAWKDTREE;
+    //public static ToggleButton DRAWKDTREE;
     public static ToggleButton REMOVETILES;
 
     public static Button ADDLEFT;
@@ -215,8 +216,14 @@ public class Util {
 
     public static KdTree KDTREE = new KdTree();
     public static KdTree KDTREECOPY = KDTREE;
+
+    public static KdTreeChunks KDTREECHUNKS = new KdTreeChunks();
+    public static ArrayList<Rect> VISIBLEKDTREECHUNKS = new ArrayList<Rect>();
+
+    public static int CHUNKSIZE = 20;
+    public static boolean DRAWKDTREE = true;
+
     public static int KDTREEMAXITEMS = 80;
-    public static boolean DRAWKDTREEBOOL;
     public static boolean KDTREECURRENTLYBUILDING = true;
     public static boolean KDTREECOPYING = false;
 

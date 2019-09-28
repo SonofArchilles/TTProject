@@ -211,8 +211,8 @@ public class LevelEditor {
     }
 
     public void AddTilesKDTREE(ArrayList<Tile> TILESTOADD) { // ADDS A LIST WITH ONE OR MORE TILES AT ONCE, IF THEY WERE ADDED ONE BY ONE IT WOULD LAG
-        KDTREE.addTilesInCurrentTree(TILESTOADD);
-        KDTREE.CreatenewKDTree();
+        KDTREECHUNKS.addTilesInCurrentTree(TILESTOADD);
+        KDTREECHUNKS.CreatenewKDTree();
 
         //KDTREECOPY = new KdTree();
         //KDTREECOPY = KDTREE;
@@ -221,8 +221,8 @@ public class LevelEditor {
     public void RemoveTileKDTREE(int x, int y) {
         if (!KDTREECOPYING) {
             Vector XY = new Vector().getTileCoordinatesfromScreencoordinates(x, y);
-            KDTREE.removeTile((int) XY.getValue(0), (int) XY.getValue(1));
-            KDTREE.CreatenewKDTree();
+            KDTREECHUNKS.removeTile((int) XY.getValue(0), (int) XY.getValue(1));
+            KDTREECHUNKS.CreatenewKDTree();
         }
     }
 
@@ -241,10 +241,10 @@ public class LevelEditor {
                 //FILLTILECOLOR = INVENTORYSELECTTILECOLOR;
                 for (int i = xmin; i < xmax; i++) {
                     for (int j = ymin; j < ymax; j++) {
-                        KDTREE.removeTile(i, j);
+                        KDTREECHUNKS.removeTile(i, j);
                     }
                 }
-                KDTREE.CreatenewKDTree();
+                KDTREECHUNKS.CreatenewKDTree();
             }
             //AddTilesKDTREE(Tilestoadd);
         }
@@ -258,7 +258,7 @@ public class LevelEditor {
         StringBuilder Tiles = new StringBuilder();
 
 
-        ArrayList<Tile> AllTiles = KDTREE.getTilesInCurrentTree();
+        ArrayList<Tile> AllTiles = KDTREECHUNKS.getTilesInCurrentTree();
 
         Log.d("LevelEditor SaveFile","Number of Tiles to save: " + String.valueOf(AllTiles.size()));
 

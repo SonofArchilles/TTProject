@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
             INVENTORY_TOGGLE = new ToggleButton(CONTEXT);
             OPENGL_TOGGLE = new ToggleButton(CONTEXT);
             FILLPLACE = new ToggleButton(CONTEXT);
-            DRAWKDTREE = new ToggleButton(CONTEXT);
+            //DRAWKDTREE = new ToggleButton(CONTEXT);
             REMOVETILES = new ToggleButton(CONTEXT);
             ADDLEFT = new Button(CONTEXT);
             ADDRIGHT = new Button(CONTEXT);
@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
             INVENTORY_TOGGLE = findViewById(R.id.INVENTORY_TOGGLE);
             OPENGL_TOGGLE = findViewById(R.id.OPENGL_TOGGLE);
             FILLPLACE = findViewById(R.id.FILLPLACE);
-            DRAWKDTREE = findViewById(R.id.DRAWKDTREE);
+            //DRAWKDTREE = findViewById(R.id.DRAWKDTREE);
             ADDLEFT = findViewById(R.id.ADDLEFT);
             ADDRIGHT = findViewById(R.id.ADDRIGHT);
             DISPLAYFRAMES = findViewById(R.id.DISPLAYFRAMES);
@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
             ADDLEFT.setVisibility(View.INVISIBLE);
             ADDRIGHT.setVisibility(View.INVISIBLE);
             REMOVETILES.setVisibility(View.INVISIBLE);
-            DRAWKDTREE.setVisibility(View.INVISIBLE);
+            //DRAWKDTREE.setVisibility(View.INVISIBLE);
             FILLPLACE.setVisibility(View.INVISIBLE);
             OPENGL_TOGGLE.setVisibility(View.INVISIBLE);
 
@@ -245,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                         REMOVETILES.setVisibility(View.INVISIBLE);
-                        DRAWKDTREE.setVisibility(View.INVISIBLE);
+                        //DRAWKDTREE.setVisibility(View.INVISIBLE);
                         FILLPLACE.setVisibility(View.INVISIBLE);
                         OPENGL_TOGGLE.setVisibility(View.INVISIBLE);
 
@@ -256,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                         REMOVETILES.setVisibility(View.VISIBLE);
-                        DRAWKDTREE.setVisibility(View.VISIBLE);
+                        //DRAWKDTREE.setVisibility(View.VISIBLE);
                         FILLPLACE.setVisibility(View.VISIBLE);
                         OPENGL_TOGGLE.setVisibility(View.VISIBLE);
 
@@ -301,12 +301,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            DRAWKDTREE.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean drawkdtreebutton) {
-                    DRAWKDTREEBOOL = drawkdtreebutton;
-                }
-            });
+            //DRAWKDTREE.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            //    @Override
+            //    public void onCheckedChanged(CompoundButton compoundButton, boolean drawkdtreebutton) {
+            //        DRAWKDTREEBOOL = drawkdtreebutton;
+            //    }
+            //});
 
 
             ADDLEFT.setOnClickListener(new View.OnClickListener() {

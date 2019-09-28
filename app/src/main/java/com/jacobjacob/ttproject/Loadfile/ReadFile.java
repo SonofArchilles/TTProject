@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.jacobjacob.ttproject.Material;
 import com.jacobjacob.ttproject.R;
 import com.jacobjacob.ttproject.Tile.KdTree;
+import com.jacobjacob.ttproject.Tile.KdTreeChunks;
 import com.jacobjacob.ttproject.Tile.Tile;
 import com.jacobjacob.ttproject.Vector;
 
@@ -272,10 +273,18 @@ public class ReadFile {
             }
             MATERIALARRAY[i].UpdateMaterialTileset();
         }
-
+/*/
         KDTREE = new KdTree();
         KDTREE.setTilesInCurrentTree(AllTiles); // 16ms
         KDTREE.CreatenewKDTree();
+        /**/
+        int b = 0;
+
+        KDTREECHUNKS = new KdTreeChunks();
+        KDTREECHUNKS.setTilesInCurrentTree(AllTiles);
+        KDTREECHUNKS.CreatenewKDTree();
+
+        int a = 5;
 
         //KDTREECOPY = KDTREE;
 

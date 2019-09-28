@@ -1,7 +1,7 @@
 package com.jacobjacob.ttproject.Tile;
 
-
 import android.graphics.Rect;
+import android.util.Log;
 
 import com.jacobjacob.ttproject.Vector;
 
@@ -11,31 +11,27 @@ import java.util.Collections;
 import static com.jacobjacob.ttproject.Util.*;
 public class KdTreeChunks {
 
-
-    private ArrayList<Chunk> ChunksInCurrentTree;
-    private ArrayList<Chunk> ChunkChildren1 = new ArrayList<>(); // Top / Right
-    private ArrayList<Chunk> ChunkChildren2 = new ArrayList<>(); // Bottom / Left
-
-    private ArrayList<KdTreeChunks> Children = new ArrayList<>();
-
+    private ArrayList<Tile> TilesInCurrentTree;
+    private ArrayList<Tile> TileChildren1 = new ArrayList<>(); // Top / Right
+    private ArrayList<Tile> TileChildren2 = new ArrayList<>(); // Bottom / Left
+    private ArrayList<KdTree> Children = new ArrayList<>();
     private Rect BoundaryOld;
     private boolean hasChildren = false;
     private int Iteration = 0;
     private int[][] TileMaterialint;
     int Boundary;
 
-/*/
-    public KdTreeChunks(ArrayList<Chunk> Chunks, Rect BoundaryOld, int Iteration) {
+    public KdTreeChunks(ArrayList<Tile> Tiles, Rect BoundaryOld, int Iteration) {
 
-        this.ChunksInCurrentTree = Chunks;
+        this.TilesInCurrentTree = Tiles;
         this.Iteration = Iteration;
         this.BoundaryOld = BoundaryOld;
 
 
         this.Boundary = (int) Math.ceil(TILESIZE * (camera.getEye2D().getValue(2) / ZOOMFACTOR));
 
-        int X = this.BoundaryOld.width() + 2;
-        int Y = this.BoundaryOld.height() + 2;
+        int X = this.BoundaryOld.width();
+        int Y = this.BoundaryOld.height();
 
         this.TileMaterialint = new int[X][Y]; // must be bigger to give the Tiles on the edges the right Orientation
 
@@ -46,26 +42,28 @@ public class KdTreeChunks {
             }
         }
 
-        if ((KDTREEMAXITEMS) < this.ChunksInCurrentTree.size() && Iteration < 20) {
+        if ((/* 2 * *//*/KDTREEMAXITEMS/**/ (CHUNKSIZE * CHUNKSIZE * 2) -1) < this.TilesInCurrentTree.size()/**/ && Iteration < 20/* && Iteration != 0*/) {
             Split();
         }
-        if (1 < this.ChunksInCurrentTree.size()) {
+        if (/*!this.hasChildren && */1 < this.TilesInCurrentTree.size()) {
             CheckIntersections();
+            //Autotile();
         }
+        //Autotile();
     }
 
     public KdTreeChunks() {
 
     } // to create the Kd Tree at the start
 
-    public void setChunksInCurrentTree(ArrayList<Chunk> ChunksInCurrentTree) {
-        this.ChunksInCurrentTree = ChunksInCurrentTree;
+    public void setTilesInCurrentTree(ArrayList<Tile> tilesInCurrentTree) {
+        this.TilesInCurrentTree = tilesInCurrentTree;
     }
 
-    public void addTilesInCurrentTree(ArrayList<Chunk> ChunksInCurrentTree) {
+    public void addTilesInCurrentTree(ArrayList<Tile> tilesInCurrentTree) {
         try {
-            this.ChunksInCurrentTree.addAll(ChunksInCurrentTree);
-        }catch (Exception e){
+            this.TilesInCurrentTree.addAll(tilesInCurrentTree);
+        } catch (Exception e) {
 
         }
     }
@@ -73,38 +71,49 @@ public class KdTreeChunks {
     public void CreatenewKDTree() {
         try {
 
+            //KDTREECURRENTLYBUILDING = true;
+
+            //TilesInCurrentTree = getTilesInCurrentTree();
+
             int minX = 999, minY = 999, maxX = -999, maxY = -999;
 
             if (this.Iteration == 0) {
 
-                ArrayList<Chunk> allChunks = getChunksInCurrentTree();
-                this.ChunksInCurrentTree.clear();
-                this.ChunksInCurrentTree.addAll(allChunks);
+                ArrayList<Tile> allTiles = getTilesInCurrentTree();
+                this.TilesInCurrentTree.clear();
+                this.TilesInCurrentTree.addAll(allTiles);
                 this.Children.clear();
                 this.hasChildren = false;
 
-                for (int i = 0; i < this.ChunksInCurrentTree.size(); i++) {
-                    if (this.ChunksInCurrentTree.get(i).getPositionRAW().getValue(0) < minX) {
-                        minX = (int) this.ChunksInCurrentTree.get(i).getPositionRAW().getValue(0);
+                for (int i = 0; i < this.TilesInCurrentTree.size(); i++) {
+                    if (this.TilesInCurrentTree.get(i).getPositionRAW().getValue(0) < minX) {
+                        minX = (int) this.TilesInCurrentTree.get(i).getPositionRAW().getValue(0);
                     }
-                    if (this.ChunksInCurrentTree.get(i).getPositionRAW().getValue(1) < minY) {
-                        minY = (int) this.ChunksInCurrentTree.get(i).getPositionRAW().getValue(1);
+                    if (this.TilesInCurrentTree.get(i).getPositionRAW().getValue(1) < minY) {
+                        minY = (int) this.TilesInCurrentTree.get(i).getPositionRAW().getValue(1);
                     }
-                    if (this.ChunksInCurrentTree.get(i).getPositionRAW().getValue(0) > maxX) {
-                        maxX = (int) this.ChunksInCurrentTree.get(i).getPositionRAW().getValue(0);
+                    if (this.TilesInCurrentTree.get(i).getPositionRAW().getValue(0) > maxX) {
+                        maxX = (int) this.TilesInCurrentTree.get(i).getPositionRAW().getValue(0);
                     }
-                    if (this.ChunksInCurrentTree.get(i).getPositionRAW().getValue(1) > maxY) {
-                        maxY = (int) this.ChunksInCurrentTree.get(i).getPositionRAW().getValue(1);
+                    if (this.TilesInCurrentTree.get(i).getPositionRAW().getValue(1) > maxY) {
+                        maxY = (int) this.TilesInCurrentTree.get(i).getPositionRAW().getValue(1);
                     }
                 }
+                /*/
                 minX -= 1;
                 minY -= 1;
                 maxX += 1;
                 maxY += 1;
+                /*/
+                minX = ((int) (Math.floor(minX / ((float)CHUNKSIZE))) * CHUNKSIZE);
+                minY = ((int) (Math.floor(minY / ((float)CHUNKSIZE))) * CHUNKSIZE);
+                maxX = ((int) (Math.ceil(maxX  / ((float)CHUNKSIZE))) * CHUNKSIZE);
+                maxY = ((int) (Math.ceil(maxY  / ((float)CHUNKSIZE))) * CHUNKSIZE);
+                /**/
                 this.BoundaryOld = new Rect(minX, minY, maxX, maxY);
 
-                int X = this.BoundaryOld.width() + 2;
-                int Y = this.BoundaryOld.height() + 2;
+                int X = this.BoundaryOld.width() +2;
+                int Y = this.BoundaryOld.height()+2;
                 if (X < 0) {
                     X = 0;
                 }
@@ -119,13 +128,17 @@ public class KdTreeChunks {
                     }
                 }
 
+
                 this.Boundary = (int) Math.ceil(TILESIZE * (camera.getEye2D().getValue(2) / ZOOMFACTOR));
+
+                Autotile();
             }
 
-            if (( KDTREEMAXITEMS) < this.ChunksInCurrentTree.size()) { // THE MAXIMUM IN A GIVEN CELL IS NOW KDTREEMMAXITEMS, SINCE THE TREE GETS DEVIDED INTO TWO CHILDREN HALF AS BIG
+            if (( /* 2 * */KDTREEMAXITEMS) < this.TilesInCurrentTree.size()) { // THE MAXIMUM IN A GIVEN CELL IS NOW KDTREEMMAXITEMS, SINCE THE TREE GETS DEVIDED INTO TWO CHILDREN HALF AS BIG
                 Split();
             }
-        }catch (Exception e){
+            //KDTREECURRENTLYBUILDING = false;
+        } catch (Exception e) {
 
         }
     }
@@ -135,26 +148,36 @@ public class KdTreeChunks {
         float XMIDDLE = 0;
         float YMIDDLE = 0;
 
-        KdTreeChunks KdTree1;
-        KdTreeChunks KdTree2;
+        KdTree KdTree1;
+        KdTree KdTree2;
         Rect BoundaryChildren1;
         Rect BoundaryChildren2;
 
         if (this.Iteration % 2 == 0) { // Starts with the Y split ----
 
-            for (int i = 0; i < this.ChunksInCurrentTree.size(); i++) {
-                YMIDDLE += this.ChunksInCurrentTree.get(i).getPositionRAW().getValue(1);
+            for (int i = 0; i < this.TilesInCurrentTree.size(); i++) {
+                YMIDDLE += this.TilesInCurrentTree.get(i).getPositionRAW().getValue(1);
             }
 
-            YMIDDLE /= this.ChunksInCurrentTree.size();
-            YMIDDLE = (int) YMIDDLE;
+            YMIDDLE /= this.TilesInCurrentTree.size();
+            /*/
+            if (YMIDDLE >= 0) {
+                YMIDDLE = (((int) Math.ceil(YMIDDLE / (float) CHUNKSIZE)) * CHUNKSIZE);
+            }else {
+                YMIDDLE = (((int) Math.floor(YMIDDLE / (float) CHUNKSIZE)) * CHUNKSIZE);
+            }
+            /*/
+            YMIDDLE -= YMIDDLE%CHUNKSIZE;
+            if (YMIDDLE < 0){
+                YMIDDLE -= CHUNKSIZE;
+            }
+            /**/
 
-
-            for (int i = 0; i < this.ChunksInCurrentTree.size(); i++) {
-                if (this.ChunksInCurrentTree.get(i).getPositionRAW().getValue(1) + 0.5 > YMIDDLE) { // Ysplit
-                    this.ChunkChildren1.add(this.ChunksInCurrentTree.get(i));
+            for (int i = 0; i < this.TilesInCurrentTree.size(); i++) {
+                if (this.TilesInCurrentTree.get(i).getPositionRAW().getValue(1)/**/ + 0.5/**/ > YMIDDLE) { // Ysplit
+                    this.TileChildren1.add(this.TilesInCurrentTree.get(i));
                 } else {
-                    this.ChunkChildren2.add(this.ChunksInCurrentTree.get(i));
+                    this.TileChildren2.add(this.TilesInCurrentTree.get(i));
                 }
             }
 
@@ -162,35 +185,46 @@ public class KdTreeChunks {
             BoundaryChildren2 = new Rect(this.BoundaryOld.left, this.BoundaryOld.top, this.BoundaryOld.right, (int) YMIDDLE); // Top Rect
 
 
-            KdTree1 = new KdTreeChunks(this.ChunkChildren1, BoundaryChildren1, this.Iteration + 1); // Top new Tree
-            KdTree2 = new KdTreeChunks(this.ChunkChildren2, BoundaryChildren2, this.Iteration + 1); // Bottom new Tree
+            KdTree1 = new KdTree(this.TileChildren1, BoundaryChildren1, this.Iteration + 1); // Top new Tree
+            KdTree2 = new KdTree(this.TileChildren2, BoundaryChildren2, this.Iteration + 1); // Bottom new Tree
 
 
         } else { // Continues with the X split |  |
 
-            for (int i = 0; i < this.ChunksInCurrentTree.size(); i++) {
-                XMIDDLE += this.ChunksInCurrentTree.get(i).getPositionRAW().getValue(0);
+            for (int i = 0; i < this.TilesInCurrentTree.size(); i++) {
+                XMIDDLE += this.TilesInCurrentTree.get(i).getPositionRAW().getValue(0);
             }
-            XMIDDLE /= this.ChunksInCurrentTree.size();
-            XMIDDLE = (int) XMIDDLE;
 
+            XMIDDLE /= this.TilesInCurrentTree.size();
 
-            for (int i = 0; i < this.ChunksInCurrentTree.size(); i++) {
-                if (this.ChunksInCurrentTree.get(i).getPositionRAW().getValue(0) + 0.5  < XMIDDLE) { // Xsplit
-                    this.ChunkChildren1.add(this.ChunksInCurrentTree.get(i)); // Left from Xall
+            /*/
+            if (XMIDDLE >= 0) {
+                XMIDDLE = (((int) Math.ceil(XMIDDLE / (float) CHUNKSIZE)) * CHUNKSIZE);
+            }else {
+                XMIDDLE = (((int) Math.floor(XMIDDLE / (float) CHUNKSIZE)) * CHUNKSIZE);
+            }/*/
+            XMIDDLE -= XMIDDLE%CHUNKSIZE;
+            if (XMIDDLE < 0){
+                XMIDDLE -= CHUNKSIZE;
+            }
+            /**/
+
+            for (int i = 0; i < this.TilesInCurrentTree.size(); i++) {
+                if (this.TilesInCurrentTree.get(i).getPositionRAW().getValue(0)/**/ + 0.5 /**/ < XMIDDLE) { // Xsplit
+                    this.TileChildren1.add(this.TilesInCurrentTree.get(i)); // Left from Xall
                 } else {
-                    this.ChunkChildren2.add(this.ChunksInCurrentTree.get(i)); // Right from Xall
+                    this.TileChildren2.add(this.TilesInCurrentTree.get(i)); // Right from Xall
                 }
             }
 
             BoundaryChildren1 = new Rect(this.BoundaryOld.left, this.BoundaryOld.top, (int) XMIDDLE, this.BoundaryOld.bottom); // left Rect
             BoundaryChildren2 = new Rect((int) XMIDDLE, this.BoundaryOld.top, this.BoundaryOld.right, this.BoundaryOld.bottom); // right Rect
 
-            KdTree1 = new KdTreeChunks(this.ChunkChildren1, BoundaryChildren1, this.Iteration + 1); // Left new Tree
-            KdTree2 = new KdTreeChunks(this.ChunkChildren2, BoundaryChildren2, this.Iteration + 1); // Right new Tree
+            KdTree1 = new KdTree(this.TileChildren1, BoundaryChildren1, this.Iteration + 1); // Left new Tree
+            KdTree2 = new KdTree(this.TileChildren2, BoundaryChildren2, this.Iteration + 1); // Right new Tree
         }
 
-        this.ChunksInCurrentTree.clear();
+        this.TilesInCurrentTree.clear();
         this.hasChildren = true;
         this.Children.clear();
         this.Children.add(KdTree1);
@@ -198,18 +232,18 @@ public class KdTreeChunks {
     }
 
 
-    public ArrayList<Chunk> getChunksInCurrentTree() { // up to which Iteration you want the Boundary
-        ArrayList<Chunk> returnChunksfromChildren = new ArrayList<>();
-        if (this.ChunksInCurrentTree != null) {
-            returnChunksfromChildren.addAll(this.ChunksInCurrentTree);
+    public ArrayList<Tile> getTilesInCurrentTree() { // up to which Iteration you want the Boundary
+        ArrayList<Tile> returnTilesfromChildren = new ArrayList<>();
+        if (this.TilesInCurrentTree != null) {
+            returnTilesfromChildren.addAll(this.TilesInCurrentTree);
         }
         for (int i = 0; i < this.Children.size(); i++) {
-            returnChunksfromChildren.addAll(this.Children.get(i).getChunksInCurrentTree());
+            returnTilesfromChildren.addAll(this.Children.get(i).getTilesInCurrentTree());
         }
-        return returnChunksfromChildren;
+        return returnTilesfromChildren;
     }
 
-    public ArrayList<Rect> getBoundaries() { // up to which Iteration you want the Boundary
+    public ArrayList<Rect> getBoundaries(/*int Iteration*/) { // up to which Iteration you want the Boundary
 
         ArrayList<Rect> Boundary = new ArrayList<>();
         if (this.hasChildren) {
@@ -236,8 +270,8 @@ public class KdTreeChunks {
                 }
             }
         } else {
-            if (this.ChunksInCurrentTree != null && this.ChunksInCurrentTree.size() > 0) {
-                Boundary.add(this.BoundaryOld);
+            if (this.TilesInCurrentTree != null && this.TilesInCurrentTree.size() > 0) {
+                Boundary.add(this.BoundaryOld);//Boundary.addAll(/*this.TilesInCurrentTree*/);
             }
         }
         return Boundary;
@@ -249,8 +283,6 @@ public class KdTreeChunks {
 
         if (this.hasChildren) {
             // Checks own Visibility
-            Rect Screenboundaries = new Rect(0, 0, WIDTHSCREEN, HEIGHTSCREEN);
-
 
             Vector a = new Vector(this.BoundaryOld.left, this.BoundaryOld.top).multiplydouble(TILESIZE);
             Vector b = new Vector(this.BoundaryOld.right, this.BoundaryOld.bottom).multiplydouble(TILESIZE);
@@ -258,25 +290,35 @@ public class KdTreeChunks {
             a = a.getScreencoordinatesFromTileCoordinates(a);
             b = b.getScreencoordinatesFromTileCoordinates(b);
 
+            int boundaryextra = (int) b.subtract(a).getValue(0);
+
+            Rect Screenboundaries = new Rect(-boundaryextra * 5, -boundaryextra * 5, WIDTHSCREEN + boundaryextra * 5, HEIGHTSCREEN + boundaryextra * 5);
+
+
             Rect CURRENTOnScreen = new Rect((int) a.getValue(0), (int) a.getValue(1), (int) b.getValue(0), (int) b.getValue(1));
 
-            if (Screenboundaries.contains(CURRENTOnScreen) && !Screenboundaries.intersect(CURRENTOnScreen)) {
+            if (Screenboundaries.contains(CURRENTOnScreen) && !Screenboundaries.intersect(CURRENTOnScreen) /*&& this.Iteration == 0 && a.getValue(0) < -Boundary*/) {
                 returnTilesfromChildren.addAll(getAllTilesBelow());
             } else {
                 if (Screenboundaries.intersect(CURRENTOnScreen)) {
                     for (int i = 0; i < this.Children.size(); i++) {
-                        returnTilesfromChildren.addAll(this.Children.get(i).getVisibleTilesInCurrentTree());
+                        try {
+                            returnTilesfromChildren.addAll(this.Children.get(i).getVisibleTilesInCurrentTree());
+                        } catch (Exception e) {
+                            Log.d("KDTREE", "CHILD = null" + e);
+                        }
                     }
                 }
             }
         } else {
             try {
-                for (int i = 0; i < this.ChunksInCurrentTree.size();i++) {
-                    if (this.ChunksInCurrentTree.get(i).isOnScreen()){
-                        returnTilesfromChildren.add(this.ChunksInCurrentTree.get(i));
+                for (int i = 0; i < this.TilesInCurrentTree.size(); i++) {
+                    if (this.TilesInCurrentTree.get(i).isOnScreen()) {
+                        returnTilesfromChildren.add(this.TilesInCurrentTree.get(i));
                     }
                 }
-            }catch (Exception e){
+                //returnTilesfromChildren.addAll(this.TilesInCurrentTree);
+            } catch (Exception e) {
 
             }
         }
@@ -295,21 +337,20 @@ public class KdTreeChunks {
         return returnTilesfromChildren;
     }
 
-    //TODO implement getting / Setting Method for Tiles
     public ArrayList<Tile> getTile(int x, int y) { // X & Y as Tile Coordinates
-        ArrayList<Chunk> Tiles = new ArrayList<>();
-        if (this.ChunksInCurrentTree.size() < 1) {
+        ArrayList<Tile> Tiles = new ArrayList<>();
+        if (this.TilesInCurrentTree.size() < 1) {
             for (int i = 0; i < this.Children.size(); i++) {
                 if (this.Children.get(i).getBoundarieOld().contains(x + 1, y + 1) || this.Children.get(i).getBoundarieOld().contains(x - 1, y - 1) || this.Children.get(i).getBoundarieOld().contains(x + 1, y - 1) || this.Children.get(i).getBoundarieOld().contains(x - 1, y + 1)) {
                     Tiles.addAll(this.Children.get(i).getTile(x, y));
                 }
             }
         } else {
-            for (int i = 0; i < this.ChunksInCurrentTree.size(); i++) {
-                if (this.ChunksInCurrentTree.get(i) != null) {
-                    Rect R = this.ChunksInCurrentTree.get(i).getBoundaries();
+            for (int i = 0; i < this.TilesInCurrentTree.size(); i++) {
+                if (this.TilesInCurrentTree.get(i) != null) {
+                    Rect R = this.TilesInCurrentTree.get(i).getBoundaries();
                     if (R.contains(x, y)) {
-                        Tile add = this.ChunksInCurrentTree.get(i);
+                        Tile add = this.TilesInCurrentTree.get(i);
                         Tiles.add(add);
                     }
                 }
@@ -330,43 +371,45 @@ public class KdTreeChunks {
 
 
     public void CheckIntersections() {
-        Collections.reverse(this.ChunksInCurrentTree);
-        for (int i = this.ChunksInCurrentTree.size() - 1; 1 < i; i--) {
+        Collections.reverse(this.TilesInCurrentTree);
+        for (int i = this.TilesInCurrentTree.size() - 1; 1 < i; i--) {
             for (int j = i - 1; -1 < j; j--) {
                 if (i != j) {
-                    if (this.ChunksInCurrentTree.get(i).getBoundaries().contains(this.ChunksInCurrentTree.get(j).getBoundaries())) {
-                        this.ChunksInCurrentTree.remove(j);
+                    if (this.TilesInCurrentTree.get(i).getBoundaries().contains(this.TilesInCurrentTree.get(j).getBoundaries())) {
+                        this.TilesInCurrentTree.remove(j);
                         i--;
                     }
                 }
             }
         }
-        Collections.reverse(this.ChunksInCurrentTree);
+        Collections.reverse(this.TilesInCurrentTree);
     }
 
 
-    //public void Autotile() {
-    //    for (int i = 0; i < this.ChunksInCurrentTree.size(); i++) { // Adds the Material id to the List
-    //        int X = (int) (1 +this.ChunksInCurrentTree.get(i).getPositionRAW().getValue(0) - this.BoundaryOld.left);
-    //        int Y = (int) (1 +this.ChunksInCurrentTree.get(i).getPositionRAW().getValue(1) - this.BoundaryOld.top);
+    public void Autotile() {
+        for (int i = 0; i < this.TilesInCurrentTree.size(); i++) { // Adds the Material id to the List
+            int X = (int) (/**/1 +/**/this.TilesInCurrentTree.get(i).getPositionRAW().getValue(0) - this.BoundaryOld.left);
+            int Y = (int) (/**/1 +/**/this.TilesInCurrentTree.get(i).getPositionRAW().getValue(1) - this.BoundaryOld.top);
 
-    //        if (0 < Y && 0 < X && X < this.BoundaryOld.width()  + 2 && Y < this.BoundaryOld.height() + 2) {
-    //            this.TileMaterialint[X][Y] = this.ChunksInCurrentTree.get(i).getMaterial();
-    //        }
-    //    }
-    //    for (int i = 0; i < this.ChunksInCurrentTree.size(); i++) { // Changes the ID
-    //        if (this.ChunksInCurrentTree.get(i).isAutotile()) {
-    //            this.ChunksInCurrentTree.get(i).setID(getnewID(this.TileMaterialint, this.ChunksInCurrentTree.get(i)));
-    //        }
-    //    }
-    //}
+            if (0 < Y && 0 < X && X < this.BoundaryOld.width() /**/ + 2/**/ && Y < this.BoundaryOld.height()/**/ + 2/**/) {
+                this.TileMaterialint[X][Y] = this.TilesInCurrentTree.get(i).getMaterial();
+            }
+        }
+        for (int i = 0; i < this.TilesInCurrentTree.size(); i++) { // Changes the ID
+            if (this.TilesInCurrentTree.get(i).isAutotile()/* && this.BoundaryOld.contains(this.TilesInCurrentTree.get(i).getBoundaries())*/) {
+                this.TilesInCurrentTree.get(i).setID(getnewID(this.TileMaterialint, this.TilesInCurrentTree.get(i)));
+                //this.TilesInCurrentTree.get(i).setMaterial();
+            }
+        }
+    }
 
     public Rect getBoundarieOld() {
         return this.BoundaryOld;
     }
 
-    public void removeTile(int x, int y) { // X & Y as Chunk Coordinates
-        if (this.ChunksInCurrentTree.size() < 1) {
+    public void removeTile(int x, int y) { // X & Y as Tile Coordinates
+        //KDTREECURRENTLYBUILDING = true;
+        if (this.TilesInCurrentTree.size() < 1) {
             for (int i = 0; i < this.Children.size(); i++) {
                 if (this.Children.get(i).getBoundarieOld().contains(x + 1, y + 1) || this.Children.get(i).getBoundarieOld().contains(x - 1, y - 1) || this.Children.get(i).getBoundarieOld().contains(x + 1, y - 1) || this.Children.get(i).getBoundarieOld().contains(x - 1, y + 1)) {
                     this.Children.get(i).removeTile(x, y);
@@ -374,13 +417,63 @@ public class KdTreeChunks {
             }
         } else {
 
-            for (int i = 0; i < this.ChunksInCurrentTree.size(); i++) {
-                Rect R = this.ChunksInCurrentTree.get(i).getBoundaries();
+            for (int i = 0; i < this.TilesInCurrentTree.size(); i++) {
+                Rect R = this.TilesInCurrentTree.get(i).getBoundaries();
+                //int X = (int) this.TilesInCurrentTree.get(i-1).getPositionRAW().getValue(0);
+                //int Y = (int) this.TilesInCurrentTree.get(i-1).getPositionRAW().getValue(1);
+                //R = new Rect(X, Y, X + 1, Y + 1);
                 if (R.contains(x, y)) {
-                    this.ChunksInCurrentTree.remove(i);
+                    this.TilesInCurrentTree.remove(i);
                     i--;
+                    //return;
                 }
             }
         }
-    }/**/
+        //KDTREECURRENTLYBUILDING = false;
+    }
+
+    // if contained in screen && !intersects screen then pass all
+
+    public int getnewID(int TilesinKdTree[][], Tile T) { // x and y = boundary left + top
+
+        int X = (int) (T.getPositionRAW().getValue(0) - this.BoundaryOld.left) + 1; // XPosition in [][]
+        int Y = (int) (T.getPositionRAW().getValue(1) - this.BoundaryOld.top) + 1; // YPosition in [][]
+        if (X < 1) {
+            X = 1;
+        }
+        if (Y < 1) {
+            Y = 1;
+        }
+
+        int left = TilesinKdTree[X - 1][Y]; // left Tile Material
+        int top = TilesinKdTree[X][Y - 1];
+        int right = TilesinKdTree[X + 1][Y];
+        int bottom = TilesinKdTree[X][Y + 1];
+
+        int Material = T.getMaterial();
+        /**/
+        if (top == Material) {
+            top = 1;
+        } else {
+            top = 0;
+        }
+        if (right == Material) {
+            right = 1;
+        } else {
+            right = 0;
+        }
+        if (bottom == Material) {
+            bottom = 1;
+        } else {
+            bottom = 0;
+        }
+
+        if (left == Material) {
+            left = 1;
+        } else {
+            left = 0;
+        }
+        // now either 1 or 0
+        return left * 8 + bottom * 4 + right * 2 + top;
+    }
 }

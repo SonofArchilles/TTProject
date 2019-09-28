@@ -793,8 +793,6 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
         setRGBA(BACKGROUNDCOLOR);
         GLES20.glClearColor(r, g, b, a);
 
-        //TODO Parallel thread that always saves all the visible Tiles, if not, the renderer is slower :(
-
 
         //ArrayList<Tile> visible = KDTREE.getVisibleTilesInCurrentTree(); // KDTREECOPY
 
@@ -905,43 +903,47 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
 
 /**/
 
+        if (!DRAWKDTREE) { //TODO of alpha of Rect is possible remove
+            for (int i = 0; i < VISIBLETILES.size(); i++) {
 
-        for (int i = 0; i < VISIBLETILES.size(); i++) {
+                try {
+                    if (VISIBLETILES.get(i).isOnScreen()) {
 
-            try {
-                if (VISIBLETILES.get(i).isOnScreen()) {
-
-                    Cal = Cal.getScreencoordinatesFromTileCoordinates(VISIBLETILES.get(i).getPosition());
-
-
-                    float left = (float) Cal.getValue(0);//(float) visible.get(i).getPositionRAW().getX() * Scale;//width / height;
-                    float top = (float) Cal.getValue(1);//(float) visible.get(i).getPositionRAW().getY() * Scale;
-                    float right = (float) Cal.getValue(0) + TILESIZEzoom;//(float) (visible.get(i).getPositionRAW().getX() + 1) * Scale;
-                    float bottom = (float) Cal.getValue(1) + TILESIZEzoom;//(float) (visible.get(i).getPositionRAW().getY() + 1) * Scale;
+                        Cal = Cal.getScreencoordinatesFromTileCoordinates(VISIBLETILES.get(i).getPosition());
 
 
-                    left = 2 * ((left / WIDTHSCREEN) * 2 - 1);
-                    top = 2 * (1 - (top / HEIGHTSCREEN) * 2);
-                    right = 2 * ((right / WIDTHSCREEN) * 2 - 1);
-                    bottom = 2 * (1 - (bottom / HEIGHTSCREEN) * 2);
+                        float left = (float) Cal.getValue(0);//(float) visible.get(i).getPositionRAW().getX() * Scale;//width / height;
+                        float top = (float) Cal.getValue(1);//(float) visible.get(i).getPositionRAW().getY() * Scale;
+                        float right = (float) Cal.getValue(0) + TILESIZEzoom;//(float) (visible.get(i).getPositionRAW().getX() + 1) * Scale;
+                        float bottom = (float) Cal.getValue(1) + TILESIZEzoom;//(float) (visible.get(i).getPositionRAW().getY() + 1) * Scale;
 
-                    try {
-                        drawTextureLight(left, top, right, bottom, VISIBLETILES.get(i).getIDint(), VISIBLETILES.get(i).getMaterial(), VISIBLETILES.get(i).getPosition());
-                    } catch (Exception e) {
-                        Log.d("Render Texture: ", e + "");
+
+                        left = 2 * ((left / WIDTHSCREEN) * 2 - 1);
+                        top = 2 * (1 - (top / HEIGHTSCREEN) * 2);
+                        right = 2 * ((right / WIDTHSCREEN) * 2 - 1);
+                        bottom = 2 * (1 - (bottom / HEIGHTSCREEN) * 2);
+
+                        try {
+                            drawTextureLight(left, top, right, bottom, VISIBLETILES.get(i).getIDint(), VISIBLETILES.get(i).getMaterial(), VISIBLETILES.get(i).getPosition());
+                        } catch (Exception e) {
+                            Log.d("Render Texture: ", e + "");
+                        }
                     }
+                } catch (Exception e) {
+                    Log.d("KDTREE: ", "Tile null error");
                 }
-            } catch (Exception e) {
-                Log.d("KDTREE: ", "Tile null error");
             }
         }
-
 
         mMVPMatrixHandle = GLES20.glGetUniformLocation(Program[1], "u_MVPMatrix");
         mPositionHandle = GLES20.glGetAttribLocation(Program[1], "a_Position");
         mColorHandle = GLES20.glGetAttribLocation(Program[1], "a_Color");
 
         GLES20.glUseProgram(Program[1]);
+
+        if (DRAWKDTREE) {
+            DrawKdtree();
+        }
 
         if (DRAWHITBOX) {
             DrawHitbox();
@@ -1315,7 +1317,7 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
 
         boolean TestUPDATEMATERIALS = UPDATERELOADEDMATERIALS;
 
-        for (int i = 0; i < MATERIALARRAY.length; i++) { //TODO Updates the Texture if the Material has an Animation in a different, parallel Thread!
+        for (int i = 0; i < MATERIALARRAY.length; i++) { // Updates the Texture if the Material has an Animation in a different, parallel Thread!
             try {
                 if (MATERIALARRAY[i].hasAnimation()) {
                     TILETEXTURE.deleteTextures(i); // Both working perfectly!!
@@ -1342,7 +1344,7 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
         //boolean TestUPDATEMATERIALS = UPDATERELOADEDMATERIALS;
 
         if (AnimationsToUpdate.size() > 0) {
-            for (int i = 0; i < AnimationsToUpdate.size(); i++) { //TODO Updates the Texture if the Material has an Animation in a different, parallel Thread!
+            for (int i = 0; i < AnimationsToUpdate.size(); i++) { // Updates the Texture if the Material has an Animation in a different, parallel Thread!
                 try {
                     TILETEXTURE.deleteTextures(AnimationsToUpdate.get(i)); // Both working perfectly!!
                     TILETEXTURE.updateTextures(AnimationsToUpdate.get(i)); // Both working perfectly!!
@@ -1364,11 +1366,11 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
         try {
             int RectPosition = HITBOX.size() - 1;
 
-            Cal = Cal.getScreencoordinatesFromTileCoordinates(new Vector(HITBOX.get(RectPosition).left-1, HITBOX.get(RectPosition).top-1));//.multiplydouble(TILESIZE));
+            Cal = Cal.getScreencoordinatesFromTileCoordinates(new Vector(HITBOX.get(RectPosition).left - 1, HITBOX.get(RectPosition).top - 1));//.multiplydouble(TILESIZE));
 
             float left = (float) Cal.getValue(0);
             float top = (float) Cal.getValue(1);
-            Cal = Cal.getScreencoordinatesFromTileCoordinates(new Vector(HITBOX.get(RectPosition).right+1, HITBOX.get(RectPosition).bottom+1));//.multiplydouble(TILESIZE));
+            Cal = Cal.getScreencoordinatesFromTileCoordinates(new Vector(HITBOX.get(RectPosition).right + 1, HITBOX.get(RectPosition).bottom + 1));//.multiplydouble(TILESIZE));
             float right = (float) Cal.getValue(0);
             float bottom = (float) Cal.getValue(1);
 
@@ -1495,5 +1497,30 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
         }
 
         /**Draw close Collision Tiles or filter for a specific Material*/
+    }
+
+    private void DrawKdtree() {
+
+
+        Vector Cal = new Vector();
+
+        for (int i = 0; i < VISIBLEKDTREECHUNKS.size(); i++) {
+            float brightness = ((float)i)/(float) VISIBLEKDTREECHUNKS.size();
+
+            Cal = Cal.getScreencoordinatesFromTileCoordinates(new Vector(VISIBLEKDTREECHUNKS.get(i).left  * TILESIZE, VISIBLEKDTREECHUNKS.get(i).top  * TILESIZE));
+
+            float left = (float) Cal.getValue(0);
+            float top = (float) Cal.getValue(1);
+            Cal = Cal.getScreencoordinatesFromTileCoordinates(new Vector(VISIBLEKDTREECHUNKS.get(i).right  * TILESIZE, VISIBLEKDTREECHUNKS.get(i).bottom  * TILESIZE));
+            float right = (float) Cal.getValue(0);
+            float bottom = (float) Cal.getValue(1);
+
+            left = 2 * ((left / WIDTHSCREEN) * 2 - 1);
+            top = 2 * (1 - (top / HEIGHTSCREEN) * 2);
+            right = 2 * ((right / WIDTHSCREEN) * 2 - 1);
+            bottom = 2 * (1 - (bottom / HEIGHTSCREEN) * 2);
+
+            drawSquare(left, top, right, bottom, Color.argb(120, (int)(255 * brightness), (int)(255 * (1-brightness)), 255/2));
+        }
     }
 }

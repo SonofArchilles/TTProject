@@ -10,7 +10,6 @@ import static com.jacobjacob.ttproject.Util.*;
 
 public class Chunk {
 
-    private int Size = 20;
     private Rect Boundingbox;
     private int X, Y;
 
@@ -19,8 +18,8 @@ public class Chunk {
     private Tile[][] TilesinChunk;
 
     public Chunk(int X, int Y) { // Position in Chunkspace!!!
-        this.Boundingbox = new Rect(X, Y, X + this.Size, Y + this.Size);
-        this.TilesinChunk = new Tile[this.Size][this.Size];
+        this.Boundingbox = new Rect(X, Y, X + CHUNKSIZE, Y + CHUNKSIZE);
+        this.TilesinChunk = new Tile[CHUNKSIZE][CHUNKSIZE];
         this.X = X;
         this.Y = Y;
         this.PositionChunkspace = new Vector(X, Y);
@@ -46,8 +45,8 @@ public class Chunk {
 
     public boolean isOnScreen() {
 
-        Vector Cal = new Vector().getScreencoordinatesFromTileCoordinates(this.PositionChunkspace.multiplydouble(this.Size * TILESIZE));
-        float TILESIZEzoom = (float) Math.ceil(this.Size * TILESIZE * (camera.getEye2D().getValue(2) / ZOOMFACTOR));
+        Vector Cal = new Vector().getScreencoordinatesFromTileCoordinates(this.PositionChunkspace.multiplydouble(CHUNKSIZE * TILESIZE));
+        float TILESIZEzoom = (float) Math.ceil(CHUNKSIZE * TILESIZE * (camera.getEye2D().getValue(2) / ZOOMFACTOR));
 
 
         int left = (int) Cal.getValue(0);//(float) visible.get(i).getPositionRAW().getX() * Scale;//width / height;
@@ -93,8 +92,8 @@ public class Chunk {
 
     public ArrayList<Tile> getTilesInCurrentChunk() { // up to which Iteration you want the Boundary
         ArrayList<Tile> returnTilesInChunk = new ArrayList<>();
-        for (int i = 0; i < this.Size; i++) {
-            for (int j = 0; j < this.Size; j++) {
+        for (int i = 0; i < CHUNKSIZE; i++) {
+            for (int j = 0; j < CHUNKSIZE; j++) {
                 returnTilesInChunk.add(this.TilesinChunk[i][j]);
             }
         }

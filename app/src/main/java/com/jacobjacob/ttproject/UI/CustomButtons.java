@@ -29,7 +29,6 @@ public class CustomButtons {
     float left_Opengl, right_Opengl, top_Opengl, bottom_Opengl,left, right, top, bottom;
 
 
-    //TODO buttonsnapping ==> Tell Button to get Placed to the right, left, top or Bottom side of one or more Buttons
 
 
     boolean[] booleansToChange = new boolean[1];
@@ -230,6 +229,18 @@ public class CustomButtons {
                         DRAWHITBOX = !DRAWHITBOX;
 
                         if (DRAWHITBOX) {
+                            this.Colors.set(0, FILLTILECOLOR);
+
+                            Debug newDebug = new Debug();
+                            newDebug.TilesToClippboard();
+
+                        } else {
+                            this.Colors.set(0, CHUNKCOLOR);
+                        }
+                    }else if (this.VariableToChange == "DRAWKDTREE"){
+                        DRAWKDTREE = ! DRAWKDTREE;
+
+                        if (DRAWKDTREE) {
                             this.Colors.set(0, FILLTILECOLOR);
 
                             Debug newDebug = new Debug();

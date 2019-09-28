@@ -318,22 +318,26 @@ public class KdTree {
 
     public ArrayList<Tile> getTile(int x, int y) { // X & Y as Tile Coordinates
         ArrayList<Tile> Tiles = new ArrayList<>();
-        if (this.TilesInCurrentTree.size() < 1) {
-            for (int i = 0; i < this.Children.size(); i++) {
-                if (this.Children.get(i).getBoundarieOld().contains(x + 1, y + 1) || this.Children.get(i).getBoundarieOld().contains(x - 1, y - 1) || this.Children.get(i).getBoundarieOld().contains(x + 1, y - 1) || this.Children.get(i).getBoundarieOld().contains(x - 1, y + 1)) {
-                    Tiles.addAll(this.Children.get(i).getTile(x, y));
+        try {
+            if (this.TilesInCurrentTree.size() < 1) {
+                for (int i = 0; i < this.Children.size(); i++) {
+                    if (this.Children.get(i).getBoundarieOld().contains(x + 1, y + 1) || this.Children.get(i).getBoundarieOld().contains(x - 1, y - 1) || this.Children.get(i).getBoundarieOld().contains(x + 1, y - 1) || this.Children.get(i).getBoundarieOld().contains(x - 1, y + 1)) {
+                        Tiles.addAll(this.Children.get(i).getTile(x, y));
+                    }
                 }
-            }
-        } else {
-            for (int i = 0; i < this.TilesInCurrentTree.size(); i++) {
-                if (this.TilesInCurrentTree.get(i) != null) {
-                    Rect R = this.TilesInCurrentTree.get(i).getBoundaries();
-                    if (R.contains(x, y)) {
-                        Tile add = this.TilesInCurrentTree.get(i);
-                        Tiles.add(add);
+            } else {
+                for (int i = 0; i < this.TilesInCurrentTree.size(); i++) {
+                    if (this.TilesInCurrentTree.get(i) != null) {
+                        Rect R = this.TilesInCurrentTree.get(i).getBoundaries();
+                        if (R.contains(x, y)) {
+                            Tile add = this.TilesInCurrentTree.get(i);
+                            Tiles.add(add);
+                        }
                     }
                 }
             }
+        }catch (Exception e){
+
         }
         return Tiles;
     }
