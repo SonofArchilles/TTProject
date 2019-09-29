@@ -11,6 +11,8 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.jacobjacob.ttproject.Light.PointLight;
+import com.jacobjacob.ttproject.Material.Material;
+import com.jacobjacob.ttproject.Material.Tiletexture;
 import com.jacobjacob.ttproject.Tile.KdTreeChunks;
 import com.jacobjacob.ttproject.UI.CustomButtons;
 import com.jacobjacob.ttproject.Tile.KdTree;
@@ -212,16 +214,17 @@ public class Util {
     public static ArrayList<Rect> HITBOX;
     public static int SELECTEDMATERIAL; // the Material which should be displayed and should be collided with
 
-
+    public static boolean READDIRECTLYFROMFILE = false;
 
     public static KdTree KDTREE = new KdTree();
     public static KdTree KDTREECOPY = KDTREE;
 
     public static KdTreeChunks KDTREECHUNKS = new KdTreeChunks();
+    public static int KDTREECHUNKSMAXITERATIONS = 7;
     public static ArrayList<Rect> VISIBLEKDTREECHUNKS = new ArrayList<Rect>();
 
     public static int CHUNKSIZE = 20;
-    public static boolean DRAWKDTREE = true;
+    public static boolean DRAWKDTREE = false;
 
     public static int KDTREEMAXITEMS = 80;
     public static boolean KDTREECURRENTLYBUILDING = true;

@@ -28,6 +28,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.jacobjacob.ttproject.Material.Tiletexture;
 import com.jacobjacob.ttproject.UI.Inputloop;
 
 import static com.jacobjacob.ttproject.LevelEditor.SelectedMaterial;

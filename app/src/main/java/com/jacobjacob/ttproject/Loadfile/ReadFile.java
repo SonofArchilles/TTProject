@@ -1,14 +1,10 @@
 package com.jacobjacob.ttproject.Loadfile;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.jacobjacob.ttproject.Material;
+import com.jacobjacob.ttproject.Material.Material;
 import com.jacobjacob.ttproject.R;
-import com.jacobjacob.ttproject.Tile.KdTree;
 import com.jacobjacob.ttproject.Tile.KdTreeChunks;
 import com.jacobjacob.ttproject.Tile.Tile;
 import com.jacobjacob.ttproject.Vector;
@@ -135,20 +131,24 @@ public class ReadFile {
 
             InputStream inputStream;
 
-            /*/ // Reads the .txt file directly, no changes possible yet
-            if (LEVELINT == 0) {
-                inputStream = CONTEXT.getResources().openRawResource(R.raw.lvla);
-            }else if (LEVELINT == 1) {
-                inputStream = CONTEXT.getResources().openRawResource(R.raw.lvlb);
-            }else if (LEVELINT == 2) {
-                inputStream = CONTEXT.getResources().openRawResource(R.raw.lvlc);
-            }else if (LEVELINT == 3) {
-                inputStream = CONTEXT.getResources().openRawResource(R.raw.lvld);
-            }else{
-                inputStream = CONTEXT.getResources().openRawResource(R.raw.lvle);
-            }/*/
-            // seems to read the file from somewhere else, changes can be saved
-            inputStream = CONTEXT.openFileInput(FILE_NAMES.get(LEVELINT));
+            /**/ // Reads the .txt file directly, no changes possible yet
+            if (READDIRECTLYFROMFILE) {
+                if (LEVELINT == 0) {
+                    inputStream = CONTEXT.getResources().openRawResource(R.raw.lvla);
+                } else if (LEVELINT == 1) {
+                    inputStream = CONTEXT.getResources().openRawResource(R.raw.lvlb);
+                } else if (LEVELINT == 2) {
+                    inputStream = CONTEXT.getResources().openRawResource(R.raw.lvlc);
+                } else if (LEVELINT == 3) {
+                    inputStream = CONTEXT.getResources().openRawResource(R.raw.lvld);
+                } else {
+                    inputStream = CONTEXT.getResources().openRawResource(R.raw.lvle);
+                }
+            }/**/
+            else {
+                // seems to read the file from somewhere else, changes can be saved
+                inputStream = CONTEXT.openFileInput(FILE_NAMES.get(LEVELINT));
+            }
             /**/
 
 

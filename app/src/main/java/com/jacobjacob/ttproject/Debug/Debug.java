@@ -38,7 +38,7 @@ public class Debug {
         StringBuilder Tiles = new StringBuilder();
 
 
-        ArrayList<Tile> AllTiles = KDTREE.getTilesInCurrentTree();
+        ArrayList<Tile> AllTiles = KDTREECHUNKS.getTilesInCurrentTree();
 
         Log.d("Debug LvlToString","Number of Tiles to save: " + String.valueOf(AllTiles.size()));
 

@@ -2,7 +2,6 @@ package com.jacobjacob.ttproject;
 
 import android.graphics.Rect;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.jacobjacob.ttproject.Tile.Tile;
 
@@ -27,8 +26,6 @@ public class LevelEditor {
     public void Inventory() { // big inventory
         for (int i = 0; i < TEXTUREWIDTH; i++) {
             for (int j = 0; j < TEXTUREWIDTH; j++) {
-                //Tile ADDTOINVENTORY = new Tile(new Vector(j, i), new Vector(j, i),FRAMES);
-                //ADDTOINVENTORY.setStarttime((int)System.currentTimeMillis());
                 INVENTORY.add(new Tile(new Vector(j, i), i + j * TEXTUREWIDTH, FRAMES));
             }
         }
@@ -61,7 +58,9 @@ public class LevelEditor {
 
 
     public boolean SelectTileFromSmallInventory(int x, int y) {
-
+        if (OPENGL){
+            return false;
+        }
         int Height7Texturewidth = HEIGHTSCREEN / TEXTUREWIDTH;
 
         int HeTeIn = (int) (Height7Texturewidth * INVENTORYDISPLAYSIZE);
@@ -132,6 +131,10 @@ public class LevelEditor {
         if (SELECTEDIDINVENTORY.size() > 0) {
             return (int) (SELECTEDIDINVENTORY.get(SELECTEDIDINVENTORY.size() - 1)/*+1*/) / TEXTUREWIDTH;
         } else return 0;
+    }
+
+    public void setSelectedMaterial(int Material){
+        SelectedMaterial = Material;
     }
 
 

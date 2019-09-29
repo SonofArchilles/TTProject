@@ -14,7 +14,7 @@ public class KdTreeChunks {
     private ArrayList<Tile> TilesInCurrentTree;
     private ArrayList<Tile> TileChildren1 = new ArrayList<>(); // Top / Right
     private ArrayList<Tile> TileChildren2 = new ArrayList<>(); // Bottom / Left
-    private ArrayList<KdTree> Children = new ArrayList<>();
+    private ArrayList<KdTreeChunks> Children = new ArrayList<>();
     private Rect BoundaryOld;
     private boolean hasChildren = false;
     private int Iteration = 0;
@@ -42,14 +42,12 @@ public class KdTreeChunks {
             }
         }
 
-        if ((/* 2 * *//*/KDTREEMAXITEMS/**/ (CHUNKSIZE * CHUNKSIZE * 2) -1) < this.TilesInCurrentTree.size()/**/ && Iteration < 20/* && Iteration != 0*/) {
+        if (((CHUNKSIZE * CHUNKSIZE)) <= this.TilesInCurrentTree.size() && this.Iteration < KDTREECHUNKSMAXITERATIONS) {
             Split();
         }
-        if (/*!this.hasChildren && */1 < this.TilesInCurrentTree.size()) {
+        if (1 < this.TilesInCurrentTree.size()) {
             CheckIntersections();
-            //Autotile();
         }
-        //Autotile();
     }
 
     public KdTreeChunks() {
@@ -148,8 +146,8 @@ public class KdTreeChunks {
         float XMIDDLE = 0;
         float YMIDDLE = 0;
 
-        KdTree KdTree1;
-        KdTree KdTree2;
+        KdTreeChunks KdTree1;
+        KdTreeChunks KdTree2;
         Rect BoundaryChildren1;
         Rect BoundaryChildren2;
 
@@ -185,8 +183,8 @@ public class KdTreeChunks {
             BoundaryChildren2 = new Rect(this.BoundaryOld.left, this.BoundaryOld.top, this.BoundaryOld.right, (int) YMIDDLE); // Top Rect
 
 
-            KdTree1 = new KdTree(this.TileChildren1, BoundaryChildren1, this.Iteration + 1); // Top new Tree
-            KdTree2 = new KdTree(this.TileChildren2, BoundaryChildren2, this.Iteration + 1); // Bottom new Tree
+            KdTree1 = new KdTreeChunks(this.TileChildren1, BoundaryChildren1, this.Iteration + 1); // Top new Tree
+            KdTree2 = new KdTreeChunks(this.TileChildren2, BoundaryChildren2, this.Iteration + 1); // Bottom new Tree
 
 
         } else { // Continues with the X split |  |
@@ -220,8 +218,8 @@ public class KdTreeChunks {
             BoundaryChildren1 = new Rect(this.BoundaryOld.left, this.BoundaryOld.top, (int) XMIDDLE, this.BoundaryOld.bottom); // left Rect
             BoundaryChildren2 = new Rect((int) XMIDDLE, this.BoundaryOld.top, this.BoundaryOld.right, this.BoundaryOld.bottom); // right Rect
 
-            KdTree1 = new KdTree(this.TileChildren1, BoundaryChildren1, this.Iteration + 1); // Left new Tree
-            KdTree2 = new KdTree(this.TileChildren2, BoundaryChildren2, this.Iteration + 1); // Right new Tree
+            KdTree1 = new KdTreeChunks(this.TileChildren1, BoundaryChildren1, this.Iteration + 1); // Left new Tree
+            KdTree2 = new KdTreeChunks(this.TileChildren2, BoundaryChildren2, this.Iteration + 1); // Right new Tree
         }
 
         this.TilesInCurrentTree.clear();

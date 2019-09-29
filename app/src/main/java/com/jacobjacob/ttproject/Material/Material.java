@@ -1,7 +1,9 @@
-package com.jacobjacob.ttproject;
+package com.jacobjacob.ttproject.Material;
 
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+
+import com.jacobjacob.ttproject.Vector;
 
 import java.util.Random;
 

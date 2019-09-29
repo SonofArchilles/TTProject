@@ -1,10 +1,13 @@
 package com.jacobjacob.ttproject.UI;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.jacobjacob.ttproject.Debug.Debug;
+import com.jacobjacob.ttproject.Material.Tiletexture;
 import com.jacobjacob.ttproject.Vector;
 
 import java.util.ArrayList;
@@ -19,12 +22,13 @@ public class CustomButtons {
     int  color = Color.rgb(120, 120, 120), color2;
     Rect Box;
     Rect BoxDraw;
-    boolean ButtonUpdated = false;
+    boolean ButtonUpdated = false,Togglestate;
 
     ArrayList<Rect> Boxes = new ArrayList<>();
     ArrayList<Integer> Colors = new ArrayList<>();
     private int Accuracy = 128;
-
+    private int Texture;
+    private String Texturename;
 
     float left_Opengl, right_Opengl, top_Opengl, bottom_Opengl,left, right, top, bottom;
 
@@ -41,12 +45,13 @@ public class CustomButtons {
      *
      * @param ButtonType  "Joystick" - changes the Cameraposition  "Button" - updates when pressed down "ToggleButton" - only updates when pressed once "Seekbar" - slider to adjust value
      * @param VariableToChange The Sting of the Variables name that should be changed
+     * @param Texturename The name of the Texturefile as texture.png
      * @param Position The Position in Screenspacecoordinates and is directly at the center of the shape, could get inverted if OpenGl coordinates kick in
      * @param Width    total width from left to right of the shape
      * @param Height   total height from top to bottom
      * @param Colorint The color of the Button
      */
-    public CustomButtons(String ButtonType,String VariableToChange, Vector Position, float Width, float Height, int Colorint) {
+    public CustomButtons(String ButtonType,String VariableToChange,String Texturename, Vector Position, float Width, float Height, int Colorint) {
         this.Position = Position;
         this.Width = Width;
         this.Height = Height;
@@ -76,8 +81,18 @@ public class CustomButtons {
         this.color2 = Colorint;
         this.Colors.add(this.color2);
         this.Boxes.add(this.BoxDraw);
+
+        this.Texturename = Texturename;
     }
 
+    public void LoadTexture() {
+        if (this.Texturename != "") {
+            Tiletexture T = new Tiletexture();
+            Bitmap Texturebmp = T.LoadBitmapFromRes(this.Texturename);
+
+            this.Texture = T.BitmapToTexture(Texturebmp);
+        }
+    }
 
 
 
@@ -211,54 +226,66 @@ public class CustomButtons {
                         RELOADMATERIALS = true;
 
 
-                    }else if (this.VariableToChange == "OPENGL"){
+                    } else if (this.VariableToChange == "OPENGL") {
 
                         SETTINGS_OPENGL = !SETTINGS_OPENGL;
+                        Togglestate = SETTINGS_OPENGL;
+
 
                         if (SETTINGS_OPENGL) {
-                            this.Colors.set(0, FILLTILECOLOR);
-
                             Debug newDebug = new Debug();
                             newDebug.TilesToClippboard();
 
-                        } else {
-                            this.Colors.set(0, CHUNKCOLOR);
                         }
                         WF.SaveSettings();
-                    }else if (this.VariableToChange == "DRAWHITBOX"){
+
+                    } else if (this.VariableToChange == "DRAWHITBOX") {
                         DRAWHITBOX = !DRAWHITBOX;
+                        Togglestate = DRAWHITBOX;
 
-                        if (DRAWHITBOX) {
-                            this.Colors.set(0, FILLTILECOLOR);
+                    } else if (this.VariableToChange == "DRAWKDTREE") {
+                        DRAWKDTREE = !DRAWKDTREE;
 
-                            Debug newDebug = new Debug();
-                            newDebug.TilesToClippboard();
+                        Togglestate = DRAWKDTREE;
 
-                        } else {
-                            this.Colors.set(0, CHUNKCOLOR);
-                        }
-                    }else if (this.VariableToChange == "DRAWKDTREE"){
-                        DRAWKDTREE = ! DRAWKDTREE;
-
-                        if (DRAWKDTREE) {
-                            this.Colors.set(0, FILLTILECOLOR);
-
-                            Debug newDebug = new Debug();
-                            newDebug.TilesToClippboard();
-
-                        } else {
-                            this.Colors.set(0, CHUNKCOLOR);
-                        }
                     }
 
                 }
+
+                //WF.SaveSettings();
+
+                if (this.Togglestate) {
+                    this.Colors.set(0, FILLTILECOLOR);
+                    Toast.makeText(CONTEXT,this.VariableToChange + " is true",Toast.LENGTH_LONG).show();
+
+                } else {
+                    this.Colors.set(0, CHUNKCOLOR);
+                    Toast.makeText(CONTEXT,this.VariableToChange + " is false",Toast.LENGTH_SHORT).show();
+                }
+
             }
+
+
+
 
             if (this.Type == "Seekbar") { // Seekbar
                 CustomSeekbar();
 
-                if (this.VariableToChange == "SELECTEDMATERIAL"){
-                    SELECTEDMATERIAL = (int)(this.Progress * MATERIALSTOTEXTURE); // To select the Materials to check the Collisions
+                if (this.VariableToChange == "SELECTEDMATERIAL") {
+                    SELECTEDMATERIAL = (int) (this.Progress * MATERIALSTOTEXTURE); // To select the Materials to check the Collisions
+                    LE.setSelectedMaterial(SELECTEDMATERIAL);
+
+                    /*/
+                    if (SELECTEDIDINVENTORY != null) {
+                        if (SELECTEDIDINVENTORY.size() > 1){
+                            SELECTEDIDINVENTORY.set(0, SELECTEDMATERIAL);
+                        }else {
+                            SELECTEDIDINVENTORY.add( SELECTEDMATERIAL);
+                        }
+                    }else {
+                        SELECTEDIDINVENTORY = new ArrayList<>();
+                        SELECTEDIDINVENTORY.add(SELECTEDMATERIAL);
+                    }/**/
                 }
             }
 
@@ -602,6 +629,10 @@ public class CustomButtons {
         this.Position = new Vector(this.Position.getX(),newPositionY);
 
         UpdateBox();
+    }
+
+    public int getTexture(){
+        return this.Texture;
     }
 
 }

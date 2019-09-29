@@ -1,17 +1,12 @@
-package com.jacobjacob.ttproject;
+package com.jacobjacob.ttproject.Material;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.LightingColorFilter;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Rect;
+import android.graphics.*;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
+
+import com.jacobjacob.ttproject.R;
+import com.jacobjacob.ttproject.Vector;
 
 import java.util.ArrayList;
 
@@ -168,7 +163,7 @@ public class Tiletexture {
      */
     public Bitmap getBitmap(int ID, int MATERIALint) { // no animations possible yet
 
-        if (!PLACETILE &&   TILELAYER < TILELAYERSTART + 4/*MATERIALNORMALS[MATERIALint] != null && MATERIALint * 5 < Bitmaplist.size() && MATERIALARRAY[MATERIALint].showNormal()*/) {
+        if (!PLACETILE && TILELAYER < TILELAYERSTART + 4/*MATERIALNORMALS[MATERIALint] != null && MATERIALint * 5 < Bitmaplist.size() && MATERIALARRAY[MATERIALint].showNormal()*/) {
             try {
                 return MATERIALNORMALS[MATERIALint][ID];
             } catch (Exception e) {
@@ -234,7 +229,7 @@ public class Tiletexture {
     /**
      * Loads the given Texture into Opengl es memory
      *
-     * @param TextureToUpdate the int of The Material that has to be loadet
+     * @param TextureToUpdate the int of The Material that has to be loaded
      */
     public void updateTextures(int TextureToUpdate) {
 
@@ -272,7 +267,7 @@ public class Tiletexture {
     /**
      * Loads the given normal Texture into Opengl es memory
      *
-     * @param TextureToUpdate the int of The Material that has to be loadet
+     * @param TextureToUpdate the int of The Material that has to be loaded
      */
     public void updateTexturesNormals(int TextureToUpdate) {
 
@@ -899,11 +894,78 @@ public class Tiletexture {
         }
         int a = 0;
         for (int j = 0; j < SingleTilemap.length - 1; j++) {
-            SingleTilemap[j] = OverlayTilemap(SingleTilemap[15]/*SingleTilemap[SingleTilemap.length-1]*/, SingleTilemap[j]);
+            SingleTilemap[j] = OverlayTilemap(SingleTilemap[15]/*SingleTilemap[SingleTilemap.length-1]*/, SingleTilemap[j]);//BitmapFactory;
         }
 
 
         MATERIALNORMALS[intMaterial] = SingleTilemap;
+    }
+
+    private Bitmap convert(Bitmap bitmap, Bitmap.Config config) {
+        Bitmap convertedBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), config);
+        Canvas canvas = new Canvas(convertedBitmap);
+        Paint paint = new Paint();
+        paint.setColor(Color.BLACK);
+        canvas.drawBitmap(bitmap, 0, 0, paint);
+        return convertedBitmap;
+    }
+
+    public Bitmap LoadBitmapFromRes(String Filename) {
+
+        try {
+
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            options.inScaled = false;
+
+            int id;
+
+            if (Filename.equals("opengl.png")) {
+                id = R.drawable.opengl;
+            } else if (Filename.equals("kdtree.png")) {
+                id = R.drawable.kdtree;
+            } else if (Filename.equals("hitbox.png")) {
+                id = R.drawable.hitbox;
+            } else {
+                id = R.drawable.level;
+            }
+             /*/
+             return BitmapFactory.decodeFile("/drawable-v24/" + Filename, options);
+             /*/
+            return convert(BitmapFactory.decodeResource(CONTEXT.getResources(), id/*, options*/),Bitmap.Config.ARGB_8888);
+            /**/
+        } catch (Exception e) {
+
+        }
+        return null;
+    }
+
+    public int BitmapToTexture(Bitmap Bmp) {
+
+        int[] textureHandle = new int[1];
+        GLES20.glGenTextures(1, textureHandle, textureHandle[0]);
+
+        try {
+            if (textureHandle[0] != 0) {
+                // Bind to the texture in OpenGL
+                GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
+
+                // Set filtering
+                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+
+                // Load the bitmap into the bound texture.
+                GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, Bmp, 0);
+            }
+        } catch (Exception e) {
+            Log.d("Load Texture:", "" + e);
+        }
+        if (textureHandle[0] == 0) {
+            throw new RuntimeException("Error loading texture.");
+        }
+
+
+        return textureHandle[0];
     }
 }
 
