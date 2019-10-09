@@ -1,6 +1,7 @@
 package com.jacobjacob.ttproject.Material;
 
 import android.graphics.*;
+import android.graphics.drawable.Drawable;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
@@ -8,6 +9,8 @@ import android.util.Log;
 import com.jacobjacob.ttproject.R;
 import com.jacobjacob.ttproject.Vector;
 
+import java.io.BufferedInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import static com.jacobjacob.ttproject.Util.*;
@@ -918,22 +921,10 @@ public class Tiletexture {
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
             options.inScaled = false;
 
-            int id;
+            int id = CONTEXT.getResources().getIdentifier(Filename,"drawable",CONTEXT.getPackageName());
 
-            if (Filename.equals("opengl.png")) {
-                id = R.drawable.opengl;
-            } else if (Filename.equals("kdtree.png")) {
-                id = R.drawable.kdtree;
-            } else if (Filename.equals("hitbox.png")) {
-                id = R.drawable.hitbox;
-            } else {
-                id = R.drawable.level;
-            }
-             /*/
-             return BitmapFactory.decodeFile("/drawable-v24/" + Filename, options);
-             /*/
-            return convert(BitmapFactory.decodeResource(CONTEXT.getResources(), id/*, options*/),Bitmap.Config.ARGB_8888);
-            /**/
+            return convert(BitmapFactory.decodeResource(CONTEXT.getResources(), id),Bitmap.Config.ARGB_8888);
+
         } catch (Exception e) {
 
         }

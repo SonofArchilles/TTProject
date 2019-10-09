@@ -32,22 +32,21 @@ public class Inputloop {
 
                 animations = new ArrayList<>();
 
-                for (int i = 0; i < visible.size();i++){
-                    if (MATERIALARRAY[visible.get(i).getMaterial()].hasAnimation() && !animations.contains(visible.get(i).getMaterial())){
+                for (int i = 0; i < visible.size(); i++) {
+                    if (MATERIALARRAY[visible.get(i).getMaterial()].hasAnimation() && !animations.contains(visible.get(i).getMaterial())) {
                         animations.add(visible.get(i).getMaterial());//MATERIALARRAY[i].getNumber());
                     }
                 }
-                for (int i = 0; i < animations.size();i++){
+                for (int i = 0; i < animations.size(); i++) {
                     MATERIALARRAY[animations.get(i)].UpdateTileset();
                     MATERIALLIST[animations.get(i)] = MATERIALLISTUPDATING[animations.get(i)];
                 }
 
 
-
                 if (!RELOADMATERIALS) {
                     for (int i = 0; i < MATERIALARRAY.length; i++) {
                         try {
-                            if (RELOADMATERIALS){
+                            if (RELOADMATERIALS) {
 
                                 MATERIALARRAY[i].CreateMaterialTileset();
 
@@ -72,7 +71,6 @@ public class Inputloop {
 
 
                 if (TOUCHSTATE == 0) {
-                    TOUCHCUSTOMBUTTONS = false; // Doesen't update the inventory or buttonplacement if not necessary
                     ActionDown();
                 } else if (TOUCHSTATE == 1) {
                     ActionMove();
@@ -88,51 +86,60 @@ public class Inputloop {
         }
     }
 
-    public void ActionDown() {
+    private void ActionDown() {
+        TOUCHCUSTOMBUTTONS = false; // Doesen't update the inventory or buttonplacement if not necessary
         for (int i = 0; i < CUSTOMBUTTONSLIST.size(); i++) {
             CUSTOMBUTTONSLIST.get(i).UpdateButton();
+            CUSTOMBUTTONSLIST.get(i).Intersect();
         }
-        UpdateTouch();
+
+        if (!TOUCHCUSTOMBUTTONS) {
+            UpdateTouch();
+        }
+    }
+
+    private void ActionMove() {
+        for (int i = 0; i < CUSTOMBUTTONSLIST.size(); i++) {
+            CUSTOMBUTTONSLIST.get(i).UpdateButton();
+            CUSTOMBUTTONSLIST.get(i).Intersect();
+        }
+
+        if (!TOUCHCUSTOMBUTTONS) {
+            UpdateTouch();
+        }
 
     }
 
-    public void ActionMove() {
-        for (int i = 0; i < CUSTOMBUTTONSLIST.size(); i++) {
-            CUSTOMBUTTONSLIST.get(i).UpdateButton();
-        }
-        UpdateTouch();
-
-
-    }
-
-    public void ActionUp() {
+    private void ActionUp() {
         for (int i = 0; i < CUSTOMBUTTONSLIST.size(); i++) {
             CUSTOMBUTTONSLIST.get(i).UpdateButtonUp();
+            CUSTOMBUTTONSLIST.get(i).Intersect();
         }
-        UpdateTouchUp();
+
+        if (!TOUCHCUSTOMBUTTONS) {
+            UpdateTouchUp();
+        }
     }
 
 
-    public void UpdateTouch() {
-        if (!TOUCHCUSTOMBUTTONS) {
-            if (DISPLAYINVENTORY) {
-                LE.setSelectTilefromInventory((float) TOUCHPOSITION.getX(), (float) TOUCHPOSITION.getY());
-            } else {
+    private void UpdateTouch() {
+        if (DISPLAYINVENTORY) {
+            LE.setSelectTilefromInventory((float) TOUCHPOSITION.getX(), (float) TOUCHPOSITION.getY());
+        } else {
 
-                if (FILLTILES) { // Starts the Boundarie to place many Tiles
-                    LE.StartFillingTile((int) TOUCHPOSITION.getX(), (int) TOUCHPOSITION.getY());
-                }
-                if (!DESTROYTILES) { // Removes many Tiles
-                    if (PLACETILE) {
-                        LE.PlaceSelectedTile((int) TOUCHPOSITION.getX(), (int) TOUCHPOSITION.getY());
-                    }
-                } else {
-                    if (PLACETILE) { // removes single Tile
-                        LE.RemoveTileKDTREE((int) TOUCHPOSITION.getX(), (int) TOUCHPOSITION.getY());
-                    }
-                }
-
+            if (FILLTILES) { // Starts the Boundarie to place many Tiles
+                LE.StartFillingTile((int) TOUCHPOSITION.getX(), (int) TOUCHPOSITION.getY());
             }
+            if (!DESTROYTILES) { // Removes many Tiles
+                if (PLACETILE) {
+                    LE.PlaceSelectedTile((int) TOUCHPOSITION.getX(), (int) TOUCHPOSITION.getY());
+                }
+            } else {
+                if (PLACETILE) { // removes single Tile
+                    LE.RemoveTileKDTREE((int) TOUCHPOSITION.getX(), (int) TOUCHPOSITION.getY());
+                }
+            }
+
         }
     }
 

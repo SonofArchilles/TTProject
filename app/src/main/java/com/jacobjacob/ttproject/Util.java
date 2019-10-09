@@ -4,11 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.widget.Button;
-import android.widget.SeekBar;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.ToggleButton;
+import android.widget.*;
 
 import com.jacobjacob.ttproject.Light.PointLight;
 import com.jacobjacob.ttproject.Material.Material;
@@ -145,6 +141,8 @@ public class Util {
     public static boolean DISPAYTOAST = false;
     public static boolean DISPLAYINVENTORY = false;
 
+    public static boolean MENU = true; // Toggles whether the buttons in a group should be displayed or not
+
     public static boolean PLACETILE = true;
     public static boolean FILLTILES = false;
     public static boolean DESTROYTILES = false;
@@ -220,7 +218,7 @@ public class Util {
     public static KdTree KDTREECOPY = KDTREE;
 
     public static KdTreeChunks KDTREECHUNKS = new KdTreeChunks();
-    public static int KDTREECHUNKSMAXITERATIONS = 7;
+    public static int KDTREECHUNKSMAXITERATIONS = 6;
     public static ArrayList<Rect> VISIBLEKDTREECHUNKS = new ArrayList<Rect>();
 
     public static int CHUNKSIZE = 20;

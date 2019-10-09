@@ -19,6 +19,7 @@ public class KdTreeChunks {
     private boolean hasChildren = false;
     private int Iteration = 0;
     private int[][] TileMaterialint;
+    private Tile[][] TileIn2dArray = new Tile[CHUNKSIZE][CHUNKSIZE];
     int Boundary;
 
     public KdTreeChunks(ArrayList<Tile> Tiles, Rect BoundaryOld, int Iteration) {
@@ -32,7 +33,7 @@ public class KdTreeChunks {
 
         int X = this.BoundaryOld.width();
         int Y = this.BoundaryOld.height();
-
+/**/
         this.TileMaterialint = new int[X][Y]; // must be bigger to give the Tiles on the edges the right Orientation
 
         for (int i = 0; i < X; i++) {
@@ -40,13 +41,19 @@ public class KdTreeChunks {
                 this.TileMaterialint[i][j] = -1;
 
             }
-        }
-
-        if (((CHUNKSIZE * CHUNKSIZE)) <= this.TilesInCurrentTree.size() && this.Iteration < KDTREECHUNKSMAXITERATIONS) {
+        }/**/
+        //Fill2dArray();
+        // if the max amount of splits is reached it wont be split, even if it should be
+        if ((CHUNKSIZE * CHUNKSIZE <= this.TilesInCurrentTree.size() || this.BoundaryOld.width() > CHUNKSIZE && this.BoundaryOld.height() > CHUNKSIZE/**/) && this.Iteration < KDTREECHUNKSMAXITERATIONS) {
             Split();
-        }
-        if (1 < this.TilesInCurrentTree.size()) {
-            CheckIntersections();
+        }else {
+            if (1 < this.TilesInCurrentTree.size()) {
+                CheckIntersections();
+            }
+            int a = 0;
+            //if ((/**/CHUNKSIZE * CHUNKSIZE >= this.TilesInCurrentTree.size() &&/**/ this.BoundaryOld.width() <= CHUNKSIZE && this.BoundaryOld.height() <= CHUNKSIZE)/*/ && this.Iteration < KDTREECHUNKSMAXITERATIONS/**/) {
+
+            //}
         }
     }
 
@@ -103,28 +110,28 @@ public class KdTreeChunks {
                 maxX += 1;
                 maxY += 1;
                 /*/
-                minX = ((int) (Math.floor(minX / ((float)CHUNKSIZE))) * CHUNKSIZE);
-                minY = ((int) (Math.floor(minY / ((float)CHUNKSIZE))) * CHUNKSIZE);
-                maxX = ((int) (Math.ceil(maxX  / ((float)CHUNKSIZE))) * CHUNKSIZE);
-                maxY = ((int) (Math.ceil(maxY  / ((float)CHUNKSIZE))) * CHUNKSIZE);
+                minX = ((int) (Math.floor(minX / ((float)CHUNKSIZE))) * CHUNKSIZE); // number from - n * Chunksize to + n * Chunksize
+                minY = ((int) (Math.floor(minY / ((float)CHUNKSIZE))) * CHUNKSIZE); // number from - n * Chunksize to + n * Chunksize
+                maxX = ((int) (Math.ceil(maxX  / ((float)CHUNKSIZE))) * CHUNKSIZE); // number from - n * Chunksize to + n * Chunksize
+                maxY = ((int) (Math.ceil(maxY  / ((float)CHUNKSIZE))) * CHUNKSIZE); // number from - n * Chunksize to + n * Chunksize
                 /**/
                 this.BoundaryOld = new Rect(minX, minY, maxX, maxY);
 
-                int X = this.BoundaryOld.width() +2;
-                int Y = this.BoundaryOld.height()+2;
+                int X = this.BoundaryOld.width() ;//+2;
+                int Y = this.BoundaryOld.height();//+2;
                 if (X < 0) {
                     X = 0;
                 }
                 if (Y < 0) {
                     Y = 0;
-                }
+                }/**/
                 this.TileMaterialint = new int[X][Y]; // must be bigger to give the Tiles on the edges the right Orientation
                 for (int i = 0; i < X; i++) {
                     for (int j = 0; j < Y; j++) {
                         this.TileMaterialint[i][j] = -1;
 
                     }
-                }
+                }/**/
 
 
                 this.Boundary = (int) Math.ceil(TILESIZE * (camera.getEye2D().getValue(2) / ZOOMFACTOR));
@@ -132,7 +139,7 @@ public class KdTreeChunks {
                 Autotile();
             }
 
-            if (( /* 2 * */KDTREEMAXITEMS) < this.TilesInCurrentTree.size()) { // THE MAXIMUM IN A GIVEN CELL IS NOW KDTREEMMAXITEMS, SINCE THE TREE GETS DEVIDED INTO TWO CHILDREN HALF AS BIG
+            if (( /* 2 * */CHUNKSIZE * CHUNKSIZE) < this.TilesInCurrentTree.size()) { // THE MAXIMUM IN A GIVEN CELL IS NOW KDTREEMMAXITEMS, SINCE THE TREE GETS DEVIDED INTO TWO CHILDREN HALF AS BIG
                 Split();
             }
             //KDTREECURRENTLYBUILDING = false;
@@ -168,6 +175,11 @@ public class KdTreeChunks {
             YMIDDLE -= YMIDDLE%CHUNKSIZE;
             if (YMIDDLE < 0){
                 YMIDDLE -= CHUNKSIZE;
+            }
+            if (YMIDDLE == this.getBoundarieOld().top){
+                YMIDDLE = this.getBoundarieOld().top + CHUNKSIZE;
+            }else if (YMIDDLE == this.getBoundarieOld().bottom){
+                YMIDDLE = this.getBoundarieOld().bottom - CHUNKSIZE;
             }
             /**/
 
@@ -205,6 +217,11 @@ public class KdTreeChunks {
             if (XMIDDLE < 0){
                 XMIDDLE -= CHUNKSIZE;
             }
+            if (XMIDDLE == this.getBoundarieOld().left){
+                XMIDDLE = this.getBoundarieOld().left + CHUNKSIZE;
+            }else if (XMIDDLE == this.getBoundarieOld().right){
+                XMIDDLE = this.getBoundarieOld().right - CHUNKSIZE;
+            }
             /**/
 
             for (int i = 0; i < this.TilesInCurrentTree.size(); i++) {
@@ -233,7 +250,15 @@ public class KdTreeChunks {
     public ArrayList<Tile> getTilesInCurrentTree() { // up to which Iteration you want the Boundary
         ArrayList<Tile> returnTilesfromChildren = new ArrayList<>();
         if (this.TilesInCurrentTree != null) {
+            /**/
             returnTilesfromChildren.addAll(this.TilesInCurrentTree);
+            /*/
+            for (int i = 0; i < this.TileIn2dArray.length;i++) {
+                for (int j = 0; j < this.TileIn2dArray[i].length; j++) {
+                    returnTilesfromChildren.add(this.TileIn2dArray[i][j]);
+                }
+            }
+            /**/
         }
         for (int i = 0; i < this.Children.size(); i++) {
             returnTilesfromChildren.addAll(this.Children.get(i).getTilesInCurrentTree());
@@ -431,6 +456,19 @@ public class KdTreeChunks {
     }
 
     // if contained in screen && !intersects screen then pass all
+
+    public void Fill2dArray() {
+        for (int i = 0; i < this.TilesInCurrentTree.size();i++) {
+            try {
+                int X = (int) (this.TilesInCurrentTree.get(i).getPositionRAW().getValue(0) - this.BoundaryOld.left);
+                int Y = (int) (this.TilesInCurrentTree.get(i).getPositionRAW().getValue(1) - this.BoundaryOld.top);
+
+                this.TileIn2dArray[X][Y] = this.TilesInCurrentTree.get(i);
+            }catch (Exception e){
+                Log.d("KdTreeChunks","Filling 2d Tiles Array");
+            }
+        }
+    }
 
     public int getnewID(int TilesinKdTree[][], Tile T) { // x and y = boundary left + top
 

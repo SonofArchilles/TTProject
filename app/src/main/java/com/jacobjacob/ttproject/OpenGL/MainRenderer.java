@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import static android.opengl.GLES20.GL_BLEND;
+import static android.opengl.GLES20.GL_ONE_MINUS_SRC_ALPHA;
+import static android.opengl.GLES20.GL_SRC_ALPHA;
 import static com.jacobjacob.ttproject.Util.*;
 
 
@@ -122,14 +125,8 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
             + "varying vec4 v_Color;"                          // This is the color from the vertex shader interpolated across the
             // triangle per fragment.
             + "void main()"                          // The entry point for our fragment shader.
-            + "{"
-            + "gl_FragColor = v_Color;"        // Pass the color directly through the pipeline.
+            + "{" + "gl_FragColor = v_Color;"// * (1.0 - v_Color.w) + v_Color * v_Color.w;"        // Pass the color directly through the pipeline.
             + "}";
-
-
-
-
-
 
 
     final String vertex_shader_texture = "uniform mat4 u_MVPMatrix;"
@@ -141,8 +138,7 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
 
             + "varying vec3 v_Position;"
 
-            + "attribute vec2 a_TexCoordinate;"
-            + "varying vec2 v_TexCoordinate;"
+            + "attribute vec2 a_TexCoordinate;" + "varying vec2 v_TexCoordinate;"
 
             + "void main(){"
 
@@ -161,20 +157,7 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
             + "varying vec2 v_TexCoordinate;"  // interpolated Texture coordinate same for texture and normaltexture
             + "uniform vec4 v_Color;"
 
-            + "void main(){"
-            + "vec4 color = texture2D(u_Texture, v_TexCoordinate);"
-            + "gl_FragColor = v_Color * (1.0 - color.w) + color * color.w;"
-            //+ "gl_FragColor = v_Color;"
-            + "}";
-
-
-
-
-
-
-
-
-
+            + "void main(){" + "gl_FragColor = texture2D(u_Texture, v_TexCoordinate);" + "}";
 
 
     /**/
@@ -517,14 +500,13 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
 
             //+ "colorvec = colorvec * 0.3;"
 
-            +"float minBright = 0.3;"
+            + "float minBright = 0.3;"
 
-            +"float Light_Size = 10.0;"
+            + "float Light_Size = 10.0;"
 
-            +"if(distance < Light_Size){"
+            + "if(distance < Light_Size){"
 
             + "float brightness = ( 1.0 -(distance/Light_Size)) * (1.0 - (distance/Light_Size));"
-
 
 
             + "vec3 lightVector = normalize(Light_Tile);"
@@ -534,18 +516,16 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
             + "float diffuseold = max(dot(vec_normalTex, lightVector), 0.0);" // 0 to 1
 
 
-
-
             //+"colorvec = colorvec + colorvec *  brightness + v_Light_Color * brightness + colorvec * diffuseold;"
             //+"colorvec = colorvec * 0.3 + colorvec *  brightness * v_Light_Color * diffuseold;"
             //+"colorvec = colorvec * 0.3 + colorvec *  brightness  + colorvec  *  brightness * v_Light_Color * diffuseold;"
 
             //+"vec4 coloredLight = brightness * v_Light_Color * diffuseold;"
-            +"float coloredLight = brightness * diffuseold;"
+            + "float coloredLight = brightness * diffuseold;"
 
             //+"colorvec = colorvec * 0.3 + colorvec * coloredLight * diffuseold + coloredLight + brightness * brightness *  v_Light_Color;"
             //+"colorvec = colorvec * 0.3 + coloredLight + brightness * brightness *  v_Light_Color;"
-            +"colorvec = colorvec * minBright + colorvec * coloredLight + colorvec * v_Light_Color * coloredLight + v_Light_Color * coloredLight;"
+            + "colorvec = colorvec * minBright + colorvec * coloredLight + colorvec * v_Light_Color * coloredLight + v_Light_Color * coloredLight;"
 
             /*/
             + "float distancepixel = length(vec2(Light_Tile));"// Get a lighting direction vector from the light to the vertex.\n"
@@ -574,11 +554,11 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
 
 
 
-            + "if(levels > 0.0){" + "colorvec = floor(colorvec * levels)/levels;" + "}" +
+            +"}else{colorvec = colorvec * minBright;}"
 
-            "}else{colorvec = colorvec * minBright;}" +
+            + "if(levels > 0.0){" + "colorvec = floor(colorvec * levels)/levels;" + "}"
 
-            "gl_FragColor = colorvec;" // Multiply the color by the diffuse illumination level and texture value to get final output color.\n"
+            +"gl_FragColor = " + /*1.0-*/"colorvec;" // Multiply the color by the diffuse illumination level and texture value to get final output color.\n"
 
             + "}";
     /**/
@@ -789,7 +769,7 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
         // view matrix. In OpenGL 2, we can keep track of these matrices separately if we choose.
         Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, lookX, lookY, lookZ, upX, upY, upZ);
 
-        Program[2] = createProgram(vertex_shader_texture,fragment_shader_texture);
+        Program[2] = createProgram(vertex_shader_texture, fragment_shader_texture);
 
         Program[1] = createProgram(vertexShader, fragmentShader);
 
@@ -800,9 +780,12 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
         //TILETEXTURE.updateTextures();        // working
         //TILETEXTURE.updateTexturesNormals(); // working
         for (int i = 0; i < MATERIALSTOTEXTURE; i++) {
-            TILETEXTURE.UpdateMaterialTexture(i);
-            TILETEXTURE.UpdateMaterialNormalTexture(i);
+            if (!MATERIALARRAY[i].hasAnimation()) {
+                TILETEXTURE.UpdateMaterialTexture(i);
+            }
+                TILETEXTURE.UpdateMaterialNormalTexture(i);
         }
+
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 
@@ -811,7 +794,7 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
         LIGHTS.add(new PointLight(new Vector(-10, -10).multiplydouble(TILESIZE), Color.argb(0, 255, 255, 1)));
         LIGHTS.add(new PointLight(new Vector(-10, 10).multiplydouble(TILESIZE), Color.argb(255, 0, 255, 1)));
 
-        for (int i = 0; i < CUSTOMBUTTONSLIST.size();i++){
+        for (int i = 0; i < CUSTOMBUTTONSLIST.size(); i++) {
             CUSTOMBUTTONSLIST.get(i).LoadTexture();
         }
     }
@@ -862,6 +845,10 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
 
         GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
 
+
+        GLES20.glDisable(GL_BLEND);
+        //GLES20.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         setRGBA(BACKGROUNDCOLOR);
         GLES20.glClearColor(r, g, b, a);
 
@@ -870,10 +857,6 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
 
 
         Log.d("Tiles: ", String.valueOf(VISIBLETILES.size()));
-
-
-        Vector Cal = new Vector();
-        float TILESIZEzoom = (float) Math.ceil(TILESIZE * (camera.getEye2D().getValue(2) / ZOOMFACTOR));
 
 
         mTextureUniformHandle = GLES20.glGetUniformLocation(Program[0], "u_Texture");
@@ -916,24 +899,8 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
 
         /**/
 
-        Vector LightVec = camera.getEye2D(); // position of the Light
+        LoadLightInShader();
 
-        float Rotationtime = 5000.0f; // in ms 5000
-        float Rotationdistance = 3;//3
-
-        float A = SystemClock.uptimeMillis() % Rotationtime;
-        float Time = A / Rotationtime; // float from 0 to 1. It takes 5s to reset
-
-        //Log.d("percentage:",String.valueOf(Time));
-
-        float X = (float) (Rotationdistance * Math.sin(Math.PI * 2 * Time)); // rotating point in a distance of 5 tiles / units
-        float Y = (float) (Rotationdistance * Math.cos(Math.PI * 2 * Time)); // rotating point in a distance of 5 tiles / units
-
-
-        float[] LightPositionData = {(float) (LightVec.getValue(0) / TILESIZE) + X, (float) (LightVec.getValue(1) / TILESIZE) + Y, 10.0f / TILESIZE}; // light x, y, z
-        GLES20.glUniform3f(LightUniformHandle, LightPositionData[0], LightPositionData[1], LightPositionData[2]);
-        float[] LightColorData = {CUSTOM_BUTTON_SEEKBAR_RED, CUSTOM_BUTTON_SEEKBAR_GREEN, CUSTOM_BUTTON_SEEKBAR_BLUE}; // light x, y, z
-        GLES20.glUniform4f(LightColorUniformHandle, LightColorData[0], LightColorData[1], LightColorData[2], 1);
 
 
 
@@ -974,38 +941,10 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
 
 
 /**/
+        DrawTiles();
 
-        if (!DRAWKDTREE) { //TODO of alpha of Rect is possible remove
-            for (int i = 0; i < VISIBLETILES.size(); i++) {
-
-                try {
-                   // if (VISIBLETILES.get(i).isOnScreen()) {
-
-                        Cal = Cal.getScreencoordinatesFromTileCoordinates(VISIBLETILES.get(i).getPosition());
-
-
-                        float left = (float) Cal.getValue(0);//(float) visible.get(i).getPositionRAW().getX() * Scale;//width / height;
-                        float top = (float) Cal.getValue(1);//(float) visible.get(i).getPositionRAW().getY() * Scale;
-                        float right = (float) Cal.getValue(0) + TILESIZEzoom;//(float) (visible.get(i).getPositionRAW().getX() + 1) * Scale;
-                        float bottom = (float) Cal.getValue(1) + TILESIZEzoom;//(float) (visible.get(i).getPositionRAW().getY() + 1) * Scale;
-
-
-                        left = 2 * ((left / WIDTHSCREEN) * 2 - 1);
-                        top = 2 * (1 - (top / HEIGHTSCREEN) * 2);
-                        right = 2 * ((right / WIDTHSCREEN) * 2 - 1);
-                        bottom = 2 * (1 - (bottom / HEIGHTSCREEN) * 2);
-
-                        try {
-                            drawTextureLight(left, top, right, bottom, VISIBLETILES.get(i).getIDint(), VISIBLETILES.get(i).getMaterial(), VISIBLETILES.get(i).getPosition());
-                        } catch (Exception e) {
-                            Log.d("Render Texture: ", e + "");
-                        }
-                    //}
-                } catch (Exception e) {
-                    Log.d("KDTREE: ", "Tile null error");
-                }
-            }
-        }
+        GLES20.glEnable(GL_BLEND);
+        GLES20.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         mMVPMatrixHandle = GLES20.glGetUniformLocation(Program[1], "u_MVPMatrix");
         mPositionHandle = GLES20.glGetAttribLocation(Program[1], "a_Position");
@@ -1014,7 +953,7 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
         GLES20.glUseProgram(Program[1]);
 
         if (DRAWKDTREE) {
-            DrawKdtree();
+            DrawKdtreeChunks();
         }
 
         if (DRAWHITBOX) {
@@ -1023,34 +962,8 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
             DrawCharacter();
         }
 
+        DrawButtons();
 
-        for (int j = 0; j < CUSTOMBUTTONSLIST.size(); j++) {
-            ArrayList<Rect> Boxes = CUSTOMBUTTONSLIST.get(j).getBoxes();
-            ArrayList<Integer> BoxesColor = CUSTOMBUTTONSLIST.get(j).getColors();
-            for (int i = 0; i < Boxes.size(); i++) {
-                drawSquare(Boxes.get(i).left / 128.0f, Boxes.get(i).top / 128.0f, Boxes.get(i).right / 128.0f, Boxes.get(i).bottom / 128.0f, BoxesColor.get(i)); // BoxesColor.get(i)
-            }
-        }
-
-
-
-
-        mMVPMatrixHandle = GLES20.glGetUniformLocation(Program[2], "u_MVPMatrix");
-        mTextureUniformHandle = GLES20.glGetUniformLocation(Program[2], "u_Texture");
-        mPositionHandle = GLES20.glGetAttribLocation(Program[2], "a_Position");
-        mColorHandle = GLES20.glGetUniformLocation(Program[2], "v_Color");
-
-
-
-        GLES20.glUseProgram(Program[2]);
-
-        for (int j = 0; j < CUSTOMBUTTONSLIST.size(); j++) {
-            if (CUSTOMBUTTONSLIST.get(j).getTexture() != 0) {
-                ArrayList<Rect> Boxes = CUSTOMBUTTONSLIST.get(j).getBoxes();
-                int BoxColor = CUSTOMBUTTONSLIST.get(j).getColors().get(0);
-                drawTexture(Boxes.get(0).left / 128.0f, Boxes.get(0).top / 128.0f, Boxes.get(0).right / 128.0f, Boxes.get(0).bottom / 128.0f, BoxColor,CUSTOMBUTTONSLIST.get(j).getTexture()); // BoxesColor.get(i)
-            }
-        }
 
 
 
@@ -1201,18 +1114,18 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
 
     /**
      * Draws correctly loaded Textures on the Screen with a backgroundcolor
-     * @param left left from -1 to 1
-     * @param top top from -1 to 1
-     * @param right right from -1 to 1
-     * @param bottom bottom from -1 to 1
+     *
+     * @param left    left from -1 to 1
+     * @param top     top from -1 to 1
+     * @param right   right from -1 to 1
+     * @param bottom  bottom from -1 to 1
      * @param Texture as int
      */
-    private void drawTexture(float left, float top, float right, float bottom,int Colorint, int Texture) { // 6 Values = 2 Triangles
+    private void drawTexture(float left, float top, float right, float bottom, int Colorint, int Texture) { // 6 Values = 2 Triangles
 
 
-        float[] ColorData = {Color.red(Colorint)/255.0f, Color.green(Colorint)/255.0f, Color.blue(Colorint)/255.0f}; // light x, y, z
+        float[] ColorData = {Color.red(Colorint) / 255.0f, Color.green(Colorint) / 255.0f, Color.blue(Colorint) / 255.0f}; // light x, y, z
         GLES20.glUniform4f(mColorHandle, ColorData[0], ColorData[1], ColorData[2], 1);
-
 
 
         mTextureDataHandle = /*/TILETEXTURE.getTexture(0, 15);/*/Texture;/**/
@@ -1483,6 +1396,47 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
         }
     }
 
+    /**
+     * Draws the visible Tiles with the correct Light Calculations and the correct Light Color on the Screen at the correct positions
+     */
+    private void DrawTiles() {
+
+        Vector Cal = new Vector();
+        float TILESIZEzoom = (float) Math.ceil(TILESIZE * (camera.getEye2D().getValue(2) / ZOOMFACTOR));
+
+        if (!DRAWKDTREE) { //TODO of alpha of Rect is possible remove
+            for (int i = 0; i < VISIBLETILES.size(); i++) {
+
+                try {
+                    // if (VISIBLETILES.get(i).isOnScreen()) {
+
+                    Cal = Cal.getScreencoordinatesFromTileCoordinates(VISIBLETILES.get(i).getPosition());
+
+
+                    float left = (float) Cal.getValue(0);//(float) visible.get(i).getPositionRAW().getX() * Scale;//width / height;
+                    float top = (float) Cal.getValue(1);//(float) visible.get(i).getPositionRAW().getY() * Scale;
+                    float right = (float) Cal.getValue(0) + TILESIZEzoom;//(float) (visible.get(i).getPositionRAW().getX() + 1) * Scale;
+                    float bottom = (float) Cal.getValue(1) + TILESIZEzoom;//(float) (visible.get(i).getPositionRAW().getY() + 1) * Scale;
+
+
+                    left = 2 * ((left / WIDTHSCREEN) * 2 - 1);
+                    top = 2 * (1 - (top / HEIGHTSCREEN) * 2);
+                    right = 2 * ((right / WIDTHSCREEN) * 2 - 1);
+                    bottom = 2 * (1 - (bottom / HEIGHTSCREEN) * 2);
+
+                    try {
+                        drawTextureLight(left, top, right, bottom, VISIBLETILES.get(i).getIDint(), VISIBLETILES.get(i).getMaterial(), VISIBLETILES.get(i).getPosition());
+                    } catch (Exception e) {
+                        Log.d("Render Texture: ", e + "");
+                    }
+                    //}
+                } catch (Exception e) {
+                    Log.d("KDTREE: ", "Tile null error");
+                }
+            }
+        }
+    }
+
 
     private void DrawHitbox() {
 
@@ -1592,19 +1546,19 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
         /**Draw close Collision Tiles or filter for a specific Material*/
     }
 
-    private void DrawKdtree() {
+    private void DrawKdtreeChunks() {
 
 
         Vector Cal = new Vector();
 
         for (int i = 0; i < VISIBLEKDTREECHUNKS.size(); i++) {
-            float brightness = ((float)i)/(float) VISIBLEKDTREECHUNKS.size();
+            float brightness = ((float) i) / (float) VISIBLEKDTREECHUNKS.size();
 
-            Cal = Cal.getScreencoordinatesFromTileCoordinates(new Vector(VISIBLEKDTREECHUNKS.get(i).left  * TILESIZE, VISIBLEKDTREECHUNKS.get(i).top  * TILESIZE));
+            Cal = Cal.getScreencoordinatesFromTileCoordinates(new Vector(VISIBLEKDTREECHUNKS.get(i).left * TILESIZE, VISIBLEKDTREECHUNKS.get(i).top * TILESIZE));
 
             float left = (float) Cal.getValue(0);
             float top = (float) Cal.getValue(1);
-            Cal = Cal.getScreencoordinatesFromTileCoordinates(new Vector(VISIBLEKDTREECHUNKS.get(i).right  * TILESIZE, VISIBLEKDTREECHUNKS.get(i).bottom  * TILESIZE));
+            Cal = Cal.getScreencoordinatesFromTileCoordinates(new Vector(VISIBLEKDTREECHUNKS.get(i).right * TILESIZE, VISIBLEKDTREECHUNKS.get(i).bottom * TILESIZE));
             float right = (float) Cal.getValue(0);
             float bottom = (float) Cal.getValue(1);
 
@@ -1613,7 +1567,61 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
             right = 2 * ((right / WIDTHSCREEN) * 2 - 1);
             bottom = 2 * (1 - (bottom / HEIGHTSCREEN) * 2);
 
-            drawSquare(left, top, right, bottom, Color.argb(120, (int)(255 * brightness), (int)(255 * (1-brightness)), 255/2));
+            drawSquare(left, top, right, bottom, Color.argb(120, (int) (255 * brightness), (int) (255 * (1 - brightness)), 255 / 2));
         }
+    }
+
+    private void DrawButtons() {
+        for (int j = 0; j < CUSTOMBUTTONSLIST.size(); j++) {
+            if (CUSTOMBUTTONSLIST.get(j).isVisible()) {
+                ArrayList<Rect> Boxes = CUSTOMBUTTONSLIST.get(j).getBoxes();
+                ArrayList<Integer> BoxesColor = CUSTOMBUTTONSLIST.get(j).getColors();
+                for (int i = 0; i < Boxes.size(); i++) {
+                    drawSquare(Boxes.get(i).left / 128.0f, Boxes.get(i).top / 128.0f, Boxes.get(i).right / 128.0f, Boxes.get(i).bottom / 128.0f, BoxesColor.get(i)); // BoxesColor.get(i)
+                }
+            }
+        }
+
+
+        mMVPMatrixHandle = GLES20.glGetUniformLocation(Program[2], "u_MVPMatrix");
+        mTextureUniformHandle = GLES20.glGetUniformLocation(Program[2], "u_Texture");
+        mPositionHandle = GLES20.glGetAttribLocation(Program[2], "a_Position");
+        mColorHandle = GLES20.glGetUniformLocation(Program[2], "v_Color");
+
+
+        GLES20.glUseProgram(Program[2]);
+
+        for (int j = 0; j < CUSTOMBUTTONSLIST.size(); j++) {
+            if (CUSTOMBUTTONSLIST.get(j).getTexture() != 0 && CUSTOMBUTTONSLIST.get(j).isVisible()) {
+                ArrayList<Rect> Boxes = CUSTOMBUTTONSLIST.get(j).getBoxes();
+                int BoxColor = CUSTOMBUTTONSLIST.get(j).getColors().get(0);
+                drawTexture(Boxes.get(0).left / 128.0f, Boxes.get(0).top / 128.0f, Boxes.get(0).right / 128.0f, Boxes.get(0).bottom / 128.0f, BoxColor, CUSTOMBUTTONSLIST.get(j).getTexture()); // BoxesColor.get(i)
+            }
+        }
+    }
+
+    /**
+     * Loads the lights color and Position into the fragment shader for the Tiles. Does only work for one lightsource right now
+     */
+    private void LoadLightInShader() {
+
+        Vector LightVec = camera.getEye2D(); // position of the Light
+
+        float Rotationtime = 5000.0f; // in ms 5000
+        float Rotationdistance = 3;//3
+
+        float A = SystemClock.uptimeMillis() % Rotationtime;
+        float Time = A / Rotationtime; // float from 0 to 1. It takes 5s to reset
+
+        //Log.d("percentage:",String.valueOf(Time));
+
+        float X = (float) (Rotationdistance * Math.sin(Math.PI * 2 * Time)); // rotating point in a distance of 5 tiles / units
+        float Y = (float) (Rotationdistance * Math.cos(Math.PI * 2 * Time)); // rotating point in a distance of 5 tiles / units
+
+
+        float[] LightPositionData = {(float) (LightVec.getValue(0) / TILESIZE) + X, (float) (LightVec.getValue(1) / TILESIZE) + Y, 10.0f / TILESIZE}; // light x, y, z
+        GLES20.glUniform3f(LightUniformHandle, LightPositionData[0], LightPositionData[1], LightPositionData[2]);
+        float[] LightColorData = {CUSTOM_BUTTON_SEEKBAR_RED, CUSTOM_BUTTON_SEEKBAR_GREEN, CUSTOM_BUTTON_SEEKBAR_BLUE}; // light x, y, z
+        GLES20.glUniform4f(LightColorUniformHandle, LightColorData[0], LightColorData[1], LightColorData[2], 1);
     }
 }
