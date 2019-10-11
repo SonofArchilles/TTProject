@@ -403,7 +403,7 @@ public class Material {
 
     public void UpdateMaterialTilesetNormal() {
         if (TILELAYER < TILELAYERSTART + 4) {
-            if (CREATEFASTNORMALS) {
+            if (BOOLARRAYLIST.get(CREATEFASTNORMALSINT)) {
                 TILETEXTURE.CreateNormals(this.Number, this.Layer1, this.Layer2, this.Layer3, Color.alpha(ColorLayer1), Color.alpha(ColorLayer2), Color.alpha(ColorLayer3));
             } else {
                 TILETEXTURE.CreateAccurateNormals(this.Number, this.Layer1, this.Layer2, this.Layer3, Color.alpha(ColorLayer1), Color.alpha(ColorLayer2), Color.alpha(ColorLayer3));
@@ -412,7 +412,7 @@ public class Material {
     }
 
     public void CreateMaterialTilesetNormal() {
-        if (CREATEFASTNORMALS) {
+        if (BOOLARRAYLIST.get(CREATEFASTNORMALSINT)) {
             TILETEXTURE.CreateNormals(this.Number, this.Layer1, this.Layer2, this.Layer3, Color.alpha(ColorLayer1), Color.alpha(ColorLayer2), Color.alpha(ColorLayer3));
         } else {
             TILETEXTURE.CreateAccurateNormals(this.Number, this.Layer1, this.Layer2, this.Layer3, Color.alpha(ColorLayer1), Color.alpha(ColorLayer2), Color.alpha(ColorLayer3));

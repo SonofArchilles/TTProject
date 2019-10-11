@@ -1,8 +1,9 @@
-package com.jacobjacob.ttproject;
+package com.jacobjacob.ttproject.Tile.Collision;
 
 import android.graphics.Rect;
 
 import com.jacobjacob.ttproject.Tile.Tile;
+import com.jacobjacob.ttproject.Vector;
 
 import java.util.ArrayList;
 

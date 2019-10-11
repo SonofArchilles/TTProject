@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.widget.*;
 
+import com.jacobjacob.ttproject.Tile.Collision.Move;
 import com.jacobjacob.ttproject.Light.PointLight;
 import com.jacobjacob.ttproject.Material.Material;
 import com.jacobjacob.ttproject.Material.Tiletexture;
@@ -26,8 +27,6 @@ public class Util {
     public static int HEIGHTSCREEN;
     public static int SEED = 24512654;
 
-    public static boolean OPENGL;
-    public static boolean SETTINGS_OPENGL;
 
     //public static double  EPSILON = 0.04;
 
@@ -141,7 +140,38 @@ public class Util {
     public static boolean DISPAYTOAST = false;
     public static boolean DISPLAYINVENTORY = false;
 
+
+    /**
+     * Bools that should be changed by the user:
+     */
+
     public static boolean MENU = true; // Toggles whether the buttons in a group should be displayed or not
+    public static boolean DRAWHITBOX = true; /**Draw the Materials with Hitboxes in red, the checked Hitboxes in yellow and the Players Hitbox in green**/
+    public static boolean CREATEFASTNORMALS = true; /** false = every Tile gets its uniquely generated normal map, true = rotated normal maps, is maybe 3x faster/**/
+    public static boolean DRAWKDTREE = false;
+    public static boolean OPENGL = true;
+    public static boolean SELECTLVL = false;
+
+    /**
+     * BoolArray Arraylist for all the bools that can be changed by the user and can be saved
+     */
+
+    public static ArrayList<Boolean> BOOLARRAYLIST = new ArrayList<>(Arrays.asList(MENU,DRAWHITBOX,CREATEFASTNORMALS,DRAWKDTREE,OPENGL,SELECTLVL));
+
+    /**
+     * Position of the bools inside the BOOLARRAYLIST that enables fast access to the required boolean
+     *
+     */
+    public static int MENUINT = 0; //BOOLARRAYLIST.get(MENUINT)
+    public static int DRAWHITBOXINT = 1; //BOOLARRAYLIST.get(DRAWHITBOXINT)
+    public static int CREATEFASTNORMALSINT = 2; // BOOLARRAYLIST.get(CREATEFASTNORMALSINT)
+    public static int DRAWKDTREEINT = 3; //BOOLARRAYLIST.get(DRAWKDTREEINT)
+    public static int OPENGLINT = 4; //BOOLARRAYLIST.get(OPENGLINT)
+    public static int SELECTLVLINT = 5;
+
+
+
+
 
     public static boolean PLACETILE = true;
     public static boolean FILLTILES = false;
@@ -180,11 +210,9 @@ public class Util {
     public static Material STARTINGMATERIAL = new Material(1, 0, 0, 0, Color.argb(255, 120, 170, 100), Color.argb(255, 174, 160, 108), Color.argb(255, 10, 255, 255));
     public static boolean UPDATETILESET = false;
 
-    public static boolean CREATEFASTNORMALS = true; /** false = every Tile gets its uniquely generated normal map, true = rotated normal maps, is maybe 3x faster/**/
     public static float NORMALSTRENGTH = 0.1f; //0.5f // 0.2
 
 
-    public static boolean DRAWHITBOX = true; /**Draw the Materials with Hitboxes in red, the checked Hitboxes in yellow and the Players Hitbox in green**/
 
 
 
@@ -222,7 +250,6 @@ public class Util {
     public static ArrayList<Rect> VISIBLEKDTREECHUNKS = new ArrayList<Rect>();
 
     public static int CHUNKSIZE = 20;
-    public static boolean DRAWKDTREE = false;
 
     public static int KDTREEMAXITEMS = 80;
     public static boolean KDTREECURRENTLYBUILDING = true;

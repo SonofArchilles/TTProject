@@ -83,6 +83,19 @@ public class CustomButtons {
         this.Boxes.add(this.BoxDraw);
 
         this.Texturename = Texturename;
+
+
+        if (this.Type.equals("ToggleButton")) {
+            if (this.Togglestate) {
+                this.Colors.set(0, FILLTILECOLOR);
+                Toast.makeText(CONTEXT, this.VariableToChange + " is true", Toast.LENGTH_LONG).show();
+
+            } else {
+                this.Colors.set(0, CHUNKCOLOR);
+                Toast.makeText(CONTEXT, this.VariableToChange + " is false", Toast.LENGTH_SHORT).show();
+            }
+        }
+
     }
 
     public void LoadTexture() {
@@ -229,44 +242,33 @@ public class CustomButtons {
                     if (TOUCHSTATE == 0 && !this.ButtonUpdated) { // if the touch is down, not if moving or up
                         this.ButtonUpdated = true;
 
-                        if (this.VariableToChange.equals("SELECTLVL")) {
+                        if (Integer.parseInt(this.VariableToChange) == SELECTLVLINT) {
                             SelectLVL();
                             RELOADMATERIALS = true;
 
 
-                        } else if (this.VariableToChange.equals("OPENGL")) {
+                        } else if (Integer.parseInt(this.VariableToChange) == OPENGLINT) {
 
 
-                            SETTINGS_OPENGL = !SETTINGS_OPENGL;
-                            Togglestate = SETTINGS_OPENGL;
+                            //SETTINGS_OPENGL = !SETTINGS_OPENGL;
+                            //Togglestate = SETTINGS_OPENGL;
 
+                            //if (SETTINGS_OPENGL) {
+                            //    Debug newDebug = new Debug();
+                            //    newDebug.TilesToClippboard();
 
-                            if (SETTINGS_OPENGL) {
-                                Debug newDebug = new Debug();
-                                newDebug.TilesToClippboard();
+                            //}
 
-                            }
-                            WF.SaveSettings();
-
-                        } else if (this.VariableToChange.equals("DRAWHITBOX")) {
-                            DRAWHITBOX = !DRAWHITBOX;
-                            Togglestate = DRAWHITBOX;
-
-                        } else if (this.VariableToChange.equals("DRAWKDTREE")) {
-                            DRAWKDTREE = !DRAWKDTREE;
-
-                            Togglestate = DRAWKDTREE;
-
-                        } else if (this.VariableToChange.equals("MENU")) {
-                            MENU = !MENU;
+                        } else if (Integer.parseInt(this.VariableToChange) == MENUINT) {
                             for (int i = 0; i < CUSTOMBUTTONSLIST.size(); i++) {
                                 if (CUSTOMBUTTONSLIST.get(i).getGroup() > 0) {
-                                    CUSTOMBUTTONSLIST.get(i).setVisible(MENU);
+                                    CUSTOMBUTTONSLIST.get(i).setVisible(BOOLARRAYLIST.get(MENUINT));
                                 }
                             }
-                            Togglestate = MENU;
                         }
-
+                        BOOLARRAYLIST.set(Integer.parseInt((this.VariableToChange)),!BOOLARRAYLIST.get(Integer.parseInt(this.VariableToChange)));
+                        Togglestate = BOOLARRAYLIST.get(Integer.parseInt(this.VariableToChange));
+                        WF.SaveSettings();
                     }
 
                     //WF.SaveSettings();

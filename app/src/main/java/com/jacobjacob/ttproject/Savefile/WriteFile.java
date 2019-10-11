@@ -66,7 +66,10 @@ public class WriteFile {
 
         //TODO Enums for simpler Saving and loading
         String text = "";
-        text += "OPENGL " + String.valueOf(SETTINGS_OPENGL) + "\n";
+        for (int i = 0; i < BOOLARRAYLIST.size();i++){
+            text += String.valueOf(BOOLARRAYLIST.get(i).booleanValue()) + "\n";
+        }
+        Log.d("WriteFile",text);
 
         FileOutputStream fos = null;
 

@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         //OPENGL = true;
 
 
-        if (OPENGL) {
+        if (BOOLARRAYLIST.get(OPENGLINT)) {
             ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
             ConfigurationInfo info = am.getDeviceConfigurationInfo();
             boolean supportES2 = (info.reqGlEsVersion >= 0x30000);
@@ -269,7 +269,8 @@ public class MainActivity extends AppCompatActivity {
             OPENGL_TOGGLE.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    SETTINGS_OPENGL = b;
+                    //SETTINGS_OPENGL = b;
+                    BOOLARRAYLIST.set(OPENGLINT,b);
                     WF.SaveSettings();
                 }
             });
@@ -685,7 +686,7 @@ public class MainActivity extends AppCompatActivity {
 
                 camera.move(-xmove2 + event.getX(), -ymove2 + event.getY());
 
-                if (!OPENGL) {
+                if (!BOOLARRAYLIST.get(OPENGLINT)) {
                     if (DISPLAYINVENTORY) {
                         LE.setSelectTilefromInventory(event.getX(), event.getY());
                     } else {
@@ -729,7 +730,7 @@ public class MainActivity extends AppCompatActivity {
                 camera.move(xmove, ymove);
 
 
-                if (!OPENGL) {
+                if (!BOOLARRAYLIST.get(OPENGLINT)) {
                     if (DISPLAYINVENTORY) {
                         LE.setSelectTilefromInventory(event.getX(), event.getY());
                     } else {
@@ -771,7 +772,7 @@ public class MainActivity extends AppCompatActivity {
                 //}
                 camera.move(xmove, ymove);
 
-                if (!OPENGL) {
+                if (!BOOLARRAYLIST.get(OPENGLINT)) {
                     if (DISPLAYINVENTORY) {
                         LE.SELECTEDTILEIDINVENTORY();
                     } else {

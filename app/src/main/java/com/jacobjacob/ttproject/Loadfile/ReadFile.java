@@ -71,9 +71,16 @@ public class ReadFile {
                 StringBuilder sb = new StringBuilder();
                 String text;
 
+                int count = 0;
                 while ((text = br.readLine()) != null) {
                     sb.append(text).append("\n");
 
+                    //Log.d("ReadFile",text);
+
+                    BOOLARRAYLIST.set(count,Boolean.valueOf(text));
+
+                    count++;
+                    /*/
                     String[] parts = text.split(" ");
 
                     if (String.valueOf(parts[0]).equals("OPENGL")) {
@@ -82,7 +89,7 @@ public class ReadFile {
                         } else if (String.valueOf(parts[1]).equals("false")) {
                             OPENGL = false;
                         }
-                    }
+                    }/**/
 
                 }
             }

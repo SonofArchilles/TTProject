@@ -28,17 +28,17 @@ public class MainSurfaceView extends GLSurfaceView {
 
         int alpha_Buttons = 200;
 
-        Joystick = new CustomButtons("Joystick","","", new Vector(0.2 * WIDTHSCREEN * 0.5, HEIGHTSCREEN * 0.8), (float) (WIDTHSCREEN * 0.18), (float) (WIDTHSCREEN * 0.18), Color.argb(alpha_Buttons,120, 120, 120));
+        Joystick = new CustomButtons("Joystick","MENUINT","move", new Vector(0.2 * WIDTHSCREEN * 0.5, HEIGHTSCREEN * 0.8), (float) (WIDTHSCREEN * 0.18), (float) (WIDTHSCREEN * 0.18), Color.argb(alpha_Buttons,120, 120, 120));
 
-        MoveDown = new CustomButtons("Button","MoveDown", "",new Vector(WIDTHSCREEN * 0.22f, HEIGHTSCREEN * 0.88f), (float) (WIDTHSCREEN * 0.05f), (float) (WIDTHSCREEN * 0.05f), Color.argb(alpha_Buttons,120, 120, 120));
-        MoveUp = new CustomButtons("Button","MoveUp","", new Vector(WIDTHSCREEN * 0.22f, HEIGHTSCREEN * 0.72f), (float) (WIDTHSCREEN * 0.05f), (float) (WIDTHSCREEN * 0.05f), Color.argb(alpha_Buttons,120, 120, 120));
+        MoveDown = new CustomButtons("Button","MoveDown", "down",new Vector(WIDTHSCREEN * 0.22f, HEIGHTSCREEN * 0.88f), (float) (WIDTHSCREEN * 0.05f), (float) (WIDTHSCREEN * 0.05f), Color.argb(alpha_Buttons,120, 120, 120));
+        MoveUp = new CustomButtons("Button","MoveUp","up", new Vector(WIDTHSCREEN * 0.22f, HEIGHTSCREEN * 0.72f), (float) (WIDTHSCREEN * 0.05f), (float) (WIDTHSCREEN * 0.05f), Color.argb(alpha_Buttons,120, 120, 120));
 
 
-        TOGGLELEVEL = new CustomButtons("ToggleButton","SELECTLVL","level", new Vector(WIDTHSCREEN * 0.3f, HEIGHTSCREEN * 0.72f), (float) (WIDTHSCREEN * 0.1f), (float) (WIDTHSCREEN * 0.05f), Color.argb(alpha_Buttons,140, 120, 120));
-        TOGGLEOPENGL = new CustomButtons("ToggleButton","OPENGL","opengl", new Vector(WIDTHSCREEN * 0.3f, HEIGHTSCREEN * 0.88f), (float) (WIDTHSCREEN * 0.1f), (float) (WIDTHSCREEN * 0.05f), Color.argb(alpha_Buttons,140, 120, 120));
-        TOGGLEHITBOX = new CustomButtons("ToggleButton","DRAWHITBOX","hitbox", new Vector(WIDTHSCREEN * 0.3f, HEIGHTSCREEN * 0.88f), (float) (WIDTHSCREEN * 0.1f), (float) (WIDTHSCREEN * 0.05f), Color.argb(alpha_Buttons,140, 120, 120));
-        TOGGLEDRAWKDTREE = new CustomButtons("ToggleButton","DRAWKDTREE","kdtree", new Vector(WIDTHSCREEN * 0.3f, HEIGHTSCREEN * 0.88f), (float) (WIDTHSCREEN * 0.1f), (float) (WIDTHSCREEN * 0.05f), Color.argb(alpha_Buttons,140, 120, 120));
-        TOGGLEMENU = new CustomButtons("ToggleButton","MENU","menu", new Vector(WIDTHSCREEN * 0.3f, HEIGHTSCREEN * 0.88f), (float) (WIDTHSCREEN * 0.1f), (float) (WIDTHSCREEN * 0.05f), Color.argb(alpha_Buttons,140, 120, 120));
+        TOGGLELEVEL = new CustomButtons("ToggleButton","5","level", new Vector(WIDTHSCREEN * 0.3f, HEIGHTSCREEN * 0.72f), (float) (WIDTHSCREEN * 0.1f), (float) (WIDTHSCREEN * 0.05f), Color.argb(alpha_Buttons,140, 120, 120));
+        TOGGLEOPENGL = new CustomButtons("ToggleButton","4","opengl", new Vector(WIDTHSCREEN * 0.3f, HEIGHTSCREEN * 0.88f), (float) (WIDTHSCREEN * 0.1f), (float) (WIDTHSCREEN * 0.05f), Color.argb(alpha_Buttons,140, 120, 120));
+        TOGGLEHITBOX = new CustomButtons("ToggleButton","1","hitbox", new Vector(WIDTHSCREEN * 0.3f, HEIGHTSCREEN * 0.88f), (float) (WIDTHSCREEN * 0.1f), (float) (WIDTHSCREEN * 0.05f), Color.argb(alpha_Buttons,140, 120, 120));
+        TOGGLEDRAWKDTREE = new CustomButtons("ToggleButton","3","kdtree", new Vector(WIDTHSCREEN * 0.3f, HEIGHTSCREEN * 0.88f), (float) (WIDTHSCREEN * 0.1f), (float) (WIDTHSCREEN * 0.05f), Color.argb(alpha_Buttons,140, 120, 120));
+        TOGGLEMENU = new CustomButtons("ToggleButton","0","menu", new Vector(WIDTHSCREEN * 0.3f, HEIGHTSCREEN * 0.88f), (float) (WIDTHSCREEN * 0.1f), (float) (WIDTHSCREEN * 0.05f), Color.argb(alpha_Buttons,140, 120, 120));
 
 
         SEEKBARTESTRED = new CustomButtons("Seekbar","RED","", new Vector(WIDTHSCREEN * 0.88f, HEIGHTSCREEN * 0.5f), (float) (WIDTHSCREEN * 0.05f), (float) (WIDTHSCREEN * 0.3f), Color.argb(alpha_Buttons,255, 0, 0));
@@ -118,6 +118,7 @@ public class MainSurfaceView extends GLSurfaceView {
 
         //SELECTOPENGL.FlipOrientation();
 
+        CUSTOMBUTTONSLIST.clear();
 
         CUSTOMBUTTONSLIST.add(Joystick);
         CUSTOMBUTTONSLIST.add(MoveUp);

@@ -36,7 +36,7 @@ public class UpdateHandler/* extends AppCompatActivity*/ {
         //}
 
 
-        if (DRAWKDTREE) {
+        if (BOOLARRAYLIST.get(DRAWKDTREEINT)) {
             RENDERERTILES.DrawKDTree(); // Draws the KD-Tree in Red to Green
         }
 

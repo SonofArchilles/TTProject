@@ -952,11 +952,11 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
 
         GLES20.glUseProgram(Program[1]);
 
-        if (DRAWKDTREE) {
+        if (BOOLARRAYLIST.get(DRAWKDTREEINT)) {
             DrawKdtreeChunks();
         }
 
-        if (DRAWHITBOX) {
+        if (BOOLARRAYLIST.get(DRAWHITBOXINT)) {
             DrawHitbox();
         } else {
             DrawCharacter();
@@ -1404,7 +1404,7 @@ public class MainRenderer extends AppCompatActivity implements GLSurfaceView.Ren
         Vector Cal = new Vector();
         float TILESIZEzoom = (float) Math.ceil(TILESIZE * (camera.getEye2D().getValue(2) / ZOOMFACTOR));
 
-        if (!DRAWKDTREE) { //TODO of alpha of Rect is possible remove
+        if (!BOOLARRAYLIST.get(DRAWKDTREEINT)) { //TODO of alpha of Rect is possible remove
             for (int i = 0; i < VISIBLETILES.size(); i++) {
 
                 try {

@@ -58,7 +58,7 @@ public class LevelEditor {
 
 
     public boolean SelectTileFromSmallInventory(int x, int y) {
-        if (OPENGL){
+        if (BOOLARRAYLIST.get(OPENGLINT)){
             return false;
         }
         int Height7Texturewidth = HEIGHTSCREEN / TEXTUREWIDTH;
